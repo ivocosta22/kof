@@ -1,0 +1,33 @@
+# ── Project notes (not for repo) ───────────────────────────────────────────
+TODO.md
+scripts.txt
+
+# ── Environment / Secrets ──────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+
+# ── OS ─────────────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# ── Editors ────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*.suo
+*.user
+*.orig
+*~
+
+# ── Logs ───────────────────────────────────────────────────────────────────
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

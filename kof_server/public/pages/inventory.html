@@ -1,0 +1,883 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#f4efe7" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#121715" media="(prefers-color-scheme: dark)" />
+  <title>Kof Inventory</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="inventory-page">
+  <main class="admin-shell">
+  <section class="ops-hero">
+    <div class="top">
+    <div>
+      <div class="ops-eyebrow" id="inventoryEyebrow"></div>
+      <div class="ops-title" id="pageTitle"></div>
+      <div class="ops-subtitle" id="whoLine"></div>
+    </div>
+    <div class="row ops-toolbar">
+      <button onclick="goStaff()" id="staffBtn"></button>
+      <button id="adminBtn" style="display:none" onclick="goAdmin()"></button>
+      <button onclick="goSettings()" id="settingsBtn"></button>
+      <button onclick="logout()" id="logoutBtn" class="danger-soft"></button>
+    </div>
+    </div>
+  </section>
+
+  <div id="managerAddCard" class="card" style="display:none">
+    <h3 style="margin-top:0" id="addIngredientTitle"></h3>
+    <div class="subgrid">
+      <div>
+        <label for="newIngName" id="newIngNameLabel"></label>
+        <input id="newIngName" />
+      </div>
+      <div>
+        <label for="newIngUnit" id="newIngUnitLabel"></label>
+        <input id="newIngUnit" />
+      </div>
+      <div>
+        <label for="newIngStock" id="newIngStockLabel"></label>
+        <input id="newIngStock" placeholder="0" inputmode="decimal" />
+      </div>
+      <div>
+        <label for="newIngLow" id="newIngLowLabel"></label>
+        <input id="newIngLow" placeholder="0" inputmode="decimal" />
+      </div>
+    </div>
+    <div class="actions">
+      <button onclick="addIngredient()" id="addIngredientBtn" class="primary"></button>
+      <button onclick="reloadAll()" id="refreshTopBtn" class="primary"></button>
+    </div>
+    <div class="muted" id="addIngredientMsg"></div>
+  </div>
+
+  <div class="grid inventory-grid">
+    <div class="card">
+      <div class="titleRow">
+        <h3 style="margin:0" id="ingredientsTitle"></h3>
+        <button onclick="reloadIngredients()" id="refreshIngredientsBtn" class="primary"></button>
+      </div>
+      <div id="ingredientsWrap" class="stack" style="margin-top:12px"></div>
+    </div>
+
+    <div class="card">
+      <div class="titleRow">
+        <h3 style="margin:0" id="drinkAvailabilityTitle"></h3>
+        <button onclick="reloadRecipes()" id="refreshRecipesBtn" class="primary"></button>
+      </div>
+      <div id="menuRecipesWrap" class="stack" style="margin-top:12px"></div>
+    </div>
+  </div>
+
+  <div id="adjustmentsCard" class="card" style="display:none">
+    <div class="titleRow">
+      <h3 style="margin:0" id="recentAdjustmentsTitle"></h3>
+      <button onclick="loadAdjustments()" id="refreshAdjustmentsBtn" class="primary"></button>
+    </div>
+    <div id="adjustmentsWrap" class="stack" style="margin-top:12px"></div>
+  </div>
+  </main>
+
+  <div id="toastWrap"></div>
+
+  <script src="/js/translations/en.js"></script>
+  <script src="/js/translations/pt.js"></script>
+  <script src="/js/translations/fi.js"></script>
+  <script src="/js/i18n.js"></script>
+
+  <script>
+// Cache browser storage keys, i18n helpers, and top-level page state used by
+// the inventory screen.
+    const TOKEN_KEY = "kof_admin_token_v1";
+    const WHO_KEY = "kof_admin_who_v1";
+    const t = window.kofI18n.t;
+    const translateError = window.kofI18n.translateError;
+    function tf(key, fallback, vars = {}) {
+      const value = t(key, vars);
+      return value === key ? fallback : value;
+    }
+
+    let currentMe = null;
+    let ingredientsCache = [];
+
+// Cache the main DOM references used repeatedly across the inventory page.
+    const pageTitleEl = document.getElementById("pageTitle");
+    const inventoryEyebrowEl = document.getElementById("inventoryEyebrow");
+    const whoLineEl = document.getElementById("whoLine");
+    const staffBtnEl = document.getElementById("staffBtn");
+    const adminBtnEl = document.getElementById("adminBtn");
+    const settingsBtnEl = document.getElementById("settingsBtn");
+    const logoutBtnEl = document.getElementById("logoutBtn");
+    const managerAddCardEl = document.getElementById("managerAddCard");
+    const adjustmentsCardEl = document.getElementById("adjustmentsCard");
+    const ingredientsWrapEl = document.getElementById("ingredientsWrap");
+    const menuRecipesWrapEl = document.getElementById("menuRecipesWrap");
+    const adjustmentsWrapEl = document.getElementById("adjustmentsWrap");
+    const addIngredientMsgEl = document.getElementById("addIngredientMsg");
+    const toastWrapEl = document.getElementById("toastWrap");
+
+// Apply localized static UI labels and placeholders for the inventory page.
+    function applyTranslations() {
+      document.title = tf("inventory.title", "Kof Inventory");
+      inventoryEyebrowEl.textContent = tf("common.inventory", "Inventory");
+      pageTitleEl.textContent = tf("inventory.title", "Kof Inventory");
+      whoLineEl.textContent = tf("inventory.loadingWho", tf("common.loading", "Loading…"));
+      staffBtnEl.textContent = tf("common.staff", "Staff");
+      adminBtnEl.textContent = tf("common.admin", "Admin");
+      settingsBtnEl.textContent = tf("common.settings", "Settings");
+      logoutBtnEl.textContent = tf("common.logout", "Logout");
+
+      document.getElementById("addIngredientTitle").textContent = tf("inventory.addIngredient", "Add Ingredient");
+      document.getElementById("newIngNameLabel").textContent = tf("common.name", "Name");
+      document.getElementById("newIngUnitLabel").textContent = tf("common.unit", "Unit");
+      document.getElementById("newIngStockLabel").textContent = tf("inventory.stockQty", "Stock quantity");
+      document.getElementById("newIngLowLabel").textContent = tf("inventory.lowThreshold", "Low threshold");
+      document.getElementById("newIngName").placeholder = tf("inventory.exampleIngredient", "Coffee beans");
+      document.getElementById("newIngUnit").placeholder = tf("inventory.exampleUnit", "g / ml / pcs");
+      document.getElementById("addIngredientBtn").textContent = tf("inventory.addIngredient", "Add Ingredient");
+      document.getElementById("refreshTopBtn").textContent = tf("common.refresh", "Refresh");
+
+      document.getElementById("ingredientsTitle").textContent = tf("inventory.ingredients", "Ingredients");
+      document.getElementById("refreshIngredientsBtn").textContent = tf("common.refresh", "Refresh");
+      document.getElementById("drinkAvailabilityTitle").textContent = tf("inventory.drinkAvailability", "Drink Availability");
+      document.getElementById("refreshRecipesBtn").textContent = tf("common.refresh", "Refresh");
+      document.getElementById("recentAdjustmentsTitle").textContent = tf("inventory.recentAdjustments", "Recent Stock Adjustments");
+      document.getElementById("refreshAdjustmentsBtn").textContent = tf("common.refresh", "Refresh");
+    }
+
+// Read the current admin auth token from browser storage.
+    function getToken() {
+      return localStorage.getItem(TOKEN_KEY);
+    }
+
+// Clear the stored admin session from browser storage.
+    function clearToken() {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(WHO_KEY);
+    }
+
+// Escape user-controlled text before injecting it into HTML strings.
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+    }
+
+// Render a toast message using the shared fade-out only toast system.
+    function toast(type, title, msg) {
+      if (!toastWrapEl) {
+        return;
+      }
+
+      const toastEl = document.createElement("div");
+      toastEl.className = `toast ${type === "err" ? "err" : "ok"}`;
+      toastEl.innerHTML = `
+        <div class="tTitle">${escapeHtml(title || (type === "err" ? tf("common.error", "Error") : tf("common.done", "Done")))}</div>
+        <div class="tMsg">${escapeHtml(msg || "")}</div>
+      `;
+
+      toastWrapEl.appendChild(toastEl);
+
+      const ttlMs = type === "err" ? 4200 : 2200;
+
+      setTimeout(() => {
+        toastEl.classList.add("fade-out");
+
+        setTimeout(() => {
+          try {
+            toastEl.remove();
+          } catch {}
+        }, 350);
+      }, ttlMs);
+    }
+
+    function toastOk(title, msg) {
+      toast("ok", title, msg);
+    }
+
+    function toastErr(title, msg) {
+      toast("err", title, msg);
+    }
+
+// Call a protected admin API endpoint with the current bearer token and parse
+// JSON responses consistently.
+    async function api(path, opts = {}) {
+      const headers = Object.assign(
+        { "Content-Type": "application/json" },
+        opts.headers || {}
+      );
+
+      const token = getToken();
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      const response = await fetch(path, {
+        ...opts,
+        headers,
+      });
+
+      let data = {};
+
+      try {
+        data = await response.json();
+      } catch {
+        const text = await response.text().catch(() => "");
+        data = text ? { error: text } : {};
+      }
+
+      if (!response.ok) {
+        throw new Error(translateError(data.error || `Request failed (${response.status})`));
+      }
+
+      return data;
+    }
+
+// Parse a number input field, allowing comma or dot decimal separators and
+// optional empty fallback values.
+    function parseNumberInput(value, fallback = null) {
+      const normalized = String(value ?? "").trim();
+
+      if (normalized === "") {
+        return fallback;
+      }
+
+      const parsed = Number(normalized.replace(",", "."));
+      return Number.isFinite(parsed) ? parsed : null;
+    }
+
+// Format numeric quantities for UI display while avoiding noisy decimal tails.
+    function fmtQty(value) {
+      const numberValue = Number(value);
+
+      if (!Number.isFinite(numberValue)) {
+        return "0";
+      }
+
+      if (Number.isInteger(numberValue)) {
+        return String(numberValue);
+      }
+
+      return String(Math.round(numberValue * 100) / 100);
+    }
+
+// Apply the current dark mode state to the inventory page body.
+    function applyDarkMode(enabled) {
+      document.body.classList.toggle("dark", !!enabled);
+    }
+
+// Load persisted admin user settings and apply the current dark mode setting.
+    async function loadSettings() {
+      const settings = await api("/api/admin/me/settings");
+      applyDarkMode(!!settings.dark_mode);
+    }
+
+// Render an ingredient stock status badge for active, low, out, and inactive
+// ingredient states.
+    function ingredientStatusBadge(ingredient) {
+      if (!ingredient.is_active) {
+        return `<span class="badge neutral">${escapeHtml(tf("inventory.inactive", "inactive"))}</span>`;
+      }
+
+      if (Number(ingredient.stock_qty) <= 0) {
+        return `<span class="badge out">${escapeHtml(tf("inventory.out", "out"))}</span>`;
+      }
+
+      if (ingredient.is_low) {
+        return `<span class="badge low">${escapeHtml(tf("inventory.low", "low"))}</span>`;
+      }
+
+      return `<span class="badge ok">${escapeHtml(tf("inventory.ok", "ok"))}</span>`;
+    }
+
+// Render a menu item availability badge for recipe-driven stock state.
+    function menuStatusBadge(item) {
+      if (item.availability === "no_recipe") {
+        return `<span class="badge low">${escapeHtml(tf("availability.noRecipe", "No recipe"))}</span>`;
+      }
+
+      if (item.availability === "unavailable") {
+        return `<span class="badge out">${escapeHtml(tf("availability.unavailable", "Unavailable"))}</span>`;
+      }
+
+      if (item.availability === "low") {
+        return `<span class="badge low">${escapeHtml(tf("availability.low", "Low stock"))}</span>`;
+      }
+
+      return `<span class="badge ok">${escapeHtml(tf("availability.available", "Available"))}</span>`;
+    }
+
+    function makeableBadge(item) {
+      if (item.max_makeable_units === null || item.max_makeable_units === undefined) {
+        return `<span class="badge low">--</span>`;
+      }
+
+      const count = Number(item.max_makeable_units);
+
+      if (!Number.isFinite(count) || count <= 0) {
+        return `<span class="badge out">${escapeHtml(tf("inventory.makeable", "0 makeable", { count: 0 }))}</span>`;
+      }
+
+      if (count <= 3) {
+        return `<span class="badge low">${escapeHtml(tf("inventory.makeable", `${count} makeable`, { count }))}</span>`;
+      }
+
+      return `<span class="badge ok">${escapeHtml(tf("inventory.makeable", `${count} makeable`, { count }))}</span>`;
+    }
+
+// Load the current admin identity and apply role-based visibility for manager-
+// only actions and navigation.
+    async function loadMe() {
+      currentMe = await api("/api/admin/me");
+
+      whoLineEl.textContent = tf("settings.loggedInAs", `Logged in as ${currentMe.username} (${currentMe.role})`, {
+        username: currentMe.username,
+        role: currentMe.role
+      });
+
+      const isManager = currentMe.role === "manager";
+
+      adminBtnEl.style.display = isManager ? "inline-block" : "none";
+      managerAddCardEl.style.display = isManager ? "block" : "none";
+      adjustmentsCardEl.style.display = "block";
+    }
+
+// Load and render the ingredient list, including manager-only edit and stock
+// adjustment controls.
+    async function reloadIngredients() {
+      ingredientsWrapEl.innerHTML = `<div class="empty">${escapeHtml(tf("common.loading", "Loading…"))}</div>`;
+
+      try {
+        const result = await api("/api/admin/inventory/ingredients");
+        ingredientsCache = Array.isArray(result.ingredients) ? result.ingredients : [];
+
+        if (!ingredientsCache.length) {
+          ingredientsWrapEl.innerHTML = `<div class="empty">${escapeHtml(tf("inventory.noIngredients", "No ingredients yet"))}</div>`;
+          return;
+        }
+
+        ingredientsWrapEl.innerHTML = ingredientsCache
+          .map((ingredient) => {
+            const canEdit = currentMe?.role === "manager";
+
+            return `
+              <div class="ingredientCard">
+                <div class="titleRow">
+                  <div>
+                    <div><b>${escapeHtml(ingredient.name)}</b></div>
+                    <div class="muted">${escapeHtml(tf("inventory.onHand", `${fmtQty(ingredient.stock_qty)} ${ingredient.unit} on hand · low at ${fmtQty(ingredient.low_stock_threshold)} ${ingredient.unit}`, {
+                      stock: fmtQty(ingredient.stock_qty),
+                      unit: ingredient.unit,
+                      low: fmtQty(ingredient.low_stock_threshold)
+                    }))}</div>
+                  </div>
+                  <div>${ingredientStatusBadge(ingredient)}</div>
+                </div>
+
+                ${
+                  canEdit
+                    ? `
+                      <div class="subgrid" style="margin-top:12px">
+                        <div>
+                          <label>${escapeHtml(tf("common.name", "Name"))}</label>
+                          <input id="ing-name-${ingredient.id}" value="${escapeHtml(ingredient.name)}" />
+                        </div>
+                        <div>
+                          <label>${escapeHtml(tf("common.unit", "Unit"))}</label>
+                          <input id="ing-unit-${ingredient.id}" value="${escapeHtml(ingredient.unit)}" />
+                        </div>
+                        <div>
+                          <label>${escapeHtml(tf("inventory.stockQty", "Stock quantity"))}</label>
+                          <input id="ing-stock-${ingredient.id}" value="${fmtQty(ingredient.stock_qty)}" inputmode="decimal" />
+                        </div>
+                        <div>
+                          <label>${escapeHtml(tf("inventory.lowThreshold", "Low threshold"))}</label>
+                          <input id="ing-low-${ingredient.id}" value="${fmtQty(ingredient.low_stock_threshold)}" inputmode="decimal" />
+                        </div>
+                      </div>
+
+                      <div class="actions">
+                        <label style="display:flex;align-items:center;gap:8px;font-size:14px">
+                          <input
+                            id="ing-active-${ingredient.id}"
+                            type="checkbox"
+                            ${ingredient.is_active ? "checked" : ""}
+                            style="width:auto"
+                          />
+                          ${escapeHtml(tf("common.active", "active"))}
+                        </label>
+                        <button class="primary" onclick="saveIngredient(${ingredient.id})">${escapeHtml(tf("inventory.saveIngredient", "Save Ingredient"))}</button>
+                      </div>
+
+                      <div class="hr"></div>
+
+                      <div class="subgrid3">
+                        <div>
+                          <label>${escapeHtml(tf("inventory.adjustAmount", "Adjust amount"))}</label>
+                          <input id="adj-delta-${ingredient.id}" placeholder="${escapeHtml(tf("inventory.exampleAdjustment", "+100 or -20"))}" inputmode="decimal" />
+                        </div>
+                        <div>
+                          <label>${escapeHtml(tf("inventory.reason", "Reason"))}</label>
+                          <select id="adj-reason-${ingredient.id}">
+                            <option value="manual">${escapeHtml(tf("inventory.manual", "manual"))}</option>
+                            <option value="restock">${escapeHtml(tf("inventory.restock", "restock"))}</option>
+                            <option value="waste">${escapeHtml(tf("inventory.waste", "waste"))}</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label>${escapeHtml(tf("inventory.note", "Note"))}</label>
+                          <input id="adj-note-${ingredient.id}" placeholder="${escapeHtml(tf("inventory.optionalNote", "Optional note"))}" />
+                        </div>
+                      </div>
+                      <div class="actions">
+                        <button class="primary" onclick="adjustStock(${ingredient.id}, '${escapeHtml(ingredient.name)}')">${escapeHtml(tf("inventory.applyAdjustment", "Apply Adjustment"))}</button>
+                      </div>
+                    `
+                    : ""
+                }
+              </div>
+            `;
+          })
+          .join("");
+      } catch (error) {
+        ingredientsWrapEl.innerHTML = `<div class="empty">${escapeHtml(translateError(error))}</div>`;
+        toastErr(tf("inventory.loadIngredientsFailed", "Load ingredients failed"), translateError(error));
+      }
+    }
+
+// Save an edited ingredient record using the manager-only inline controls.
+    async function saveIngredient(id) {
+      try {
+        const name = document.getElementById(`ing-name-${id}`).value.trim();
+        const unit = document.getElementById(`ing-unit-${id}`).value.trim();
+        const stock_qty = parseNumberInput(document.getElementById(`ing-stock-${id}`).value);
+        const low_stock_threshold = parseNumberInput(document.getElementById(`ing-low-${id}`).value);
+        const is_active = document.getElementById(`ing-active-${id}`).checked;
+
+        if (!name) {
+          throw new Error(tf("inventory.ingredientNameRequired", "Ingredient name required"));
+        }
+
+        if (!unit) {
+          throw new Error(tf("inventory.unitRequired", "Unit required"));
+        }
+
+        if (stock_qty === null) {
+          throw new Error(tf("inventory.invalidStockQty", "Invalid stock quantity"));
+        }
+
+        if (low_stock_threshold === null) {
+          throw new Error(tf("inventory.invalidLowThreshold", "Invalid low threshold"));
+        }
+
+        await api(`/api/admin/inventory/ingredients/${id}`, {
+          method: "PATCH",
+          body: JSON.stringify({ name, unit, stock_qty, low_stock_threshold, is_active }),
+        });
+
+        toastOk(tf("inventory.saveIngredient", "Save Ingredient"), name);
+        await reloadAll();
+      } catch (error) {
+        toastErr(tf("inventory.saveIngredientFailed", "Save ingredient failed"), translateError(error));
+      }
+    }
+
+// Apply a stock adjustment for an ingredient and refresh all inventory-related
+// views afterward.
+    async function adjustStock(id, ingredientName) {
+      try {
+        const delta_qty = parseNumberInput(document.getElementById(`adj-delta-${id}`).value);
+        const reason = document.getElementById(`adj-reason-${id}`).value;
+        const note = document.getElementById(`adj-note-${id}`).value.trim();
+
+        if (delta_qty === null || delta_qty === 0) {
+          throw new Error(tf("inventory.enterNonZeroAdjustment", "Enter a non-zero adjustment"));
+        }
+
+        await api(`/api/admin/inventory/ingredients/${id}/adjust`, {
+          method: "POST",
+          body: JSON.stringify({ delta_qty, reason, note }),
+        });
+
+        toastOk(
+          tf("inventory.stockAdjusted", "Stock adjusted"),
+          `${ingredientName} ${delta_qty > 0 ? "+" : ""}${fmtQty(delta_qty)}`
+        );
+
+        await reloadAll();
+      } catch (error) {
+        toastErr(tf("inventory.adjustmentFailed", "Adjustment failed"), translateError(error));
+      }
+    }
+
+// Create a new ingredient from the manager quick-add form and refresh all
+// inventory-related views afterward.
+    async function addIngredient() {
+      const name = document.getElementById("newIngName").value.trim();
+      const unit = document.getElementById("newIngUnit").value.trim();
+      const stock_qty = parseNumberInput(document.getElementById("newIngStock").value, 0);
+      const low_stock_threshold = parseNumberInput(document.getElementById("newIngLow").value, 0);
+
+      addIngredientMsgEl.textContent = "";
+
+      try {
+        if (!name) {
+          throw new Error(tf("inventory.ingredientNameRequired", "Ingredient name required"));
+        }
+
+        if (!unit) {
+          throw new Error(tf("inventory.unitRequired", "Unit required"));
+        }
+
+        if (stock_qty === null) {
+          throw new Error(tf("inventory.invalidStockQty", "Invalid stock quantity"));
+        }
+
+        if (low_stock_threshold === null) {
+          throw new Error(tf("inventory.invalidLowThreshold", "Invalid low threshold"));
+        }
+
+        await api("/api/admin/inventory/ingredients", {
+          method: "POST",
+          body: JSON.stringify({ name, unit, stock_qty, low_stock_threshold }),
+        });
+
+        document.getElementById("newIngName").value = "";
+        document.getElementById("newIngUnit").value = "g";
+        document.getElementById("newIngStock").value = "";
+        document.getElementById("newIngLow").value = "";
+
+        addIngredientMsgEl.textContent = tf("inventory.ingredientAdded", "Ingredient added.");
+        toastOk(tf("inventory.ingredientAdded", "Ingredient added"), name);
+
+        await reloadAll();
+      } catch (error) {
+        addIngredientMsgEl.textContent = translateError(error);
+        toastErr(tf("inventory.addIngredientFailed", "Add ingredient failed"), translateError(error));
+      }
+    }
+
+// Render a read-only recipe summary for one menu item availability card.
+    function renderRecipeSummary(item) {
+      if (!Array.isArray(item.recipe) || item.recipe.length === 0) {
+        return `<div class="empty">${escapeHtml(tf("inventory.noRecipeSet", "No recipe set"))}</div>`;
+      }
+
+      return `
+        <div class="recipeSummary">
+          ${item.recipe.map((recipeRow) => `
+            <div class="row" style="justify-content:space-between">
+              <div>${escapeHtml(recipeRow.ingredient_name)}</div>
+              <div class="muted">${fmtQty(recipeRow.qty_per_item)} ${escapeHtml(recipeRow.ingredient_unit)} / item · stock ${fmtQty(recipeRow.stock_qty)} ${escapeHtml(recipeRow.ingredient_unit)}</div>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+// Build the manager-only recipe editor UI for one menu item using the current
+// ingredient cache as the option source.
+    function buildRecipeEditor(item) {
+      const ingredientOptions = ingredientsCache
+        .filter((ingredient) => ingredient.is_active)
+        .map((ingredient) => {
+          return `<option value="${ingredient.id}">${escapeHtml(ingredient.name)} (${escapeHtml(ingredient.unit)})</option>`;
+        })
+        .join("");
+
+      const rowsHtml = (
+        Array.isArray(item.recipe) && item.recipe.length ? item.recipe : [{}]
+      )
+        .map((recipeRow) => `
+          <div class="recipeRow" data-recipe-row>
+            <div>
+              <label>${escapeHtml(tf("inventory.selectIngredient", "Select ingredient"))}</label>
+              <select data-field="ingredient_id">
+                <option value="">${escapeHtml(tf("inventory.selectIngredient", "Select ingredient"))}</option>
+                ${ingredientOptions}
+              </select>
+            </div>
+            <div>
+              <label>${escapeHtml(tf("inventory.qtyPerItem", "Qty per item"))}</label>
+              <input data-field="qty_per_item" inputmode="decimal" value="${recipeRow.qty_per_item ? escapeHtml(fmtQty(recipeRow.qty_per_item)) : ""}" placeholder="${escapeHtml(tf("inventory.exampleRecipeQty", "e.g. 18"))}" />
+            </div>
+            <div>
+              <button type="button" onclick="removeRecipeRow(this)">${escapeHtml(tf("cart.remove", "Remove"))}</button>
+            </div>
+          </div>
+        `)
+        .join("");
+
+      return `
+        <div id="recipe-editor-${item.id}" class="tableLike" style="margin-top:12px">
+          ${rowsHtml}
+        </div>
+        <div class="actions">
+          <button type="button" onclick="addRecipeRow(${item.id})">${escapeHtml(tf("inventory.addRow", "Add row"))}</button>
+          <button class="primary" type="button" onclick="saveRecipe(${item.id}, '${escapeHtml(item.name)}')">${escapeHtml(tf("inventory.saveRecipe", "Save recipe"))}</button>
+        </div>
+      `;
+    }
+
+// Load and render menu recipe summaries together with the manager-only recipe
+// editor controls.
+    async function reloadRecipes() {
+      menuRecipesWrapEl.innerHTML = `<div class="empty">${escapeHtml(tf("common.loading", "Loading…"))}</div>`;
+
+      try {
+        const result = await api("/api/admin/inventory/menu-recipes");
+        const items = Array.isArray(result.items) ? result.items : [];
+
+        if (!items.length) {
+          menuRecipesWrapEl.innerHTML = `<div class="empty">${escapeHtml(tf("inventory.noMenuItems", "No menu items yet"))}</div>`;
+          return;
+        }
+
+        menuRecipesWrapEl.innerHTML = items
+          .map((item) => `
+            <div class="menuCard">
+              <div class="titleRow">
+                <div>
+                  <div><b>${escapeHtml(item.name)}</b></div>
+                  <div class="muted">${escapeHtml(item.description || "")}</div>
+                </div>
+                <div class="row" style="gap:8px">
+                  ${menuStatusBadge(item)}
+                  ${makeableBadge(item)}
+                </div>
+              </div>
+
+              ${renderRecipeSummary(item)}
+
+              ${
+                Array.isArray(item.limited_by) && item.limited_by.length
+                  ? `<div class="muted" style="margin-top:10px">${escapeHtml(tf("inventory.blockedBy", `Blocked by: ${item.limited_by.join(", ")}`, { names: item.limited_by.join(", ") }))}</div>`
+                  : ""
+              }
+
+              ${
+                currentMe?.role === "manager"
+                  ? `
+                    <div class="hr"></div>
+                    <div class="muted">${escapeHtml(tf("inventory.recipeEditor", "Recipe editor"))}</div>
+                    ${buildRecipeEditor(item)}
+                  `
+                  : ""
+              }
+            </div>
+          `)
+          .join("");
+
+        if (currentMe?.role === "manager") {
+          setTimeout(() => {
+            for (const item of items) {
+              const selectedIngredientIds = Array.isArray(item.recipe)
+                ? item.recipe.map((recipeRow) => String(recipeRow.ingredient_id))
+                : [];
+
+              const editor = document.getElementById(`recipe-editor-${item.id}`);
+              if (!editor) {
+                continue;
+              }
+
+              const rows = [...editor.querySelectorAll("[data-recipe-row]")];
+
+              rows.forEach((row, index) => {
+                const select = row.querySelector('select[data-field="ingredient_id"]');
+
+                if (select && selectedIngredientIds[index]) {
+                  select.value = selectedIngredientIds[index];
+                }
+              });
+            }
+          }, 0);
+        }
+      } catch (error) {
+        menuRecipesWrapEl.innerHTML = `<div class="empty">${escapeHtml(translateError(error))}</div>`;
+        toastErr(tf("inventory.loadRecipesFailed", "Load recipes failed"), translateError(error));
+      }
+    }
+
+// Append a blank manager-only recipe row to a menu item's editor.
+    function addRecipeRow(itemId) {
+      const editor = document.getElementById(`recipe-editor-${itemId}`);
+
+      if (!editor) {
+        return;
+      }
+
+      const ingredientOptions = ingredientsCache
+        .filter((ingredient) => ingredient.is_active)
+        .map((ingredient) => {
+          return `<option value="${ingredient.id}">${escapeHtml(ingredient.name)} (${escapeHtml(ingredient.unit)})</option>`;
+        })
+        .join("");
+
+      const row = document.createElement("div");
+      row.className = "recipeRow";
+      row.setAttribute("data-recipe-row", "");
+      row.innerHTML = `
+        <div>
+          <label>${escapeHtml(tf("inventory.selectIngredient", "Select ingredient"))}</label>
+          <select data-field="ingredient_id">
+            <option value="">${escapeHtml(tf("inventory.selectIngredient", "Select ingredient"))}</option>
+            ${ingredientOptions}
+          </select>
+        </div>
+        <div>
+          <label>${escapeHtml(tf("inventory.qtyPerItem", "Qty per item"))}</label>
+          <input data-field="qty_per_item" inputmode="decimal" placeholder="${escapeHtml(tf("inventory.exampleRecipeQty", "e.g. 18"))}" />
+        </div>
+        <div>
+          <button type="button" onclick="removeRecipeRow(this)">${escapeHtml(tf("cart.remove", "Remove"))}</button>
+        </div>
+      `;
+      editor.appendChild(row);
+    }
+
+// Remove one recipe editor row from the current manager-only recipe editor.
+    function removeRecipeRow(button) {
+      const row = button.closest("[data-recipe-row]");
+
+      if (row) {
+        row.remove();
+      }
+    }
+
+// Collect and save the full recipe definition for one menu item from the
+// manager-only recipe editor rows.
+    async function saveRecipe(itemId, itemName) {
+      try {
+        const editor = document.getElementById(`recipe-editor-${itemId}`);
+
+        if (!editor) {
+          throw new Error(tf("inventory.recipeEditorMissing", "Recipe editor not found"));
+        }
+
+        const rows = [...editor.querySelectorAll("[data-recipe-row]")];
+        const recipe = [];
+
+        for (const row of rows) {
+          const ingredientField = row.querySelector('[data-field="ingredient_id"]');
+          const qtyField = row.querySelector('[data-field="qty_per_item"]');
+
+          const ingredient_id = Number(ingredientField.value);
+          const qty_per_item = parseNumberInput(qtyField.value);
+
+          const hasAnyValue =
+            !!ingredientField.value ||
+            String(qtyField.value).trim() !== "";
+
+          if (!hasAnyValue) {
+            continue;
+          }
+
+          if (!Number.isFinite(ingredient_id)) {
+            throw new Error(tf("inventory.selectIngredientEachRow", "Select an ingredient for every recipe row"));
+          }
+
+          if (qty_per_item === null || qty_per_item <= 0) {
+            throw new Error(tf("inventory.recipeQtyPositive", "Recipe qty must be greater than 0"));
+          }
+
+          recipe.push({ ingredient_id, qty_per_item });
+        }
+
+        await api(`/api/admin/inventory/menu/${itemId}/recipe`, {
+          method: "PUT",
+          body: JSON.stringify({ recipe }),
+        });
+
+        toastOk(tf("inventory.saveRecipe", "Save recipe"), itemName);
+        await reloadRecipes();
+      } catch (error) {
+        toastErr(tf("inventory.saveRecipeFailed", "Save recipe failed"), translateError(error));
+      }
+    }
+
+// Load and render the recent manager-only stock adjustment audit list.
+    async function loadAdjustments() {
+      adjustmentsWrapEl.innerHTML = `<div class="empty">${escapeHtml(tf("common.loading", "Loading…"))}</div>`;
+
+      try {
+        const result = await api("/api/admin/inventory/adjustments");
+        const rows = Array.isArray(result.adjustments) ? result.adjustments : [];
+
+        if (!rows.length) {
+          adjustmentsWrapEl.innerHTML = `<div class="empty">${escapeHtml(tf("inventory.noAdjustments", "No adjustments yet"))}</div>`;
+          return;
+        }
+
+        adjustmentsWrapEl.innerHTML = rows
+          .map((row) => `
+            <div class="adjCard">
+              <div class="titleRow">
+                <div><b>${escapeHtml(row.ingredient_name)}</b></div>
+                <div class="badge ok">${escapeHtml(row.reason)}</div>
+              </div>
+              <div class="muted" style="margin-top:8px">
+                ${row.delta_qty > 0 ? "+" : ""}${fmtQty(row.delta_qty)} ${escapeHtml(row.ingredient_unit)}
+                · ${escapeHtml(row.created_at || "")}
+                ${row.admin_username ? ` · ${escapeHtml(tf("inventory.byUser", "by"))} ${escapeHtml(row.admin_username)}` : ""}
+              </div>
+              ${row.note ? `<div style="margin-top:8px">${escapeHtml(row.note)}</div>` : ""}
+            </div>
+          `)
+          .join("");
+      } catch (error) {
+        adjustmentsWrapEl.innerHTML = `<div class="empty">${escapeHtml(translateError(error))}</div>`;
+        toastErr(tf("inventory.loadAdjustmentsFailed", "Load adjustments failed"), translateError(error));
+      }
+    }
+
+// Refresh every inventory-related section currently visible on the page.
+    async function reloadAll() {
+      await reloadIngredients();
+      await reloadRecipes();
+      await loadAdjustments();
+    }
+
+    function goStaff() {
+      location.href = "/staff.html";
+    }
+
+    function goAdmin() {
+      location.href = "/admin.html";
+    }
+
+    function goSettings() {
+      location.href = "/settings.html";
+    }
+
+// Clear the current admin session and return to the login page.
+    function logout() {
+      clearToken();
+      toastOk(tf("common.logout", "Logout"), tf("common.sessionCleared", "Session cleared"));
+      location.href = "/login.html";
+    }
+
+// Boot the inventory page by validating the stored session, loading role-based
+// UI, applying settings, and refreshing all inventory data.
+    applyTranslations();
+
+    (async () => {
+      if (!getToken()) {
+        location.href = "/login.html";
+        return;
+      }
+
+      try {
+        await loadMe();
+        await loadSettings();
+        await reloadAll();
+      } catch (error) {
+        clearToken();
+        toastErr(tf("common.sessionError", "Session error"), translateError(error?.message || tf("settings.sessionError", "Please login again")));
+        location.href = "/login.html";
+      }
+    })();
+  </script>
+</body>
+</html>

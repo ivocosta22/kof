@@ -1,0 +1,235 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#f4efe7" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#121715" media="(prefers-color-scheme: dark)" />
+  <title>Customize</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="item-page">
+  <main class="customer-shell">
+    <button onclick="history.back()" id="backBtn" class="customer-back secondary"></button>
+
+    <section class="detail-layout">
+      <article class="detail-hero">
+        <div class="detail-hero-icon" aria-hidden="true">☕</div>
+        <div class="pill hero-accent-pill" id="heroBadge">Customize</div>
+        <h2 id="name"></h2>
+        <p class="muted" id="desc"></p>
+      </article>
+
+      <section class="customer-panel">
+        <div class="customer-panel-title">
+          <div>
+            <h3 id="customizeTitle">Customize</h3>
+            <div class="muted" id="customizeHint"></div>
+          </div>
+          <div class="status-highlight">
+            <span class="muted" id="priceLabel">Price</span>
+            <strong id="price"></strong>
+          </div>
+        </div>
+
+        <div class="option-grid">
+          <div class="field-card">
+            <label id="quantityLabel" for="qty"></label>
+            <div class="qty-stepper">
+              <input id="qty" type="number" value="1" min="1" inputmode="numeric" pattern="[0-9]*" oninput="validateQty()" />
+              <div class="qty-stepper-btns">
+                <button type="button" class="qty-stepper-btn" onclick="stepQty(1)" tabindex="-1">▲</button>
+                <button type="button" class="qty-stepper-btn" onclick="stepQty(-1)" tabindex="-1">▼</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-card">
+            <label id="milkLabel" for="milk"></label>
+            <select id="milk">
+              <option value="regular" id="milkRegularOption"></option>
+              <option value="oat" id="milkOatOption"></option>
+              <option value="soy" id="milkSoyOption"></option>
+            </select>
+          </div>
+
+          <div class="field-card">
+            <label id="extraShotLabel" for="shot"></label>
+            <select id="shot">
+              <option value="no" id="shotNoOption"></option>
+              <option value="yes" id="shotYesOption"></option>
+            </select>
+          </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="cta-row">
+          <div>
+            <div class="muted" id="ctaHint"></div>
+          </div>
+          <button onclick="addToCart()" id="addToCartBtn" class="primary"></button>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script src="/js/translations/en.js"></script>
+  <script src="/js/translations/pt.js"></script>
+  <script src="/js/translations/fi.js"></script>
+  <script src="/js/i18n.js"></script>
+  <script src="/js/kof.js"></script>
+
+  <script>
+const t = window.kofI18n.t;
+
+const backBtnEl = document.getElementById("backBtn");
+const nameEl = document.getElementById("name");
+const descEl = document.getElementById("desc");
+const priceEl = document.getElementById("price");
+const priceLabelEl = document.getElementById("priceLabel");
+const quantityLabelEl = document.getElementById("quantityLabel");
+const qtyEl = document.getElementById("qty");
+const milkLabelEl = document.getElementById("milkLabel");
+const milkEl = document.getElementById("milk");
+const milkRegularOptionEl = document.getElementById("milkRegularOption");
+const milkOatOptionEl = document.getElementById("milkOatOption");
+const milkSoyOptionEl = document.getElementById("milkSoyOption");
+const extraShotLabelEl = document.getElementById("extraShotLabel");
+const shotEl = document.getElementById("shot");
+const shotNoOptionEl = document.getElementById("shotNoOption");
+const shotYesOptionEl = document.getElementById("shotYesOption");
+const addToCartBtnEl = document.getElementById("addToCartBtn");
+const customizeTitleEl = document.getElementById("customizeTitle");
+const customizeHintEl = document.getElementById("customizeHint");
+const ctaHintEl = document.getElementById("ctaHint");
+const heroBadgeEl = document.getElementById("heroBadge");
+
+const params = new URLSearchParams(location.search);
+const id = Number(params.get("id"));
+
+let item = null;
+
+function applyTranslations() {
+  document.title = t("item.title");
+  backBtnEl.innerText = `← ${t("common.back")}`;
+  nameEl.innerText = t("item.loading");
+  quantityLabelEl.innerText = t("common.quantity");
+  milkLabelEl.innerText = t("item.milk");
+  milkRegularOptionEl.innerText = t("item.milkRegular");
+  milkOatOptionEl.innerText = t("item.milkOat");
+  milkSoyOptionEl.innerText = t("item.milkSoy");
+  extraShotLabelEl.innerText = t("item.extraShot");
+  shotNoOptionEl.innerText = t("common.no");
+  shotYesOptionEl.innerText = t("common.yes");
+  addToCartBtnEl.innerText = t("item.addToCart");
+  customizeTitleEl.innerText = t("item.title");
+  customizeHintEl.innerText = t("index.subtitle");
+  ctaHintEl.innerText = t("item.addToCart");
+  heroBadgeEl.innerText = t("item.title");
+  priceLabelEl.innerText = t("common.total");
+}
+
+(async () => {
+  kof.applyCustomerDarkMode();
+  applyTranslations();
+
+  await kof.loadMenu();
+
+  item = kof.menuById.get(id);
+
+  if (!item) {
+    nameEl.innerText = t("item.itemNotFound");
+    customizeHintEl.innerText = "";
+    ctaHintEl.innerText = "";
+    return;
+  }
+
+  nameEl.innerText = item.name;
+  descEl.innerText = item.description || "";
+  priceEl.innerText = `EUR ${(item.price_cents / 100).toFixed(2)}`;
+  const bootMaxMakeableUnits =
+    item.max_makeable_units === null || item.max_makeable_units === undefined
+      ? null
+      : Number(item.max_makeable_units);
+
+  if (bootMaxMakeableUnits !== null && Number.isFinite(bootMaxMakeableUnits) && bootMaxMakeableUnits > 0) {
+    qtyEl.max = String(bootMaxMakeableUnits);
+  }
+
+  validateQty();
+})();
+
+function validateQty() {
+  if (!item) return;
+  const qty = Math.max(1, Number(qtyEl.value || 1));
+  const alreadyInCart = kof.getCart()
+    .filter((line) => line.menu_item_id === item.id)
+    .reduce((sum, line) => sum + Number(line.qty || 0), 0);
+  const maxMakeableUnits = item.max_makeable_units == null
+    ? null
+    : Number(item.max_makeable_units);
+  const overStock = maxMakeableUnits !== null && Number.isFinite(maxMakeableUnits) && (alreadyInCart + qty) > maxMakeableUnits;
+  const unavailable = item.availability === "unavailable";
+
+  if (overStock) {
+    const remaining = Math.max(0, maxMakeableUnits - alreadyInCart);
+    addToCartBtnEl.disabled = true;
+    ctaHintEl.innerText = `Exceeds stock — max ${remaining} available`;
+    ctaHintEl.style.color = "var(--pill-out)";
+  } else {
+    addToCartBtnEl.disabled = unavailable;
+    ctaHintEl.innerText = t("item.addToCart");
+    ctaHintEl.style.color = "";
+  }
+}
+
+function stepQty(delta) {
+  const current = Math.max(1, Number(qtyEl.value || 1));
+  const max = qtyEl.max ? Number(qtyEl.max) : Infinity;
+  qtyEl.value = String(Math.max(1, isFinite(max) ? Math.min(max, current + delta) : current + delta));
+  validateQty();
+}
+
+function addToCart() {
+  const qty = Math.max(1, Number(qtyEl.value || 1));
+  const currentQty = kof.getCart()
+    .filter((line) => line.menu_item_id === item.id)
+    .reduce((sum, line) => sum + Number(line.qty || 0), 0);
+  const maxMakeableUnits =
+    item?.max_makeable_units === null || item?.max_makeable_units === undefined
+      ? null
+      : Number(item.max_makeable_units);
+
+  if (
+    item?.availability === "unavailable" ||
+    (maxMakeableUnits !== null && Number.isFinite(maxMakeableUnits) && currentQty + qty > maxMakeableUnits)
+  ) {
+    return;
+  }
+
+  const modifiers = [];
+
+  const milk = milkEl.value;
+  const shot = shotEl.value;
+
+  if (milk !== "regular") {
+    modifiers.push(`milk:${milk}`);
+  }
+
+  if (shot === "yes") {
+    modifiers.push("extra_shot");
+  }
+
+  kof.cartAdd({
+    menu_item_id: item.id,
+    name: item.name,
+    price_cents: item.price_cents,
+    qty,
+    chosen_modifiers: modifiers
+  });
+
+  location.href = "/cart.html";
+}
+  </script>
+</body>
+</html>

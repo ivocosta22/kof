@@ -1,0 +1,177 @@
+{
+  "@@locale": "pt",
+
+  "appName": "Kof",
+  "appTagline": "Café. Pedido.",
+
+  "emailLabel": "Email",
+  "emailHint": "voce@exemplo.com",
+  "passwordLabel": "Senha",
+  "cancel": "Cancelar",
+  "total": "Total",
+  "tableLabel": "Mesa {table}",
+  "@tableLabel": {
+    "placeholders": {
+      "table": { "type": "String" }
+    }
+  },
+
+  "loginForgotPassword": "Esqueceu a senha?",
+  "loginFieldsRequired": "Por favor, preencha todos os campos.",
+  "loginButton": "Entrar",
+  "loginOrContinueWith": "ou continue com",
+  "loginWithGoogle": "Continuar com Google",
+  "loginWithApple": "Continuar com Apple",
+  "loginAppleNotAvailable": "Login com Apple não está disponível ainda.",
+  "loginAsGuest": "Continuar como Convidado",
+  "loginNoAccount": "Não tem uma conta?",
+  "loginRegister": "Registar",
+
+  "forgotPasswordTitle": "Esqueci a Senha",
+  "forgotPasswordHeading": "Redefinir senha",
+  "forgotPasswordSubtitle": "Insira o seu endereço de email e enviaremos um link para redefinir a senha.",
+  "forgotPasswordButton": "Enviar Link",
+  "forgotPasswordSuccess": "Verifique a sua caixa de entrada",
+  "forgotPasswordSuccessBody": "Se existir uma conta para {email}, um link de redefinição foi enviado.",
+  "@forgotPasswordSuccessBody": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "forgotPasswordBackToLogin": "Voltar ao Login",
+  "forgotPasswordEmailRequired": "Por favor, insira o seu endereço de email.",
+  "loginSelectLanguage": "Idioma",
+  "loginSelectTheme": "Tema",
+
+  "registerAppBarTitle": "Criar Conta",
+  "registerHeading": "Junte-se ao Kof",
+  "registerSubtitle": "Crie uma conta para acompanhar pedidos e seguir as suas cafetarias favoritas.",
+  "registerNameLabel": "Nome completo",
+  "registerNameHint": "João Silva",
+  "registerPasswordHint": "Pelo menos 6 caracteres",
+  "registerPhoneLabel": "Número de telefone (opcional)",
+  "registerPhoneHint": "+351 912 000 000",
+  "registerFieldsRequired": "Por favor, preencha todos os campos obrigatórios.",
+  "registerPasswordShort": "A senha deve ter pelo menos 6 caracteres.",
+  "registerButton": "Criar Conta",
+  "registerAlreadyAccount": "Já tem uma conta?",
+  "registerLogIn": "Entrar",
+
+  "homeGreeting": "Olá, {name}!",
+  "@homeGreeting": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "homeWelcome": "Bem-vindo ao Kof",
+  "homeSubtitle": "O que gostaria de fazer?",
+  "homeScanTitle": "Ler QR Code da Mesa",
+  "homeScanSubtitle": "Comece a pedir na sua mesa",
+  "homeMapTitle": "Cafetarias que usam o Kof",
+  "homeMapSubtitle": "Encontre e siga cafetarias perto de si",
+  "homeMapComingSoon": "Mapa — em breve",
+  "homeNotificationsTooltip": "Notificações",
+  "homeNotificationsComingSoon": "Notificações — em breve",
+
+  "drawerGuestName": "Convidado",
+  "drawerBrowsingAsGuest": "A navegar como convidado",
+  "drawerMyOrders": "Os Meus Pedidos",
+  "drawerMyOrdersComingSoon": "Os Meus Pedidos — em breve",
+  "drawerSettings": "Definições",
+  "drawerSettingsComingSoon": "Definições — em breve",
+  "drawerLogout": "Terminar sessão",
+  "drawerPrivacyPolicy": "Política de Privacidade",
+  "drawerTerms": "Termos e Condições",
+  "drawerContactUs": "Contacte-nos",
+  "drawerVersion": "Kof v1.0.0",
+
+  "scanTitle": "Ler QR Code da Mesa",
+  "scanSubtitle": "Aponte a câmara para o QR code na sua mesa",
+  "scanConnecting": "A ligar à cafetaria...",
+  "scanTryAgain": "Tentar novamente",
+  "scanEnterManually": "Introduzir manualmente",
+  "scanManualDialogTitle": "Introdução Manual",
+  "scanManualServerLabel": "URL do servidor",
+  "scanManualServerHint": "http://192.168.1.10:3000",
+  "scanManualTableLabel": "Identificador da mesa",
+  "scanManualTableHint": "1",
+  "scanManualTokenLabel": "Token da mesa",
+  "scanManualTokenHint": "colar token aqui",
+  "scanConnect": "Ligar",
+  "scanInvalidQr": "QR code inválido",
+  "scanNotKofQr": "Não é um QR code de mesa Kof.\nPor favor, leia o QR code na sua mesa.",
+  "scanWrongServer": "O QR code não aponta para um servidor Kof.",
+
+  "menuNoItems": "Sem itens disponíveis",
+  "menuRetry": "Tentar novamente",
+  "menuReviewOrder": "Rever Pedido",
+  "menuScanDifferentTable": "Ler outra mesa",
+
+  "orderNumber": "Pedido #{number}",
+  "@orderNumber": {
+    "placeholders": {
+      "number": { "type": "int" }
+    }
+  },
+  "orderCancelledMessage": "Este pedido foi cancelado",
+  "orderAgain": "Pedir Novamente",
+  "orderScanDifferentTable": "Ler Outra Mesa",
+  "statusNew": "Pedido Recebido",
+  "statusMaking": "Em Preparação",
+  "statusReady": "Pronto para Levantar",
+  "statusCompleted": "Concluído",
+  "statusCancelled": "Cancelado",
+
+  "menuItemLowStock": "Stock reduzido",
+  "menuItemUnavailable": "Indisponível",
+  "menuItemAdd": "Adicionar",
+
+  "cartYourOrder": "O Seu Pedido",
+  "cartNoteHint": "Adicionar uma nota (opcional)",
+  "cartEach": "{price} cada",
+  "@cartEach": {
+    "placeholders": {
+      "price": { "type": "String" }
+    }
+  },
+  "cartPlaceOrder": "Fazer Pedido",
+
+  "myOrdersTitle": "Os Meus Pedidos",
+  "myOrdersEmpty": "Sem pedidos ainda",
+  "myOrdersEmptySubtitle": "Os pedidos que fizer em cafetarias aparecerão aqui.",
+  "myOrdersScanCta": "Ler um QR code de mesa",
+
+  "notificationsTitle": "Notificações",
+  "notificationsEmpty": "Sem notificações ainda",
+  "notificationsEmptySubtitle": "Siga cafetarias para receber atualizações sobre promoções e ofertas especiais.",
+
+  "settingsTitle": "Definições",
+  "settingsPreferences": "Preferências",
+  "settingsHapticFeedback": "Feedback háptico",
+  "settingsHapticFeedbackSubtitle": "Sentir vibrações suaves ao interagir com a aplicação",
+  "settingsAbout": "Sobre",
+  "settingsVersion": "Versão",
+  "settingsPrivacyPolicy": "Política de Privacidade",
+  "settingsTerms": "Termos e Condições",
+  "settingsContactUs": "Contacte-nos",
+  "settingsLogout": "Terminar sessão",
+  "settingsLogoutConfirm": "Tem a certeza que quer terminar a sessão?",
+  "settingsLogoutConfirmYes": "Terminar sessão",
+  "settingsNotificationsPermission": "Permissões de notificação",
+  "settingsNotificationsPermissionSubtitle": "Permitir que o Kof envie notificações push",
+
+  "mapTitle": "Cafetarias",
+  "mapLocationDenied": "Acesso à localização negado. Ative-o nas Definições para ver cafetarias perto de si.",
+  "mapNoShopsNearby": "Nenhuma cafetaria por perto ainda",
+  "mapNoShopsSubtitle": "As cafetarias que usam o Kof aparecerão aqui quando a plataforma for lançada.",
+  "mapOpenSettings": "Abrir Definições",
+
+  "settingsAppearance": "Aparência",
+  "settingsThemeMode": "Tema",
+  "settingsThemeSystem": "Sistema",
+  "settingsThemeLight": "Claro",
+  "settingsThemeDark": "Escuro",
+
+  "settingsLanguage": "Idioma",
+  "settingsLanguageSystem": "Padrão do sistema"
+}

@@ -1,0 +1,824 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#f4efe7" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#121715" media="(prefers-color-scheme: dark)" />
+  <title>Kof Staff</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="staff-page">
+  <main class="admin-shell">
+  <section class="ops-hero ops-hero-board">
+    <div class="top">
+    <div>
+      <div class="ops-eyebrow" id="staffEyebrow"></div>
+      <div class="ops-title" id="pageTitle"></div>
+      <div class="ops-subtitle" id="sub"></div>
+    </div>
+    <div class="row ops-toolbar">
+      <label class="muted" id="soundLabel"></label>
+      <span id="volLabel" class="muted"></span>
+      <input type="range" id="volSlider" min="0" max="100" step="5" />
+      <button onclick="testSound()" id="testSoundBtn" class="primary"></button>
+      <button onclick="goInventory()" id="inventoryBtn"></button>
+      <button onclick="goHistory()" id="historyBtn"></button>
+      <button onclick="goSettings()" id="settingsBtn"></button>
+      <button id="adminBtn" style="display:none" onclick="goAdmin()"></button>
+      <button onclick="logout()" id="logoutBtn" class="danger-soft"></button>
+      <span id="soundState" class="muted"></span>
+    </div>
+    </div>
+  </section>
+
+  <div class="board">
+    <div class="col">
+      <h3 id="newTitle"></h3>
+      <div id="newCol"></div>
+    </div>
+    <div class="col">
+      <h3 id="makingTitle"></h3>
+      <div id="makingCol"></div>
+    </div>
+    <div class="col">
+      <h3 id="readyTitle"></h3>
+      <div id="readyCol"></div>
+    </div>
+    <div class="col">
+      <h3 id="completedTitle"></h3>
+      <div id="completedCol"></div>
+    </div>
+    <div class="col">
+      <h3 id="cancelledTitle"></h3>
+      <div id="cancelledCol"></div>
+    </div>
+  </div>
+  </main>
+
+  <audio id="ding" preload="auto">
+    <source src="/audio/ding.mp3" type="audio/mpeg">
+  </audio>
+
+  <div id="toastWrap"></div>
+
+  <script src="/js/translations/en.js"></script>
+  <script src="/js/translations/pt.js"></script>
+  <script src="/js/translations/fi.js"></script>
+  <script src="/js/i18n.js"></script>
+
+  <script>
+// Cache i18n helpers plus the main DOM references used by the staff board.
+// Centralizing them at the top reduces repeated lookups and keeps rendering
+// logic simpler.
+    const t = window.kofI18n.t;
+    const translateError = window.kofI18n.translateError;
+
+    function tf(key, fallback, vars = {}) {
+      const value = t(key, vars);
+      return value === key ? fallback : value;
+    }
+
+    const pageTitle = document.getElementById("pageTitle");
+    const staffEyebrow = document.getElementById("staffEyebrow");
+    const soundLabel = document.getElementById("soundLabel");
+    const testSoundBtn = document.getElementById("testSoundBtn");
+    const inventoryBtn = document.getElementById("inventoryBtn");
+    const historyBtn = document.getElementById("historyBtn");
+    const settingsBtn = document.getElementById("settingsBtn");
+    const adminBtn = document.getElementById("adminBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const newTitle = document.getElementById("newTitle");
+    const makingTitle = document.getElementById("makingTitle");
+    const readyTitle = document.getElementById("readyTitle");
+    const completedTitle = document.getElementById("completedTitle");
+    const cancelledTitle = document.getElementById("cancelledTitle");
+
+    const elNew = document.getElementById("newCol");
+    const elMaking = document.getElementById("makingCol");
+    const elReady = document.getElementById("readyCol");
+    const elCancelled = document.getElementById("cancelledCol");
+    const elCompleted = document.getElementById("completedCol");
+    const sub = document.getElementById("sub");
+
+    const ding = document.getElementById("ding");
+    const volSlider = document.getElementById("volSlider");
+    const volLabel = document.getElementById("volLabel");
+    const soundState = document.getElementById("soundState");
+    const toastWrap = document.getElementById("toastWrap");
+
+    const TOKEN_KEY = "kof_admin_token_v1";
+    const WHO_KEY = "kof_admin_who_v1";
+
+    let lastSeenOrderId = 0;
+    let saveVolTimer = null;
+    let lastSavedVol = null;
+    let audioCtx = null;
+
+// Apply localized static UI labels for the staff page.
+    function applyTranslations() {
+      document.title = tf("staff.title", "Kof Staff");
+      staffEyebrow.textContent = tf("common.staff", "Staff");
+      pageTitle.textContent = tf("staff.title", "Kof Staff");
+      sub.textContent = tf("staff.connecting", "Connecting…");
+      soundLabel.textContent = tf("staff.sound", "Sound");
+      testSoundBtn.textContent = tf("staff.testSound", "Test sound");
+      inventoryBtn.textContent = tf("common.inventory", "Inventory");
+      historyBtn.textContent = tf("common.history", "History");
+      settingsBtn.textContent = tf("common.settings", "Settings");
+      adminBtn.textContent = tf("common.admin", "Admin");
+      logoutBtn.textContent = tf("common.logout", "Logout");
+      newTitle.textContent = statusText("new");
+      makingTitle.textContent = statusText("making");
+      readyTitle.textContent = statusText("ready");
+      completedTitle.textContent = statusText("completed");
+      cancelledTitle.textContent = statusText("cancelled");
+    }
+
+// Read the current admin auth token from browser storage.
+    function getToken() {
+      return localStorage.getItem(TOKEN_KEY);
+    }
+
+// Clear stored admin session values from browser storage.
+    function clearToken() {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(WHO_KEY);
+    }
+
+// Escape user-controlled text before injecting it into HTML strings.
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+    }
+
+// Capitalize the first character of a text label for button and status UI.
+    function capitalizeFirst(value) {
+      if (!value) {
+        return "";
+      }
+
+      const text = String(value);
+      return text.charAt(0).toUpperCase() + text.slice(1);
+    }
+
+// Format stored numeric table values into the UI label expected by staff.
+    function formatTableLabel(value) {
+      const normalized = String(value || "").trim();
+      const tableWord = tf("fulfillment.tableLabel", tf("staff.tableFallback", "Table"));
+      return normalized ? `${tableWord} ${normalized}` : tf("staff.tableFallback", "Table");
+    }
+
+// Open the receipt page in a new browser tab for paid orders.
+    function openReceipt(id) {
+      window.open(`/receipt.html?id=${id}`, "_blank", "noopener");
+    }
+
+// Map internal status values to display labels with graceful fallback.
+    function statusText(value) {
+      return tf(`status.${value}`, capitalizeFirst(value));
+    }
+
+    function statusPillClass(value) {
+      return `pill status-${String(value || "").toLowerCase()}`;
+    }
+
+// Map internal payment values to display labels with graceful fallback.
+    function paymentText(value) {
+      if (value === "paid") {
+        return tf("payment.paid", "Paid");
+      }
+
+      return tf("payment.unpaid", "Unpaid");
+    }
+
+// Render a toast message using the shared fade-out only toast system.
+    function toast(type, title, msg) {
+      if (!toastWrap) {
+        return;
+      }
+
+      const toastEl = document.createElement("div");
+      toastEl.className = `toast ${type === "err" ? "err" : "ok"}`;
+      toastEl.innerHTML = `
+        <div class="tTitle">${escapeHtml(title || (type === "err" ? tf("common.error", "Error") : tf("common.done", "Done")))}</div>
+        <div class="tMsg">${escapeHtml(msg || "")}</div>
+      `;
+
+      toastWrap.appendChild(toastEl);
+
+      const ttlMs = type === "err" ? 4200 : 2200;
+
+      setTimeout(() => {
+        toastEl.classList.add("fade-out");
+
+        setTimeout(() => {
+          try {
+            toastEl.remove();
+          } catch {}
+        }, 350);
+      }, ttlMs);
+    }
+
+    function toastOk(title, msg) {
+      toast("ok", title, msg);
+    }
+
+    function toastErr(title, msg) {
+      toast("err", title, msg);
+    }
+
+// Call a protected admin API endpoint with the current bearer token and parse
+// JSON responses consistently.
+    async function api(path, opts = {}) {
+      const headers = Object.assign(
+        { "Content-Type": "application/json" },
+        opts.headers || {}
+      );
+
+      const token = getToken();
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      const response = await fetch(path, {
+        ...opts,
+        headers,
+      });
+
+      let data = {};
+
+      try {
+        data = await response.json();
+      } catch {
+        const text = await response.text().catch(() => "");
+        data = text ? { error: text } : {};
+      }
+
+      if (!response.ok) {
+        throw new Error(translateError(data.error || `Request failed (${response.status})`));
+      }
+
+      return data;
+    }
+
+// Apply the current dark mode state to the page body.
+    function applyDarkMode(enabled) {
+      document.body.classList.toggle("dark", !!enabled);
+    }
+
+// Load persisted staff user settings and apply volume plus dark mode locally.
+    async function loadUserSettings() {
+      const settings = await api("/api/admin/me/settings");
+      const appliedLanguage = window.kofI18n.setLanguage(settings?.language || window.kofI18n.DEFAULT_LANG);
+      const volume = typeof settings.volume === "number" ? settings.volume : 0.5;
+      const clampedVolume = Math.max(0, Math.min(1, volume));
+
+      ding.volume = clampedVolume;
+      applyDarkMode(!!settings.dark_mode);
+
+      return {
+        volume: clampedVolume,
+        language: appliedLanguage,
+        dark_mode: !!settings.dark_mode,
+      };
+    }
+
+// Persist the staff user's volume setting with a short debounce so slider drag
+// does not spam the backend.
+    function saveUserVolume(value) {
+      const clampedVolume = Math.max(0, Math.min(1, Number(value)));
+      ding.volume = clampedVolume;
+
+      clearTimeout(saveVolTimer);
+
+      saveVolTimer = setTimeout(async () => {
+        try {
+          await api("/api/admin/me/settings", {
+            method: "PATCH",
+            body: JSON.stringify({ volume: clampedVolume }),
+          });
+
+          const approxPercent = Math.round(clampedVolume * 100);
+
+          if (lastSavedVol !== approxPercent) {
+            lastSavedVol = approxPercent;
+            toastOk(tf("staff.volumeSaved", "Volume saved"), `${approxPercent}%`);
+          }
+        } catch (error) {
+          toastErr(tf("settings.volumeSaveFailed", "Volume save failed"), translateError(error));
+        }
+      }, 200);
+    }
+
+// Create or return the shared AudioContext used for fallback beep playback.
+    function ensureAudioCtx() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+
+      return audioCtx;
+    }
+
+// Read the current effective audio volume from the ding element.
+    function getVolume() {
+      return Math.max(0, Math.min(1, Number(ding.volume ?? 0.5)));
+    }
+
+// Show a visible warning when the ding audio file is missing and the fallback
+// beep will be used instead.
+    ding.addEventListener("error", () => {
+      if (soundState) {
+        soundState.textContent = tf("staff.soundMissingState", "Sound file missing — using beep");
+      }
+
+      toastErr(tf("staff.sound", "Sound"), tf("staff.soundMissingToast", "Missing /audio/ding.mp3 — using beep"));
+    });
+
+// Unlock browser audio playback after the user's first interaction so future
+// new-order sounds can play reliably.
+    async function unlockAudio() {
+      try {
+        const ctx = ensureAudioCtx();
+
+        if (ctx.state === "suspended") {
+          await ctx.resume();
+        }
+
+        ding.currentTime = 0;
+
+        const playAttempt = ding.play();
+        if (playAttempt && typeof playAttempt.then === "function") {
+          await playAttempt;
+          ding.pause();
+          ding.currentTime = 0;
+        }
+
+        if (soundState) {
+          soundState.textContent = tf("staff.soundEnabled", "Sound enabled");
+        }
+      } catch {
+        if (soundState) {
+          soundState.textContent = tf("staff.soundUnlockHint", "Click 'Test sound' once to enable");
+        }
+      }
+    }
+
+    document.addEventListener("click", unlockAudio, { once: true });
+
+// Play a short synthesized beep when normal audio playback is unavailable.
+    function beepFallback() {
+      try {
+        const ctx = ensureAudioCtx();
+
+        if (ctx.state === "suspended") {
+          if (soundState) {
+            soundState.textContent = tf("staff.soundUnlockShortHint", "Click 'Test sound' to enable");
+          }
+          return;
+        }
+
+        const oscillator = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const volume = getVolume();
+
+        gain.gain.value = 0.001 + volume * 0.06;
+        oscillator.type = "sine";
+        oscillator.frequency.value = 880;
+        oscillator.connect(gain);
+        gain.connect(ctx.destination);
+
+        oscillator.start();
+
+        setTimeout(() => {
+          oscillator.stop();
+        }, 120);
+      } catch {}
+    }
+
+// Play the normal ding sound and fall back to a generated beep if browser or
+// asset playback fails.
+    async function playDing() {
+      try {
+        ding.currentTime = 0;
+
+        const playAttempt = ding.play();
+        if (playAttempt && typeof playAttempt.catch === "function") {
+          await playAttempt;
+        }
+      } catch {
+        beepFallback();
+      }
+    }
+
+// Trigger a manual sound test so the user can both unlock audio and verify the
+// current sound volume.
+    async function testSound() {
+      try {
+        await unlockAudio();
+        await playDing();
+        toastOk(tf("staff.sound", "Sound"), tf("staff.testSoundPlayed", "Test sound played"));
+      } catch (error) {
+        toastErr(tf("staff.sound", "Sound"), error.message || tf("staff.soundCouldNotPlay", "Could not play sound"));
+      }
+    }
+
+// Render an availability pill for low or unavailable item states shown on the
+// staff board order item list.
+    function availabilityPill(value) {
+      if (value === "unavailable") {
+        return `<span class="pill unavailable">${escapeHtml(tf("availability.unavailable", "Unavailable"))}</span>`;
+      }
+
+      if (value === "low") {
+        return `<span class="pill low">${escapeHtml(tf("availability.low", "Low stock"))}</span>`;
+      }
+
+      return "";
+    }
+
+// Render the order item list for a staff board card, including modifiers and
+// availability badges.
+    function fmtItems(order) {
+      const itemsHtml = (order.items || [])
+        .map((item) => {
+          const modifiersHtml =
+            Array.isArray(item.chosen_modifiers) && item.chosen_modifiers.length
+              ? `<div class="muted" style="margin-left:8px">+ ${item.chosen_modifiers.map(escapeHtml).join(", ")}</div>`
+              : "";
+
+          return `
+            <div>
+              <span>${item.qty}× ${escapeHtml(item.item_name)}</span>
+              ${availabilityPill(item.item_availability)}
+              ${modifiersHtml}
+            </div>
+          `;
+        })
+        .join("");
+
+      return itemsHtml || `<div class='muted'>${escapeHtml(tf("staff.noItems", "No items"))}</div>`;
+    }
+
+// Render the order payment state pill used on board cards.
+    function payPill(order) {
+      const paymentState = order.payment_status === "paid" ? "paid" : "unpaid";
+      return `<div class="pill ${paymentState}">${escapeHtml(paymentText(paymentState))}</div>`;
+    }
+
+// Render either the table destination pill or the counter pickup plus name
+// pills according to the order fulfillment context.
+    function destinationBlock(order) {
+      if (order.fulfillment_type === "table") {
+        return `
+          <div class="row" style="margin-top:6px">
+            <div class="pill paid">${escapeHtml(formatTableLabel(order.table_label))}</div>
+          </div>
+        `;
+      }
+
+      const pickupName = order.customer_label
+        ? escapeHtml(order.customer_label)
+        : tf("staff.pickupUnknown", "Pickup");
+
+      const counterNameWord = tf("staff.counterName", "Name");
+      const translatedNameLabel = t("staff.counterNameLabel", {
+        label: counterNameWord,
+        name: pickupName
+      });
+
+      const nameLabel =
+        translatedNameLabel === "staff.counterNameLabel"
+          ? `${counterNameWord}: ${pickupName}`
+          : translatedNameLabel;
+
+      return `
+        <div class="row" style="margin-top:6px">
+          <div class="pill paid">${escapeHtml(tf("fulfillment.counter", "Counter"))}</div>
+          <div class="pill paid">${escapeHtml(nameLabel)}</div>
+        </div>
+      `;
+    }
+
+    function positiveBoardActionClass() {
+      return document.body.classList.contains("dark")
+        ? "staff-positive-action-dark"
+        : "staff-positive-action";
+    }
+
+    function receiptBoardActionClass() {
+      return document.body.classList.contains("dark")
+        ? "staff-receipt-action-dark"
+        : "staff-receipt-action";
+    }
+
+    function boardCardStyle() {
+      if (!document.body.classList.contains("dark")) {
+        return "";
+      }
+
+      return `style="background:#1a211e;border-color:rgba(223,214,199,0.14);box-shadow:none;"`;
+    }
+
+// Render one board column from a list of orders for a specific status.
+    function renderList(targetEl, orders, kind) {
+      if (!orders.length) {
+        targetEl.innerHTML = `<div class="empty">${escapeHtml(tf("staff.noOrders", `No ${kind} orders`, { kind }))}</div>`;
+        return;
+      }
+
+      targetEl.innerHTML = orders
+        .map((order) => {
+          return `
+            <div class="card staff-board-card" ${boardCardStyle()}>
+              <div class="row">
+                <div>
+                  <div class="big">${escapeHtml(tf("staff.orderLabel", `Order #${order.order_number}`, { orderNumber: order.order_number }))}</div>
+                  ${destinationBlock(order)}
+                </div>
+                <div class="row">
+                  ${payPill(order)}
+                  <div class="${statusPillClass(order.status)}">${escapeHtml(statusText(order.status))}</div>
+                </div>
+              </div>
+
+              ${order.note ? `<div class="statusline"><div class="muted"><i>${escapeHtml(order.note)}</i></div></div>` : ""}
+
+              <div class="items">${fmtItems(order)}</div>
+
+              <div class="statusline">
+                <div class="time">${escapeHtml(order.created_at || "")}</div>
+              </div>
+
+              <div class="btnrow">
+                ${
+                  order.payment_status !== "paid"
+                    ? `<button class="${positiveBoardActionClass()}" onclick="setPayment(${order.id}, 'paid')">${escapeHtml(tf("staff.markPaid", "Mark Paid"))}</button>`
+                    : `<button class="secondary danger-soft" onclick="setPayment(${order.id}, 'unpaid')">${escapeHtml(tf("staff.unpay", "Unpay"))}</button>`
+                }
+
+                ${order.status !== "new" ? `<button class="secondary danger-soft" onclick="setStatus(${order.id}, 'new')">${escapeHtml(tf("staff.backToNew", "Back to New"))}</button>` : ""}
+                ${order.status !== "making" ? `<button class="${positiveBoardActionClass()}" onclick="setStatus(${order.id}, 'making', ${order.order_number})">${escapeHtml(tf("staff.making", "Making"))}</button>` : ""}
+                ${order.status !== "ready" ? `<button class="${positiveBoardActionClass()}" onclick="setStatus(${order.id}, 'ready', ${order.order_number})">${escapeHtml(tf("staff.ready", "Ready"))}</button>` : ""}
+                ${
+                  order.status !== "completed" && order.status !== "cancelled"
+                    ? (
+                        order.payment_status === "paid"
+                          ? `<button class="${positiveBoardActionClass()}" onclick="setStatus(${order.id}, 'completed', ${order.order_number})">${escapeHtml(tf("staff.complete", "Complete"))}</button>`
+                          : `<button class="${positiveBoardActionClass()}" style="opacity:.55;cursor:not-allowed" onclick="toastErr('${escapeHtml(tf("staff.cannotComplete", "Cannot complete order"))}', '${escapeHtml(tf("staff.markPaidFirst", "Mark as paid first"))}')">${escapeHtml(tf("staff.complete", "Complete"))}</button>`
+                      )
+                    : ""
+                }
+                ${order.status !== "cancelled" ? `<button class="secondary danger-soft" onclick="setStatus(${order.id}, 'cancelled', ${order.order_number})">${escapeHtml(tf("staff.cancel", "Cancel"))}</button>` : ""}
+                ${order.payment_status === "paid" ? `<button class="${receiptBoardActionClass()}" onclick="openReceipt(${order.id})">${escapeHtml(tf("common.receipt", "Receipt"))}</button>` : ""}
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+    }
+
+// Render the full board by splitting orders into status columns and updating
+// the header summary.
+    function renderBoard(orders) {
+      const newOrders = orders.filter((order) => order.status === "new");
+      const makingOrders = orders.filter((order) => order.status === "making");
+      const readyOrders = orders.filter((order) => order.status === "ready");
+      const completedOrders = orders.filter((order) => order.status === "completed");
+      const cancelledOrders = orders.filter((order) => order.status === "cancelled");
+
+      renderList(elNew, newOrders, "new");
+      renderList(elMaking, makingOrders, "making");
+      renderList(elReady, readyOrders, "ready");
+      renderList(elCompleted, completedOrders, "completed");
+      renderList(elCancelled, cancelledOrders, "cancelled");
+
+      sub.textContent = tf(
+        "staff.boardSummary",
+        `New: ${newOrders.length} · Making: ${makingOrders.length} · Ready: ${readyOrders.length} · Completed: ${completedOrders.length} · Cancelled: ${cancelledOrders.length}`,
+        {
+          newCount: newOrders.length,
+          makingCount: makingOrders.length,
+          readyCount: readyOrders.length,
+          completedCount: completedOrders.length,
+          cancelledCount: cancelledOrders.length
+        }
+      );
+    }
+
+// Refresh the staff board from the protected backend endpoint.
+    async function refresh(showToast = false) {
+      try {
+        const response = await fetch("/api/orders/board", {
+          headers: { Authorization: `Bearer ${getToken()}` },
+        });
+
+        if (!response.ok) {
+          const text = await response.text();
+
+          sub.textContent = `${tf("staff.loadOrdersFailed", "Load orders failed")} (${response.status})`;
+          elNew.innerHTML = `<pre style="white-space:pre-wrap;color:red">${escapeHtml(text)}</pre>`;
+          elMaking.innerHTML = "";
+          elReady.innerHTML = "";
+          elCompleted.innerHTML = "";
+          elCancelled.innerHTML = "";
+
+          toastErr(tf("staff.loadOrdersFailed", "Load orders failed"), `HTTP ${response.status}`);
+          return;
+        }
+
+        const data = await response.json();
+        const orders = Array.isArray(data.orders) ? data.orders : [];
+
+        orders.sort((a, b) => b.id - a.id);
+        renderBoard(orders);
+
+        const maxId = orders.reduce((maxValue, order) => Math.max(maxValue, order.id), 0);
+
+        if (lastSeenOrderId === 0) {
+          lastSeenOrderId = maxId;
+        }
+
+        if (showToast) {
+          toastOk(tf("staff.refreshed", "Refreshed"), tf("staff.boardUpdated", "Board updated"));
+        }
+      } catch (error) {
+        sub.textContent = `${tf("staff.refreshFailed", "Refresh failed")}: ${error?.message || error}`;
+        toastErr(tf("staff.refreshFailed", "Refresh failed"), error?.message || String(error));
+      }
+    }
+
+// Update an order status and show any inventory warnings returned by the
+// backend when moving to making.
+    async function setStatus(id, status, orderNumber) {
+      try {
+        const result = await api(`/api/orders/${id}/status`, {
+          method: "PATCH",
+          body: JSON.stringify({ status }),
+        });
+
+        toastOk(
+          tf("staff.statusUpdated", "Status updated"),
+          `${tf("staff.orderLabel", `Order #${orderNumber || id}`, { orderNumber: orderNumber || id })} → ${statusText(status)}`
+        );
+
+        if (status === "making" && Array.isArray(result.warnings) && result.warnings.length) {
+          const warningText = result.warnings.map((warning) => warning.message).join(" · ");
+          toastErr(tf("staff.inventoryWarning", "Inventory warning"), warningText);
+        }
+
+        refresh(false);
+      } catch (error) {
+        toastErr(tf("staff.statusUpdateFailed", "Status update failed"), translateError(error));
+      }
+    }
+
+// Update an order payment status and refresh the board afterward.
+    async function setPayment(id, paymentStatus) {
+      try {
+        await api(`/api/orders/${id}/payment`, {
+          method: "PATCH",
+          body: JSON.stringify({ payment_status: paymentStatus }),
+        });
+
+        toastOk(
+          tf("staff.paymentUpdated", "Payment updated"),
+          `${tf("staff.orderLabel", `Order #${id}`, { orderNumber: id })} → ${paymentText(paymentStatus)}`
+        );
+
+        refresh(false);
+      } catch (error) {
+        toastErr(tf("staff.paymentUpdateFailed", "Payment update failed"), translateError(error));
+      }
+    }
+
+// Open and maintain the realtime websocket connection so the staff board stays
+// live without requiring manual refreshes.
+    function connectWs() {
+      const protocol = location.protocol === "https:" ? "wss" : "ws";
+      const ws = new WebSocket(`${protocol}://${location.host}?token=${encodeURIComponent(getToken() || "")}`);
+
+      ws.onopen = () => {
+        sub.textContent = tf("staff.liveConnected", "Connected (live updates).");
+        toastOk(tf("staff.liveUpdates", "Live updates"), tf("staff.liveConnectedToast", "Connected"));
+      };
+
+      ws.onclose = () => {
+        sub.textContent = tf("staff.liveDisconnected", "Disconnected. Reconnecting…");
+        toastErr(tf("staff.liveUpdates", "Live updates"), tf("staff.liveDisconnectedToast", "Disconnected. Reconnecting…"));
+        setTimeout(connectWs, 1000);
+      };
+
+      ws.onmessage = (event) => {
+        let message;
+
+        try {
+          message = JSON.parse(event.data);
+        } catch {
+          return;
+        }
+
+        if (message.type === "order_created") {
+          const order = message.payload || {};
+          const incomingId = Number(order.id || 0);
+
+          if (incomingId > 0 && incomingId > lastSeenOrderId) {
+            lastSeenOrderId = incomingId;
+            playDing();
+          } else if (incomingId === 0) {
+            playDing();
+          }
+
+          refresh(false);
+          return;
+        }
+
+        if (
+          message.type === "order_status_changed" ||
+          message.type === "order_payment_changed"
+        ) {
+          refresh(false);
+        }
+      };
+    }
+
+// Persist volume changes as the user drags the slider while updating the label
+// immediately in the UI.
+    if (volSlider) {
+      volSlider.addEventListener("input", (event) => {
+        const percent = Number(event.target.value);
+        const volume = Math.max(0, Math.min(1, percent / 100));
+
+        saveUserVolume(volume);
+
+        if (volLabel) {
+          volLabel.textContent = `${percent}%`;
+        }
+      });
+    }
+
+    if (soundState) {
+      soundState.textContent = tf("staff.soundUnlockHint", "Click 'Test sound' once to enable");
+    }
+
+// Boot the staff page by validating the session, loading settings, rendering
+// the initial board, and starting realtime updates.
+    async function boot() {
+      if (!getToken()) {
+        location.href = "/login.html";
+        return;
+      }
+
+      const me = await api("/api/admin/me");
+
+      if (adminBtn) {
+        adminBtn.style.display = me.role === "manager" ? "inline-block" : "none";
+      }
+
+      const settings = await loadUserSettings();
+      applyTranslations();
+
+      if (volSlider) {
+        volSlider.value = Math.round(settings.volume * 100);
+      }
+
+      if (volLabel && volSlider) {
+        volLabel.textContent = `${volSlider.value}%`;
+      }
+
+      await refresh(false);
+      connectWs();
+    }
+
+// Clear the current admin session and return to the login page.
+    function logout() {
+      clearToken();
+      toastOk(tf("common.logout", "Logout"), tf("common.sessionCleared", "Session cleared"));
+      location.href = "/login.html";
+    }
+
+    function goHistory() {
+      location.href = "/history.html";
+    }
+
+    function goSettings() {
+      location.href = "/settings.html";
+    }
+
+    function goAdmin() {
+      location.href = "/admin.html";
+    }
+
+    function goInventory() {
+      location.href = "/inventory.html";
+    }
+
+    boot().catch((error) => {
+      clearToken();
+      toastErr(tf("common.sessionError", "Session error"), translateError(error?.message || tf("settings.sessionError", "Please login again")));
+      location.href = "/login.html";
+    });
+  </script>
+</body>
+</html>

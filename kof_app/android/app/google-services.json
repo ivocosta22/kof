@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "761198795495",
+    "project_id": "kofapp-ac2f6",
+    "storage_bucket": "kofapp-ac2f6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:761198795495:android:20540458b669b9da842042",
+        "android_client_info": {
+          "package_name": "com.ivocosta.kof"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAA8v2aPqFeWAl2pN7jf4WVjkVRUH4SI4k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

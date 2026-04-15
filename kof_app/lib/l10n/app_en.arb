@@ -1,0 +1,178 @@
+{
+  "@@locale": "en",
+
+  "appName": "Kof",
+  "appTagline": "Coffee. Ordered.",
+
+  "emailLabel": "Email",
+  "emailHint": "you@example.com",
+  "passwordLabel": "Password",
+  "cancel": "Cancel",
+  "total": "Total",
+  "tableLabel": "Table {table}",
+  "@tableLabel": {
+    "placeholders": {
+      "table": { "type": "String" }
+    }
+  },
+
+  "loginForgotPassword": "Forgot password?",
+  "loginFieldsRequired": "Please fill in all fields.",
+  "loginButton": "Log In",
+  "loginOrContinueWith": "or continue with",
+  "loginWithGoogle": "Continue with Google",
+  "loginWithApple": "Continue with Apple",
+  "loginAppleNotAvailable": "Apple Sign-In is not available yet.",
+  "loginAsGuest": "Continue as Guest",
+  "loginNoAccount": "Don't have an account?",
+  "loginRegister": "Register",
+
+  "forgotPasswordTitle": "Forgot Password",
+  "forgotPasswordHeading": "Reset your password",
+  "forgotPasswordSubtitle": "Enter your email address and we'll send you a link to reset your password.",
+  "forgotPasswordButton": "Send Reset Link",
+  "forgotPasswordSuccess": "Check your inbox",
+  "forgotPasswordSuccessBody": "If an account exists for {email}, a password reset link has been sent.",
+  "@forgotPasswordSuccessBody": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "forgotPasswordBackToLogin": "Back to Login",
+  "forgotPasswordEmailRequired": "Please enter your email address.",
+
+  "registerAppBarTitle": "Create Account",
+  "registerHeading": "Join Kof",
+  "registerSubtitle": "Create an account to track orders and follow your favourite coffee shops.",
+  "registerNameLabel": "Full name",
+  "registerNameHint": "Jane Doe",
+  "registerPasswordHint": "At least 6 characters",
+  "registerPhoneLabel": "Phone number (optional)",
+  "registerPhoneHint": "+1 555 000 0000",
+  "registerFieldsRequired": "Please fill in all required fields.",
+  "registerPasswordShort": "Password must be at least 6 characters.",
+  "registerButton": "Create Account",
+  "registerAlreadyAccount": "Already have an account?",
+  "registerLogIn": "Log In",
+
+  "homeGreeting": "Hello, {name}!",
+  "@homeGreeting": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "homeWelcome": "Welcome to Kof",
+  "homeSubtitle": "What would you like to do?",
+  "homeScanTitle": "Scan Table QR Code",
+  "homeScanSubtitle": "Start ordering at your table",
+  "homeMapTitle": "Coffee Shops using Kof",
+  "homeMapSubtitle": "Find and follow coffee shops near you",
+  "homeMapComingSoon": "Map — coming soon",
+  "homeNotificationsTooltip": "Notifications",
+  "homeNotificationsComingSoon": "Notifications — coming soon",
+
+  "drawerGuestName": "Guest",
+  "drawerBrowsingAsGuest": "Browsing as guest",
+  "drawerMyOrders": "My Orders",
+  "drawerMyOrdersComingSoon": "My Orders — coming soon",
+  "drawerSettings": "Settings",
+  "drawerSettingsComingSoon": "Settings — coming soon",
+  "drawerLogout": "Logout",
+  "drawerPrivacyPolicy": "Privacy Policy",
+  "drawerTerms": "Terms and Conditions",
+  "drawerContactUs": "Contact Us",
+  "drawerVersion": "Kof v1.0.0",
+
+  "scanTitle": "Scan Table QR Code",
+  "scanSubtitle": "Point your camera at the QR code on your table",
+  "scanConnecting": "Connecting to shop...",
+  "scanTryAgain": "Try again",
+  "scanEnterManually": "Enter manually",
+  "scanManualDialogTitle": "Manual Entry",
+  "scanManualServerLabel": "Server URL",
+  "scanManualServerHint": "http://192.168.1.10:3000",
+  "scanManualTableLabel": "Table label",
+  "scanManualTableHint": "1",
+  "scanManualTokenLabel": "Table token",
+  "scanManualTokenHint": "paste token here",
+  "scanConnect": "Connect",
+  "scanInvalidQr": "Invalid QR code",
+  "scanNotKofQr": "Not a Kof table QR code.\nPlease scan the QR code on your table.",
+  "scanWrongServer": "QR code does not point to a Kof server.",
+
+  "menuNoItems": "No items available",
+  "menuRetry": "Retry",
+  "menuReviewOrder": "Review Order",
+  "menuScanDifferentTable": "Scan different table",
+
+  "orderNumber": "Order #{number}",
+  "@orderNumber": {
+    "placeholders": {
+      "number": { "type": "int" }
+    }
+  },
+  "orderCancelledMessage": "This order was cancelled",
+  "orderAgain": "Order Again",
+  "orderScanDifferentTable": "Scan a Different Table",
+  "statusNew": "Order Received",
+  "statusMaking": "Being Prepared",
+  "statusReady": "Ready for Pickup",
+  "statusCompleted": "Completed",
+  "statusCancelled": "Cancelled",
+
+  "menuItemLowStock": "Low stock",
+  "menuItemUnavailable": "Unavailable",
+  "menuItemAdd": "Add",
+
+  "cartYourOrder": "Your Order",
+  "cartNoteHint": "Add a note (optional)",
+  "cartEach": "{price} each",
+  "@cartEach": {
+    "placeholders": {
+      "price": { "type": "String" }
+    }
+  },
+  "cartPlaceOrder": "Place Order",
+
+  "myOrdersTitle": "My Orders",
+  "myOrdersEmpty": "No orders yet",
+  "myOrdersEmptySubtitle": "Orders you place at coffee shops will appear here.",
+  "myOrdersScanCta": "Scan a table QR code",
+
+  "notificationsTitle": "Notifications",
+  "notificationsEmpty": "No notifications yet",
+  "notificationsEmptySubtitle": "Follow coffee shops to receive updates about promotions and special offers.",
+
+  "settingsTitle": "Settings",
+  "settingsPreferences": "Preferences",
+  "settingsHapticFeedback": "Haptic feedback",
+  "settingsHapticFeedbackSubtitle": "Feel subtle taps when interacting with the app",
+  "settingsAbout": "About",
+  "settingsVersion": "Version",
+  "settingsPrivacyPolicy": "Privacy Policy",
+  "settingsTerms": "Terms and Conditions",
+  "settingsContactUs": "Contact Us",
+  "settingsLogout": "Log out",
+  "settingsLogoutConfirm": "Are you sure you want to log out?",
+  "settingsLogoutConfirmYes": "Log out",
+  "settingsNotificationsPermission": "Notification permissions",
+  "settingsNotificationsPermissionSubtitle": "Allow Kof to send you push notifications",
+
+  "mapTitle": "Coffee Shops",
+  "mapLocationDenied": "Location access denied. Enable it in Settings to see shops near you.",
+  "mapNoShopsNearby": "No coffee shops nearby yet",
+  "mapNoShopsSubtitle": "Shops using Kof will appear here once the platform launches.",
+  "mapOpenSettings": "Open Settings",
+
+  "settingsAppearance": "Appearance",
+  "settingsThemeMode": "Theme",
+  "settingsThemeSystem": "System",
+  "settingsThemeLight": "Light",
+  "settingsThemeDark": "Dark",
+
+  "settingsLanguage": "Language",
+  "settingsLanguageSystem": "System default",
+
+  "loginSelectLanguage": "Language",
+  "loginSelectTheme": "Theme"
+}

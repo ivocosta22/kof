@@ -1,0 +1,177 @@
+{
+  "@@locale": "fi",
+
+  "appName": "Kof",
+  "appTagline": "Kahvi. Tilattu.",
+
+  "emailLabel": "Sähköposti",
+  "emailHint": "sinä@esimerkki.fi",
+  "passwordLabel": "Salasana",
+  "cancel": "Peruuta",
+  "total": "Yhteensä",
+  "tableLabel": "Pöytä {table}",
+  "@tableLabel": {
+    "placeholders": {
+      "table": { "type": "String" }
+    }
+  },
+
+  "loginForgotPassword": "Unohditko salasanan?",
+  "loginFieldsRequired": "Täytä kaikki kentät.",
+  "loginButton": "Kirjaudu sisään",
+  "loginOrContinueWith": "tai jatka",
+  "loginWithGoogle": "Jatka Googlella",
+  "loginWithApple": "Jatka Applella",
+  "loginAppleNotAvailable": "Apple-kirjautuminen ei ole vielä käytettävissä.",
+  "loginAsGuest": "Jatka vieraana",
+  "loginNoAccount": "Ei tiliä?",
+  "loginRegister": "Rekisteröidy",
+
+  "forgotPasswordTitle": "Unohtunut salasana",
+  "forgotPasswordHeading": "Nollaa salasanasi",
+  "forgotPasswordSubtitle": "Syötä sähköpostiosoitteesi ja lähetämme sinulle linkin salasanan nollaamiseksi.",
+  "forgotPasswordButton": "Lähetä nollauslinkki",
+  "forgotPasswordSuccess": "Tarkista sähköpostisi",
+  "forgotPasswordSuccessBody": "Jos tilisi {email} on olemassa, salasanan nollaustilinkki on lähetetty.",
+  "@forgotPasswordSuccessBody": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "forgotPasswordBackToLogin": "Takaisin kirjautumiseen",
+  "forgotPasswordEmailRequired": "Syötä sähköpostiosoitteesi.",
+  "loginSelectLanguage": "Kieli",
+  "loginSelectTheme": "Teema",
+
+  "registerAppBarTitle": "Luo tili",
+  "registerHeading": "Liity Kofiin",
+  "registerSubtitle": "Luo tili tilataksesi ja seurataksesi suosikkikahvilojasi.",
+  "registerNameLabel": "Koko nimi",
+  "registerNameHint": "Matti Meikäläinen",
+  "registerPasswordHint": "Vähintään 6 merkkiä",
+  "registerPhoneLabel": "Puhelinnumero (valinnainen)",
+  "registerPhoneHint": "+358 40 000 0000",
+  "registerFieldsRequired": "Täytä kaikki pakolliset kentät.",
+  "registerPasswordShort": "Salasanan on oltava vähintään 6 merkkiä.",
+  "registerButton": "Luo tili",
+  "registerAlreadyAccount": "Onko sinulla jo tili?",
+  "registerLogIn": "Kirjaudu sisään",
+
+  "homeGreeting": "Hei, {name}!",
+  "@homeGreeting": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "homeWelcome": "Tervetuloa Kofiin",
+  "homeSubtitle": "Mitä haluaisit tehdä?",
+  "homeScanTitle": "Skannaa pöydän QR-koodi",
+  "homeScanSubtitle": "Aloita tilaaminen pöydältäsi",
+  "homeMapTitle": "Kof-kahvilat",
+  "homeMapSubtitle": "Löydä ja seuraa lähellä olevia kahviloita",
+  "homeMapComingSoon": "Kartta — tulossa pian",
+  "homeNotificationsTooltip": "Ilmoitukset",
+  "homeNotificationsComingSoon": "Ilmoitukset — tulossa pian",
+
+  "drawerGuestName": "Vieras",
+  "drawerBrowsingAsGuest": "Selaat vieraana",
+  "drawerMyOrders": "Omat tilaukset",
+  "drawerMyOrdersComingSoon": "Omat tilaukset — tulossa pian",
+  "drawerSettings": "Asetukset",
+  "drawerSettingsComingSoon": "Asetukset — tulossa pian",
+  "drawerLogout": "Kirjaudu ulos",
+  "drawerPrivacyPolicy": "Tietosuojakäytäntö",
+  "drawerTerms": "Käyttöehdot",
+  "drawerContactUs": "Ota yhteyttä",
+  "drawerVersion": "Kof v1.0.0",
+
+  "scanTitle": "Skannaa pöydän QR-koodi",
+  "scanSubtitle": "Suuntaa kamera pöydälläsi olevaan QR-koodiin",
+  "scanConnecting": "Yhdistetään kahvilaan...",
+  "scanTryAgain": "Yritä uudelleen",
+  "scanEnterManually": "Syötä manuaalisesti",
+  "scanManualDialogTitle": "Manuaalinen syöttö",
+  "scanManualServerLabel": "Palvelimen URL",
+  "scanManualServerHint": "http://192.168.1.10:3000",
+  "scanManualTableLabel": "Pöydän tunniste",
+  "scanManualTableHint": "1",
+  "scanManualTokenLabel": "Pöydän token",
+  "scanManualTokenHint": "liitä token tähän",
+  "scanConnect": "Yhdistä",
+  "scanInvalidQr": "Virheellinen QR-koodi",
+  "scanNotKofQr": "Ei Kof-pöydän QR-koodi.\nSkannaa pöydälläsi oleva QR-koodi.",
+  "scanWrongServer": "QR-koodi ei osoita Kof-palvelimeen.",
+
+  "menuNoItems": "Ei saatavilla olevia tuotteita",
+  "menuRetry": "Yritä uudelleen",
+  "menuReviewOrder": "Tarkista tilaus",
+  "menuScanDifferentTable": "Skannaa eri pöytä",
+
+  "orderNumber": "Tilaus #{number}",
+  "@orderNumber": {
+    "placeholders": {
+      "number": { "type": "int" }
+    }
+  },
+  "orderCancelledMessage": "Tämä tilaus peruutettiin",
+  "orderAgain": "Tilaa uudelleen",
+  "orderScanDifferentTable": "Skannaa eri pöytä",
+  "statusNew": "Tilaus vastaanotettu",
+  "statusMaking": "Valmistetaan",
+  "statusReady": "Valmis noudettavaksi",
+  "statusCompleted": "Valmis",
+  "statusCancelled": "Peruutettu",
+
+  "menuItemLowStock": "Vähän varastossa",
+  "menuItemUnavailable": "Ei saatavilla",
+  "menuItemAdd": "Lisää",
+
+  "cartYourOrder": "Tilauksesi",
+  "cartNoteHint": "Lisää huomio (valinnainen)",
+  "cartEach": "{price} kpl",
+  "@cartEach": {
+    "placeholders": {
+      "price": { "type": "String" }
+    }
+  },
+  "cartPlaceOrder": "Tee tilaus",
+
+  "myOrdersTitle": "Omat tilaukset",
+  "myOrdersEmpty": "Ei vielä tilauksia",
+  "myOrdersEmptySubtitle": "Kahviloissa tekemäsi tilaukset näkyvät täällä.",
+  "myOrdersScanCta": "Skannaa pöydän QR-koodi",
+
+  "notificationsTitle": "Ilmoitukset",
+  "notificationsEmpty": "Ei vielä ilmoituksia",
+  "notificationsEmptySubtitle": "Seuraa kahviloita saadaksesi tietoja tarjouksista ja erikoistarjouksista.",
+
+  "settingsTitle": "Asetukset",
+  "settingsPreferences": "Asetukset",
+  "settingsHapticFeedback": "Haptinen palaute",
+  "settingsHapticFeedbackSubtitle": "Tunne hienovaraiset napautukset sovellusta käytettäessä",
+  "settingsAbout": "Tietoja",
+  "settingsVersion": "Versio",
+  "settingsPrivacyPolicy": "Tietosuojakäytäntö",
+  "settingsTerms": "Käyttöehdot",
+  "settingsContactUs": "Ota yhteyttä",
+  "settingsLogout": "Kirjaudu ulos",
+  "settingsLogoutConfirm": "Haluatko varmasti kirjautua ulos?",
+  "settingsLogoutConfirmYes": "Kirjaudu ulos",
+  "settingsNotificationsPermission": "Ilmoitusluvat",
+  "settingsNotificationsPermissionSubtitle": "Salli Kofin lähettää push-ilmoituksia",
+
+  "mapTitle": "Kahvilat",
+  "mapLocationDenied": "Sijaintilupa evätty. Ota se käyttöön Asetuksissa nähdäksesi lähellä olevat kahvilat.",
+  "mapNoShopsNearby": "Ei lähellä olevia kahviloita vielä",
+  "mapNoShopsSubtitle": "Kof-kahvilat näkyvät täällä kun alusta on lanseerattu.",
+  "mapOpenSettings": "Avaa asetukset",
+
+  "settingsAppearance": "Ulkoasu",
+  "settingsThemeMode": "Teema",
+  "settingsThemeSystem": "Järjestelmä",
+  "settingsThemeLight": "Vaalea",
+  "settingsThemeDark": "Tumma",
+
+  "settingsLanguage": "Kieli",
+  "settingsLanguageSystem": "Järjestelmän oletus"
+}

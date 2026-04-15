@@ -1,0 +1,1382 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#f4efe7" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#121715" media="(prefers-color-scheme: dark)" />
+  <title>Kof Admin</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="admin-page">
+  <main class="admin-shell">
+  <section class="ops-hero">
+    <div>
+      <div class="ops-eyebrow" id="adminEyebrow"></div>
+      <h1 class="ops-title" id="pageTitle"></h1>
+      <p class="ops-subtitle" id="whoLine"></p>
+    </div>
+    <div class="ops-toolbar" id="adminToolbar" style="display:none">
+      <button id="staffBtn" style="display:none" onclick="goStaff()" class="secondary"></button>
+      <button onclick="goInventory()" id="inventoryBtn" class="secondary"></button>
+      <button onclick="goSettings()" id="settingsBtn" class="secondary"></button>
+      <button onclick="logout()" id="logoutBtn" class="secondary danger-soft"></button>
+    </div>
+  </section>
+
+  <div id="login" class="card admin-login-panel">
+    <div class="row">
+      <input id="username" value="admin" />
+      <div class="pin-field">
+        <input id="pin" type="password" inputmode="numeric" />
+        <button type="button" class="pin-toggle-btn" onclick="togglePin('pin', this)" tabindex="-1" aria-label="Show PIN"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+      </div>
+      <button onclick="login()" id="loginBtn"></button>
+    </div>
+    <div class="muted" id="loginMsg"></div>
+  </div>
+
+  <div id="app" style="display:none" class="ops-stack">
+    <section class="admin-tabs-panel">
+      <div class="admin-tabs" role="tablist" aria-label="Admin sections">
+        <button type="button" class="admin-tab active" id="securityTabBtn" data-admin-tab-btn="security"></button>
+        <button type="button" class="admin-tab" id="menuTabBtn" data-admin-tab-btn="menu"></button>
+        <button type="button" class="admin-tab" id="qrTabBtn" data-admin-tab-btn="qr"></button>
+      </div>
+    </section>
+
+    <section class="ops-section" data-admin-tab-section="security">
+    <div class="card">
+      <h3 id="securityTitle"></h3>
+
+      <h4 id="changeMyPinTitle" class="section-field-title"></h4>
+      <div class="row">
+        <div class="pin-field">
+          <input id="oldPin" type="password" inputmode="numeric" />
+          <button type="button" class="pin-toggle-btn" onclick="togglePin('oldPin', this)" tabindex="-1" aria-label="Show PIN"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        </div>
+        <div class="pin-field">
+          <input id="newPin" type="password" inputmode="numeric" />
+          <button type="button" class="pin-toggle-btn" onclick="togglePin('newPin', this)" tabindex="-1" aria-label="Show PIN"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        </div>
+        <button onclick="changePin()" id="changePinBtn" class="primary"></button>
+      </div>
+      <div class="muted" id="pinMsg"></div>
+    </div>
+
+    <div class="card" id="usersCard" style="display:none">
+      <h3 id="usersManagerTitle"></h3>
+
+      <h4 id="createUserTitle" class="section-field-title"></h4>
+      <div class="row">
+        <input id="uName" />
+        <div class="pin-field">
+          <input id="uPin" type="password" inputmode="numeric" />
+          <button type="button" class="pin-toggle-btn" onclick="togglePin('uPin', this)" tabindex="-1" aria-label="Show PIN"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        </div>
+        <select id="uRole">
+          <option value="barista">barista</option>
+          <option value="manager">manager</option>
+        </select>
+        <button onclick="createUser()" id="createUserBtn" class="primary"></button>
+        <button onclick="loadUsers()" id="refreshUsersBtn" class="primary"></button>
+      </div>
+      <div class="muted" id="userMsg"></div>
+
+      <h4 style="margin-top:14px" id="userListTitle" class="section-field-title"></h4>
+      <div id="users"></div>
+      <div class="muted" id="disableHint"></div>
+    </div>
+    </section>
+
+    <section class="ops-section" data-admin-tab-section="menu" hidden>
+    <div class="card">
+      <h3 id="addItemTitle" class="section-field-title"></h3>
+      <div class="row">
+        <input id="newName" />
+        <input id="newDesc" />
+        <input id="newPrice" inputmode="decimal" />
+        <button onclick="addItem()" id="addItemBtn" class="primary"></button>
+      </div>
+      <div class="muted" id="addMsg"></div>
+    </div>
+
+    <div class="card" id="ingredientQuickCard" style="display:none">
+      <div class="sectionTitleRow">
+        <h3 style="margin:0" id="addIngredientTitle"></h3>
+        <button onclick="goInventory()" id="openInventoryBtn" class="primary"></button>
+      </div>
+
+      <div class="row" style="margin-top:12px">
+        <input id="ingName" />
+        <input id="ingUnit" />
+        <input id="ingStock" inputmode="decimal" />
+        <input id="ingLow" inputmode="decimal" />
+        <button onclick="addIngredientQuick()" id="addIngredientBtn" class="primary"></button>
+      </div>
+      <div class="muted" id="ingredientMsg"></div>
+    </div>
+    </section>
+
+    <section class="ops-section" data-admin-tab-section="qr" hidden>
+    <div class="card" id="wifiQrCard" style="display:none">
+      <div class="sectionTitleRow">
+        <h3 style="margin:0" id="wifiQrTitle"></h3>
+        <button onclick="saveWifiSettings()" id="saveWifiBtn" class="primary"></button>
+      </div>
+
+      <div class="row" style="margin-top:12px">
+        <input id="wifiSsid" oninput="renderWifiQr()" />
+        <select id="wifiSecurity" onchange="renderWifiQr()">
+          <option value="WPA">WPA / WPA2</option>
+          <option value="WEP">WEP</option>
+          <option value="nopass">Open (no password)</option>
+        </select>
+        <div class="pin-field" id="wifiPasswordField">
+          <input id="wifiPassword" type="password" oninput="renderWifiQr()" />
+          <button type="button" class="pin-toggle-btn" onclick="togglePin('wifiPassword', this)" tabindex="-1" aria-label="Show password"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        </div>
+      </div>
+
+      <div id="wifiQrPreview" style="margin-top:16px; text-align:center"></div>
+      <div style="margin-top:8px; text-align:center">
+        <button onclick="printWifiQr()" id="printWifiBtn" class="primary" style="display:none"></button>
+      </div>
+      <div class="muted" id="wifiQrHint" style="margin-top:8px"></div>
+    </div>
+
+    <div class="card" id="tableLinksCard" style="display:none">
+      <div class="sectionTitleRow">
+        <h3 style="margin:0" id="tableLinksTitle"></h3>
+        <button onclick="loadTableLinks()" id="refreshTableLinksBtn" class="primary"></button>
+      </div>
+
+      <div class="row" style="margin-top:12px">
+        <input id="tableBaseUrl"/>
+        <input id="tableLinkCount" inputmode="numeric" value="5" />
+        <button onclick="copyTableLinks()" id="copyTableLinksBtn"></button>
+        <button onclick="printTableLinks()" id="printTableLinksBtn" class="primary"></button>
+      </div>
+
+      <div class="muted" id="tableLinksHint"></div>
+      <div class="muted" id="tableLinksMsg" style="margin-top:8px"></div>
+      <div id="tableLinksWrap" class="stack" style="margin-top:12px"></div>
+    </div>
+    </section>
+
+    <section class="ops-section" data-admin-tab-section="menu" hidden>
+    <div class="card">
+      <h3 id="menuTitle" class="section-field-title"></h3>
+      <div id="menu"></div>
+    </div>
+    </section>
+  </div>
+  </main>
+
+  <div id="toastWrap"></div>
+
+  <script src="/js/translations/en.js"></script>
+  <script src="/js/translations/pt.js"></script>
+  <script src="/js/translations/fi.js"></script>
+  <script src="/js/i18n.js"></script>
+  <script src="/vendor/qrcode-generator/qrcode.js"></script>
+
+  <script>
+// Cache browser storage keys, i18n helpers, and the main DOM elements used by
+// the admin page so logic stays clear and repeated lookups are reduced.
+    const TOKEN_KEY = "kof_admin_token_v1";
+    const WHO_KEY = "kof_admin_who_v1";
+
+    const PIN_EYE = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+    const PIN_EYE_OFF = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+
+    function togglePin(inputId, btn) {
+      const input = document.getElementById(inputId);
+      const reveal = input.type === "password";
+      input.type = reveal ? "text" : "password";
+      btn.innerHTML = reveal ? PIN_EYE_OFF : PIN_EYE;
+      btn.setAttribute("aria-label", reveal ? "Hide PIN" : "Show PIN");
+    }
+
+    const t = window.kofI18n.t;
+    const translateError = window.kofI18n.translateError;
+    function tf(key, fallback, vars = {}) {
+      const value = t(key, vars);
+      return value === key ? fallback : value;
+    }
+
+    const pageTitleEl = document.getElementById("pageTitle");
+    const adminEyebrowEl = document.getElementById("adminEyebrow");
+    const loginEl = document.getElementById("login");
+    const appEl = document.getElementById("app");
+    const whoLineEl = document.getElementById("whoLine");
+    const adminToolbarEl = document.getElementById("adminToolbar");
+    const loginMsgEl = document.getElementById("loginMsg");
+    const pinMsgEl = document.getElementById("pinMsg");
+    const userMsgEl = document.getElementById("userMsg");
+    const addMsgEl = document.getElementById("addMsg");
+    const ingredientMsgEl = document.getElementById("ingredientMsg");
+    const tableLinksMsgEl = document.getElementById("tableLinksMsg");
+    const usersWrapEl = document.getElementById("users");
+    const tableLinksWrapEl = document.getElementById("tableLinksWrap");
+    const menuWrapEl = document.getElementById("menu");
+    const staffBtnEl = document.getElementById("staffBtn");
+    const usersCardEl = document.getElementById("usersCard");
+    const ingredientQuickCardEl = document.getElementById("ingredientQuickCard");
+    const tableLinksCardEl = document.getElementById("tableLinksCard");
+    const wifiQrCardEl = document.getElementById("wifiQrCard");
+    const wifiSsidEl = document.getElementById("wifiSsid");
+    const wifiPasswordEl = document.getElementById("wifiPassword");
+    const wifiSecurityEl = document.getElementById("wifiSecurity");
+    const wifiPasswordFieldEl = document.getElementById("wifiPasswordField");
+    const wifiQrPreviewEl = document.getElementById("wifiQrPreview");
+    const wifiQrTitleEl = document.getElementById("wifiQrTitle");
+    const wifiQrHintEl = document.getElementById("wifiQrHint");
+    const saveWifiBtnEl = document.getElementById("saveWifiBtn");
+    const printWifiBtnEl = document.getElementById("printWifiBtn");
+    const toastWrapEl = document.getElementById("toastWrap");
+    const adminTabButtons = Array.from(document.querySelectorAll("[data-admin-tab-btn]"));
+    const adminTabSections = Array.from(document.querySelectorAll("[data-admin-tab-section]"));
+
+    const usernameEl = document.getElementById("username");
+    const pinEl = document.getElementById("pin");
+    const loginBtnEl = document.getElementById("loginBtn");
+    const inventoryBtnEl = document.getElementById("inventoryBtn");
+    const settingsBtnEl = document.getElementById("settingsBtn");
+    const logoutBtnEl = document.getElementById("logoutBtn");
+    const securityTitleEl = document.getElementById("securityTitle");
+    const changeMyPinTitleEl = document.getElementById("changeMyPinTitle");
+    const changePinBtnEl = document.getElementById("changePinBtn");
+    const usersManagerTitleEl = document.getElementById("usersManagerTitle");
+    const createUserTitleEl = document.getElementById("createUserTitle");
+    const createUserBtnEl = document.getElementById("createUserBtn");
+    const refreshUsersBtnEl = document.getElementById("refreshUsersBtn");
+    const userListTitleEl = document.getElementById("userListTitle");
+    const disableHintEl = document.getElementById("disableHint");
+    const addItemTitleEl = document.getElementById("addItemTitle");
+    const addItemBtnEl = document.getElementById("addItemBtn");
+    const addIngredientTitleEl = document.getElementById("addIngredientTitle");
+    const openInventoryBtnEl = document.getElementById("openInventoryBtn");
+    const addIngredientBtnEl = document.getElementById("addIngredientBtn");
+    const tableLinksTitleEl = document.getElementById("tableLinksTitle");
+    const tableBaseUrlEl = document.getElementById("tableBaseUrl");
+    const tableLinkCountEl = document.getElementById("tableLinkCount");
+    const refreshTableLinksBtnEl = document.getElementById("refreshTableLinksBtn");
+    const copyTableLinksBtnEl = document.getElementById("copyTableLinksBtn");
+    const printTableLinksBtnEl = document.getElementById("printTableLinksBtn");
+    const tableLinksHintEl = document.getElementById("tableLinksHint");
+    const menuTitleEl = document.getElementById("menuTitle");
+    const securityTabBtnEl = document.getElementById("securityTabBtn");
+    const menuTabBtnEl = document.getElementById("menuTabBtn");
+    const qrTabBtnEl = document.getElementById("qrTabBtn");
+
+    let tableLinksCache = [];
+    let publicConfig = {};
+    let activeAdminTab = "security";
+
+// Apply localized static UI labels and placeholders for the admin page.
+    function applyTranslations() {
+      document.title = tf("adminPage.title", tf("admin.title", "Kof Admin"));
+      adminEyebrowEl.innerText = tf("common.admin", "Admin");
+      pageTitleEl.innerText = tf("adminPage.title", tf("admin.title", "Kof Admin"));
+
+      usernameEl.placeholder = tf("login.username", "username");
+      pinEl.placeholder = tf("login.pin", "pin");
+      loginBtnEl.innerText = tf("login.login", "Login");
+
+      staffBtnEl.innerText = tf("common.staff", "Staff");
+      inventoryBtnEl.innerText = tf("common.inventory", "Inventory");
+      settingsBtnEl.innerText = tf("common.settings", "Settings");
+      logoutBtnEl.innerText = tf("common.logout", "Logout");
+
+      securityTitleEl.innerText = tf("adminPage.security", "Security");
+      securityTabBtnEl.innerText = tf("adminPage.tabSecurity", "Security");
+      menuTabBtnEl.innerText = tf("adminPage.tabMenu", "Menu");
+      qrTabBtnEl.innerText = tf("adminPage.tabQr", "Table QR Codes");
+      changeMyPinTitleEl.innerText = tf("adminPage.changeMyPin", "Change my PIN");
+      document.getElementById("oldPin").placeholder = tf("settings.oldPin", "Old PIN");
+      document.getElementById("newPin").placeholder = tf("settings.newPin", "New PIN");
+      changePinBtnEl.innerText = tf("settings.changePin", "Change PIN");
+
+      usersManagerTitleEl.innerText = tf("adminPage.usersManager", "Users (manager)");
+      createUserTitleEl.innerText = tf("adminPage.createUser", "Create user");
+      document.getElementById("uName").placeholder = tf("login.username", "username");
+      document.getElementById("uPin").placeholder = tf("login.pin", "pin");
+      createUserBtnEl.innerText = tf("adminPage.createUser", "Create user");
+      refreshUsersBtnEl.innerText = tf("common.refresh", "Refresh");
+      userListTitleEl.innerText = tf("adminPage.userList", "User list");
+      disableHintEl.innerText = tf("adminPage.disableHint", "Disable = remove access. Reset PIN assigns a new random PIN.");
+
+      addItemTitleEl.innerText = tf("adminPage.addItem", "Add item");
+      document.getElementById("newName").placeholder = tf("common.name", "Name");
+      document.getElementById("newDesc").placeholder = tf("adminPage.description", "Description");
+      document.getElementById("newPrice").placeholder = tf("adminPage.price", "Price (€)");
+      addItemBtnEl.innerText = tf("adminPage.addItem", "Add item");
+
+      addIngredientTitleEl.innerText = tf("adminPage.addIngredient", "Add Ingredient");
+      openInventoryBtnEl.innerText = tf("adminPage.openInventoryPage", "Open inventory page");
+      document.getElementById("ingName").placeholder = tf("adminPage.ingredientName", "Ingredient name");
+      document.getElementById("ingUnit").placeholder = tf("adminPage.ingredientUnit", "Unit (g, ml, pcs)");
+      document.getElementById("ingStock").placeholder = tf("inventory.stockQty", "Stock quantity");
+      document.getElementById("ingLow").placeholder = tf("inventory.lowThreshold", "Low threshold");
+      addIngredientBtnEl.innerText = tf("adminPage.addIngredient", "Add Ingredient");
+
+      wifiQrTitleEl.innerText = tf("adminPage.wifiQr", "Wi-Fi QR Code");
+      wifiSsidEl.placeholder = tf("adminPage.wifiSsid", "Network name (SSID)");
+      wifiPasswordEl.placeholder = tf("adminPage.wifiPassword", "Password");
+      saveWifiBtnEl.innerText = tf("common.save", "Save");
+      printWifiBtnEl.innerText = tf("common.print", "Print");
+      wifiQrHintEl.innerText = tf("adminPage.wifiQrHint", "Display this QR at the entrance so customers can join your Wi-Fi before ordering.");
+
+      tableLinksTitleEl.innerText = tf("adminPage.tableLinks", "Table QR Links");
+      tableBaseUrlEl.placeholder = tf("adminPage.tableBaseUrl", "Base URL");
+      tableLinkCountEl.placeholder = tf("adminPage.tableCount", "Table count");
+      refreshTableLinksBtnEl.innerText = tf("common.refresh", "Refresh");
+      copyTableLinksBtnEl.innerText = tf("common.copy", "Copy");
+      printTableLinksBtnEl.innerText = tf("common.print", "Print");
+      tableLinksHintEl.innerText = tf("adminPage.tableLinksHint", "Generate signed table URLs to turn into QR codes for each table.");
+
+      menuTitleEl.innerText = tf("adminPage.menu", "Menu");
+    }
+
+    function setAdminTab(tab) {
+      activeAdminTab = tab;
+
+      adminTabButtons.forEach((button) => {
+        const isActive = button.dataset.adminTabBtn === tab;
+        button.classList.toggle("active", isActive);
+        button.setAttribute("aria-selected", isActive ? "true" : "false");
+      });
+
+      adminTabSections.forEach((section) => {
+        const isVisible = section.dataset.adminTabSection === tab;
+        section.hidden = !isVisible;
+        section.style.display = isVisible ? "flex" : "none";
+        section.setAttribute("aria-hidden", isVisible ? "false" : "true");
+      });
+    }
+
+    function usersTableSurfaceStyle() {
+      if (!document.body.classList.contains("dark")) {
+        return "";
+      }
+
+      return ' style="background:#1a211e;border-color:rgba(223,214,199,0.14);box-shadow:none;"';
+    }
+
+    function usersTableCellStyle() {
+      if (!document.body.classList.contains("dark")) {
+        return "";
+      }
+
+      return ' style="background:#1a211e;border-bottom-color:rgba(223,214,199,0.1);color:var(--dark-text-strong);"';
+    }
+
+    function menuSurfaceStyle() {
+      if (!document.body.classList.contains("dark")) {
+        return "";
+      }
+
+      return ' style="background:#1a211e;border-color:rgba(223,214,199,0.14);box-shadow:none;"';
+    }
+
+    function menuCellStyle() {
+      if (!document.body.classList.contains("dark")) {
+        return "";
+      }
+
+      return ' style="background:#1a211e;border-bottom-color:rgba(223,214,199,0.1);color:var(--dark-text-strong);"';
+    }
+
+    function menuHintStyle() {
+      if (!document.body.classList.contains("dark")) {
+        return "";
+      }
+
+      return ' style="color:var(--dark-muted);"';
+    }
+
+// Initialize the table link base URL field with the current origin so managers
+// can keep it or replace it with the Raspberry Pi LAN address.
+    function initializeTableBaseUrl() {
+      if (!tableBaseUrlEl || String(tableBaseUrlEl.value || "").trim()) {
+        return;
+      }
+
+      tableBaseUrlEl.value = publicConfig.public_base_url || window.location.origin;
+    }
+
+// Load public frontend config used by unauthenticated and authenticated pages.
+    async function loadPublicConfig() {
+      try {
+        const response = await fetch("/api/config");
+
+        if (!response.ok) {
+          throw new Error(`Request failed (${response.status})`);
+        }
+
+        publicConfig = await response.json();
+      } catch {
+        publicConfig = {};
+      }
+    }
+
+// Read the current admin auth token from browser storage.
+    function getToken() {
+      return localStorage.getItem(TOKEN_KEY);
+    }
+
+// Persist the current admin auth token in browser storage.
+    function setToken(token) {
+      localStorage.setItem(TOKEN_KEY, token);
+    }
+
+// Clear the stored admin session from browser storage.
+    function clearToken() {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(WHO_KEY);
+    }
+
+// Escape user-controlled text before injecting it into HTML strings.
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+    }
+
+// Render a toast message using the shared fade-out only toast system.
+    function toast(type, title, msg) {
+      if (!toastWrapEl) {
+        return;
+      }
+
+      const toastEl = document.createElement("div");
+      toastEl.className = `toast ${type === "err" ? "err" : "ok"}`;
+      toastEl.innerHTML = `
+        <div class="tTitle">${escapeHtml(title || (type === "err" ? tf("common.error", "Error") : tf("common.done", "Done")))}</div>
+        <div class="tMsg">${escapeHtml(msg || "")}</div>
+      `;
+
+      toastWrapEl.appendChild(toastEl);
+
+      const ttlMs = type === "err" ? 4200 : 2200;
+
+      setTimeout(() => {
+        toastEl.classList.add("fade-out");
+
+        setTimeout(() => {
+          try {
+            toastEl.remove();
+          } catch {}
+        }, 350);
+      }, ttlMs);
+    }
+
+    function toastOk(title, msg) {
+      toast("ok", title, msg);
+    }
+
+    function toastErr(title, msg) {
+      toast("err", title, msg);
+    }
+
+// Call a protected admin API endpoint with the current bearer token and parse
+// JSON responses consistently.
+    async function api(path, opts = {}) {
+      const headers = Object.assign(
+        { "Content-Type": "application/json" },
+        opts.headers || {}
+      );
+
+      const token = getToken();
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      const response = await fetch(path, {
+        ...opts,
+        headers,
+      });
+
+      let data = {};
+
+      try {
+        data = await response.json();
+      } catch {
+        const text = await response.text().catch(() => "");
+        data = text ? { error: text } : {};
+      }
+
+      if (!response.ok) {
+        throw new Error(translateError(data.error || `Request failed (${response.status})`));
+      }
+
+      return data;
+    }
+
+// Show the authenticated admin application view and update the visible session
+// identity label.
+    function showApp() {
+      loginEl.style.display = "none";
+      appEl.style.display = "block";
+      if (adminToolbarEl) {
+        adminToolbarEl.style.display = "flex";
+      }
+      whoLineEl.textContent = localStorage.getItem(WHO_KEY) || "";
+    }
+
+// Redirect unauthenticated users to the dedicated login page.
+    function showLogin() {
+      location.href = "/login.html";
+    }
+
+// Apply the current dark mode state to the admin page body.
+    function applyDarkMode(enabled) {
+      document.body.classList.toggle("dark", !!enabled);
+    }
+
+// Load persisted admin user settings and apply the current dark mode setting.
+    async function loadAndApplySettings() {
+      const settings = await api("/api/admin/me/settings");
+      window.kofI18n.setLanguage(settings?.language || window.kofI18n.DEFAULT_LANG);
+      applyDarkMode(!!settings.dark_mode);
+      applyTranslations();
+      return settings;
+    }
+
+// Load the current admin identity label shown in the page header.
+    async function loadWhoLine() {
+      const me = await api("/api/admin/me");
+      whoLineEl.textContent = tf("admin.loggedInAs", `Logged in as ${me.username} (${me.role})`, {
+        username: me.username,
+        role: me.role,
+      });
+      return me;
+    }
+
+// Apply role-based navigation and manager-only UI visibility for the current
+// admin user.
+    async function applyRoleNav() {
+      const me = await api("/api/admin/me");
+      const isManager = me.role === "manager";
+
+      if (staffBtnEl) {
+        staffBtnEl.style.display = isManager ? "inline-block" : "none";
+      }
+
+      if (usersCardEl) {
+        usersCardEl.style.display = isManager ? "block" : "none";
+      }
+
+      if (ingredientQuickCardEl) {
+        ingredientQuickCardEl.style.display = isManager ? "block" : "none";
+      }
+
+      if (tableLinksCardEl) {
+        tableLinksCardEl.style.display = isManager ? "block" : "none";
+      }
+
+      if (wifiQrCardEl) {
+        wifiQrCardEl.style.display = isManager ? "block" : "none";
+      }
+
+      if (qrTabBtnEl) {
+        qrTabBtnEl.style.display = isManager ? "inline-flex" : "none";
+      }
+
+      if (!isManager && activeAdminTab === "qr") {
+        setAdminTab("security");
+      }
+
+      if (isManager) {
+        await loadUsers();
+        await loadTableLinks();
+        await loadWifiSettings();
+      }
+    }
+
+// Authenticate the admin user, persist the returned session token, and load the
+// authenticated admin interface.
+    async function login() {
+      const username = usernameEl.value.trim();
+      const pin = pinEl.value.trim();
+
+      loginMsgEl.innerText = "";
+
+      try {
+        const result = await api("/api/admin/login", {
+          method: "POST",
+          body: JSON.stringify({ username, pin }),
+        });
+
+        setToken(result.token);
+        localStorage.setItem(WHO_KEY, `${result.username} (${result.role})`);
+
+        showApp();
+        await loadAndApplySettings();
+        await loadWhoLine();
+        await applyRoleNav();
+        await loadMenu();
+
+        toastOk(tf("login.login", "Login"), tf("adminPage.welcome", `Welcome ${result.username}`, { username: result.username }));
+      } catch (error) {
+        loginMsgEl.innerText = translateError(error);
+        toastErr(tf("login.loginFailed", "Login failed"), translateError(error));
+      }
+    }
+
+// Clear the current admin session and return the page to login mode.
+    function logout() {
+      clearToken();
+      toastOk(tf("common.logout", "Logout"), tf("common.sessionCleared", "Session cleared"));
+      location.href = "/login.html";
+    }
+
+    function goStaff() {
+      location.href = "/staff.html";
+    }
+
+    function goSettings() {
+      location.href = "/settings.html";
+    }
+
+    function goInventory() {
+      location.href = "/inventory.html";
+    }
+
+// Change the currently authenticated admin user's PIN.
+    async function changePin() {
+      pinMsgEl.innerText = "";
+
+      try {
+        const old_pin = document.getElementById("oldPin").value.trim();
+        const new_pin = document.getElementById("newPin").value.trim();
+
+        await api("/api/admin/change-pin", {
+          method: "POST",
+          body: JSON.stringify({ old_pin, new_pin }),
+        });
+
+        document.getElementById("oldPin").value = "";
+        document.getElementById("newPin").value = "";
+        pinMsgEl.innerText = tf("settings.pinChanged", "PIN changed.");
+
+        toastOk(tf("settings.pinChanged", "PIN changed"), tf("settings.pinChangedToast", "Your PIN was updated."));
+      } catch (error) {
+        pinMsgEl.innerText = translateError(error);
+        toastErr(tf("settings.pinChangeFailed", "PIN change failed"), translateError(error));
+      }
+    }
+
+// Create a new admin user and refresh the manager-only user list afterwards.
+    async function createUser() {
+      userMsgEl.innerText = "";
+
+      try {
+        const username = document.getElementById("uName").value.trim();
+        const pin = document.getElementById("uPin").value.trim();
+        const role = document.getElementById("uRole").value;
+
+        await api("/api/admin/users", {
+          method: "POST",
+          body: JSON.stringify({ username, pin, role }),
+        });
+
+        document.getElementById("uName").value = "";
+        document.getElementById("uPin").value = "";
+        userMsgEl.innerText = tf("admin.userCreated", "User created.");
+
+        toastOk(tf("admin.userCreated", "User created"), `${username} (${role})`);
+        await loadUsers();
+      } catch (error) {
+        userMsgEl.innerText = translateError(error);
+        toastErr(tf("admin.createUserFailed", "Create user failed"), translateError(error));
+      }
+    }
+
+// Load and render the manager-only user list in the table layout.
+    async function loadUsers() {
+      if (!usersWrapEl) {
+        return;
+      }
+
+      usersWrapEl.innerHTML = `<div class='muted'>${escapeHtml(tf("common.loading", "Loading…"))}</div>`;
+
+      try {
+        const result = await api("/api/admin/users");
+        const users = Array.isArray(result.users) ? result.users : [];
+
+        const tableRowsHtml = users
+          .map((user) => `
+            <tr>
+              <td${usersTableCellStyle()}>${user.id}</td>
+              <td${usersTableCellStyle()}>${escapeHtml(user.username)}</td>
+              <td${usersTableCellStyle()}>${escapeHtml(user.role)}</td>
+              <td${usersTableCellStyle()}>${user.is_active ? escapeHtml(tf("common.active", "Active")) : escapeHtml(tf("common.disabled", "Disabled"))}</td>
+              <td class="row" style="gap:8px${document.body.classList.contains("dark") ? ";background:#1a211e;border-bottom-color:rgba(223,214,199,0.1);color:var(--dark-text-strong);" : ""}">
+                ${
+                  user.is_active
+                    ? `<button class="danger-soft" onclick="setUserActive(${user.id}, false)">${escapeHtml(tf("common.disable", "Disable"))}</button>`
+                    : `<button onclick="setUserActive(${user.id}, true)">${escapeHtml(tf("common.enable", "Enable"))}</button>`
+                }
+                <button class="primary" onclick="resetUserPin(${user.id}, '${escapeHtml(user.username)}')">${escapeHtml(tf("admin.resetPin", "Reset PIN"))}</button>
+              </td>
+            </tr>
+          `)
+          .join("");
+
+        const cardsHtml = users
+          .map((user) => `
+            <div class="userCard">
+              <div class="topRow">
+                <div>
+                  <b>${escapeHtml(user.username)}</b>
+                  <span class="badge ${user.is_active ? "" : "off"}">${escapeHtml(user.role)} · ${user.is_active ? escapeHtml(tf("common.active", "Active")) : escapeHtml(tf("common.disabled", "Disabled"))}</span>
+                </div>
+              </div>
+              <div class="row" style="margin-top:10px">
+                ${
+                  user.is_active
+                    ? `<button class="danger-soft" onclick="setUserActive(${user.id}, false)">${escapeHtml(tf("common.disable", "Disable"))}</button>`
+                    : `<button onclick="setUserActive(${user.id}, true)">${escapeHtml(tf("common.enable", "Enable"))}</button>`
+                }
+                <button class="primary" onclick="resetUserPin(${user.id}, '${escapeHtml(user.username)}')">${escapeHtml(tf("admin.resetPin", "Reset PIN"))}</button>
+              </div>
+            </div>
+          `)
+          .join("");
+
+        usersWrapEl.innerHTML = `
+          <div class="usersTableWrap"${usersTableSurfaceStyle()}>
+            <table${usersTableSurfaceStyle()}>
+              <thead>
+                <tr>
+                  <th${usersTableCellStyle()}>ID</th>
+                  <th${usersTableCellStyle()}>${escapeHtml(tf("login.username", "Username"))}</th>
+                  <th${usersTableCellStyle()}>${escapeHtml(tf("adminPage.role", "Role"))}</th>
+                  <th${usersTableCellStyle()}>${escapeHtml(tf("adminPage.status", "Status"))}</th>
+                  <th${usersTableCellStyle()}>${escapeHtml(tf("common.actions", "Actions"))}</th>
+                </tr>
+              </thead>
+              <tbody>${tableRowsHtml}</tbody>
+            </table>
+          </div>
+        `;
+      } catch (error) {
+        usersWrapEl.innerHTML = `<div class="muted">${escapeHtml(translateError(error))}</div>`;
+        toastErr(tf("admin.loadUsersFailed", "Load users failed"), translateError(error));
+      }
+    }
+
+// Toggle a target user's active state and refresh the rendered user list.
+    async function setUserActive(id, enabled) {
+      try {
+        await api(`/api/admin/users/${id}`, {
+          method: "PATCH",
+          body: JSON.stringify({ is_active: !!enabled }),
+        });
+
+        toastOk(tf("admin.userUpdated", "User updated"), enabled ? tf("admin.userEnabled", "User enabled") : tf("admin.userDisabled", "User disabled"));
+        await loadUsers();
+      } catch (error) {
+        toastErr(tf("admin.updateUserFailed", "Update user failed"), translateError(error));
+      }
+    }
+
+// Reset a target user's PIN to the default manager-controlled value after a
+// confirmation prompt.
+    async function resetUserPin(id, username) {
+      const displayName = username || tf("adminPage.thisUser", "this user");
+      if (!confirm(tf("admin.resetPinConfirm", `Reset PIN for ${displayName}? A new random PIN will be assigned.`, { username: displayName }))) {
+        return;
+      }
+
+      try {
+        const result = await api(`/api/admin/users/${id}/reset-pin`, { method: "POST" });
+        const newPin = result.new_pin ?? "—";
+        toastOk(
+          tf("admin.resetPin", "Reset PIN"),
+          tf("admin.resetPinDone", `${displayName} new PIN: ${newPin}`, { username: displayName, pin: newPin })
+        );
+      } catch (error) {
+        toastErr(tf("admin.resetPinFailed", "Reset PIN failed"), translateError(error));
+      }
+    }
+
+// Escape special characters in WiFi QR string values per the Wi-Fi EasyConnect spec.
+    function escapeWifiValue(str) {
+      return String(str || "").replace(/([\\;,":@])/g, "\\$1");
+    }
+
+// Build the Wi-Fi QR string for the given credentials.
+// Format: WIFI:T:<security>;S:<ssid>;P:<password>;;
+    function buildWifiQrString(ssid, password, security) {
+      const s = escapeWifiValue(ssid);
+      if (!s) return "";
+      if (security === "nopass") {
+        return `WIFI:T:nopass;S:${s};;`;
+      }
+      return `WIFI:T:${security};S:${s};P:${escapeWifiValue(password)};;`;
+    }
+
+// Regenerate and display the Wi-Fi QR preview whenever credentials change.
+    function renderWifiQr() {
+      const ssid = wifiSsidEl ? wifiSsidEl.value.trim() : "";
+      const password = wifiPasswordEl ? wifiPasswordEl.value : "";
+      const security = wifiSecurityEl ? wifiSecurityEl.value : "WPA";
+
+      if (wifiPasswordFieldEl) {
+        wifiPasswordFieldEl.style.display = security === "nopass" ? "none" : "flex";
+      }
+
+      if (!wifiQrPreviewEl) return;
+
+      if (!ssid) {
+        wifiQrPreviewEl.innerHTML = "";
+        if (printWifiBtnEl) printWifiBtnEl.style.display = "none";
+        return;
+      }
+
+      const qrStr = buildWifiQrString(ssid, password, security);
+      const dataUrl = getTableQrImageUrl(qrStr, 220);
+
+      if (!dataUrl) {
+        wifiQrPreviewEl.innerHTML = "";
+        if (printWifiBtnEl) printWifiBtnEl.style.display = "none";
+        return;
+      }
+
+      wifiQrPreviewEl.innerHTML = `<img
+        src="${escapeHtml(dataUrl)}"
+        alt="${escapeHtml(tf("adminPage.wifiQrAlt", "Wi-Fi QR code"))}"
+        style="width:220px;max-width:100%;height:auto;border:1px solid #ddd;border-radius:12px;background:#fff;padding:8px"
+      />`;
+
+      if (printWifiBtnEl) printWifiBtnEl.style.display = "inline-flex";
+    }
+
+// Load saved Wi-Fi settings from the shop profile and render the QR preview.
+    async function loadWifiSettings() {
+      try {
+        const shop = await api("/api/admin/shop");
+        if (wifiSsidEl) wifiSsidEl.value = shop.wifi_ssid || "";
+        if (wifiPasswordEl) wifiPasswordEl.value = shop.wifi_password || "";
+        if (wifiSecurityEl) wifiSecurityEl.value = shop.wifi_security || "WPA";
+        renderWifiQr();
+      } catch {}
+    }
+
+// Persist the current Wi-Fi settings to the shop profile.
+    async function saveWifiSettings() {
+      const ssid = wifiSsidEl ? wifiSsidEl.value.trim() : "";
+      const password = wifiPasswordEl ? wifiPasswordEl.value : "";
+      const security = wifiSecurityEl ? wifiSecurityEl.value : "WPA";
+
+      try {
+        await api("/api/admin/shop", {
+          method: "PATCH",
+          body: JSON.stringify({ wifi_ssid: ssid, wifi_password: password, wifi_security: security }),
+        });
+        toastOk(tf("adminPage.wifiQr", "Wi-Fi QR Code"), tf("adminPage.wifiSaved", "Wi-Fi settings saved"));
+        renderWifiQr();
+      } catch (error) {
+        toastErr(tf("common.error", "Error"), translateError(error));
+      }
+    }
+
+// Open a print-friendly window with the Wi-Fi QR code.
+    function printWifiQr() {
+      const ssid = wifiSsidEl ? wifiSsidEl.value.trim() : "";
+      const password = wifiPasswordEl ? wifiPasswordEl.value : "";
+      const security = wifiSecurityEl ? wifiSecurityEl.value : "WPA";
+
+      if (!ssid) return;
+
+      const qrStr = buildWifiQrString(ssid, password, security);
+      const dataUrl = getTableQrImageUrl(qrStr, 280);
+
+      const popup = window.open("", "_blank", "width=500,height=600");
+      if (!popup) {
+        toastErr(tf("common.error", "Error"), tf("adminPage.popupBlocked", "Popup blocked"));
+        return;
+      }
+
+      popup.document.open();
+      popup.document.write(`
+        <!doctype html>
+        <html>
+        <head>
+          <title>${escapeHtml(tf("adminPage.wifiQr", "Wi-Fi QR Code"))}</title>
+          <meta name="viewport" content="width=device-width,initial-scale=1" />
+        </head>
+        <body style="font-family:system-ui,sans-serif;padding:32px;text-align:center">
+          <h2>${escapeHtml(tf("adminPage.wifiPrintTitle", "Connect to our Wi-Fi to Order"))}</h2>
+          <p style="font-size:18px;margin:8px 0">${escapeHtml(ssid)}</p>
+          <img src="${escapeHtml(dataUrl)}" style="width:280px;max-width:100%;height:auto;border:1px solid #ddd;border-radius:12px;background:#fff;padding:8px;margin:16px 0" />
+          <p class="muted" style="color:#888;font-size:13px">${escapeHtml(tf("adminPage.wifiPrintHint", "Scan this QR Code with your device's camera to order at our shop!"))}</p>
+        </body>
+        </html>
+      `);
+      popup.document.close();
+      popup.focus();
+      popup.print();
+    }
+
+// Render the current table QR link list inside the manager-only admin card.
+    function renderTableLinks() {
+      if (!tableLinksWrapEl) {
+        return;
+      }
+
+      if (!tableLinksCache.length) {
+        tableLinksWrapEl.innerHTML = `<div class="muted">${escapeHtml(tf("common.loading", "Loadingâ€¦"))}</div>`;
+        return;
+      }
+
+      tableLinksWrapEl.innerHTML = tableLinksCache
+        .map((table) => `
+          <div class="card" style="margin:0">
+            <div class="titleRow">
+              <div><b>${escapeHtml(tf("staff.tableFallback", "Table"))} ${escapeHtml(table.table_label)}</b></div>
+              <button onclick="copySingleTableLink('${escapeHtml(table.url)}')">${escapeHtml(tf("common.copy", "Copy"))}</button>
+            </div>
+            <div style="margin-top:12px; text-align:center">
+              <img
+                src="${escapeHtml(getTableQrImageUrl(table.url, 220))}"
+                alt="${escapeHtml(tf("adminPage.tableQrAlt", "QR code for table {table}", { table: table.table_label }))}"
+                style="width:220px; max-width:100%; height:auto; border:1px solid #ddd; border-radius:12px; background:#fff; padding:8px"
+              />
+            </div>
+            <div class="muted" style="margin-top:8px; word-break:break-all">${escapeHtml(table.url)}</div>
+          </div>
+        `)
+        .join("");
+    }
+
+// Build a QR image data URL locally in the browser so table QR generation works
+// without internet access.
+    function getTableQrImageUrl(url, size = 220) {
+      const safeSize = Math.max(80, Math.min(1000, Number(size || 220)));
+
+      if (typeof qrcode !== "function") {
+        return "";
+      }
+
+      const qr = qrcode(0, "M");
+      qr.addData(String(url || ""));
+      qr.make();
+
+      const moduleCount = qr.getModuleCount ? qr.getModuleCount() : 21;
+      const cellSize = Math.max(2, Math.floor(safeSize / moduleCount));
+      const margin = Math.max(4, Math.floor(cellSize * 2));
+
+      return qr.createDataURL(cellSize, margin);
+    }
+
+// Load signed table URLs from the manager-only backend endpoint.
+    async function loadTableLinks() {
+      if (!tableLinksWrapEl) {
+        return;
+      }
+
+      const count = Math.max(1, Math.min(200, Number(tableLinkCountEl?.value || 5)));
+      const baseUrl = String(tableBaseUrlEl?.value || "").trim();
+      tableLinksMsgEl.innerText = "";
+      tableLinksWrapEl.innerHTML = `<div class="muted">${escapeHtml(tf("common.loading", "Loadingâ€¦"))}</div>`;
+
+      try {
+        const params = new URLSearchParams({ count: String(count) });
+
+        if (baseUrl) {
+          params.set("base_url", baseUrl);
+        }
+
+        const result = await api(`/api/admin/table-links?${params.toString()}`);
+        tableLinksCache = Array.isArray(result.tables) ? result.tables : [];
+        renderTableLinks();
+      } catch (error) {
+        tableLinksWrapEl.innerHTML = `<div class="muted">${escapeHtml(translateError(error))}</div>`;
+        toastErr(tf("common.error", "Error"), translateError(error));
+      }
+    }
+
+// Copy one generated table URL to the clipboard.
+    async function copySingleTableLink(url) {
+      try {
+        await navigator.clipboard.writeText(String(url || ""));
+        toastOk(tf("common.copy", "Copy"), tf("adminPage.tableLinkCopied", "Table link copied"));
+      } catch (error) {
+        toastErr(tf("common.error", "Error"), error?.message || String(error));
+      }
+    }
+
+// Copy the full generated table URL list to the clipboard in one batch.
+    async function copyTableLinks() {
+      if (!tableLinksCache.length) {
+        return;
+      }
+
+      const text = tableLinksCache
+        .map((table) => `${tf("staff.tableFallback", "Table")} ${table.table_label}: ${table.url}`)
+        .join("\n");
+
+      try {
+        await navigator.clipboard.writeText(text);
+        toastOk(tf("common.copy", "Copy"), tf("adminPage.tableLinksCopied", "Table links copied"));
+      } catch (error) {
+        toastErr(tf("common.error", "Error"), error?.message || String(error));
+      }
+    }
+
+// Open a print-friendly window with the generated table URL list.
+    function printTableLinks() {
+      if (!tableLinksCache.length) {
+        return;
+      }
+
+      const popup = window.open("", "_blank", "width=900,height=700");
+
+      if (!popup) {
+        toastErr(tf("common.error", "Error"), tf("adminPage.popupBlocked", "Popup blocked"));
+        return;
+      }
+
+      const cardsHtml = tableLinksCache
+        .map((table) => `
+          <div style="border:1px solid #ccc;border-radius:12px;padding:16px;margin:0 0 16px">
+            <div style="font-size:20px;font-weight:700">${escapeHtml(tf("staff.tableFallback", "Table"))} ${escapeHtml(table.table_label)}</div>
+            <div style="margin-top:12px;text-align:center">
+              <img
+                src="${escapeHtml(getTableQrImageUrl(table.url, 260))}"
+                alt="${escapeHtml(tf("adminPage.tableQrAlt", "QR code for table {table}", { table: table.table_label }))}"
+                style="width:260px;max-width:100%;height:auto;border:1px solid #ddd;border-radius:12px;background:#fff;padding:8px"
+              />
+            </div>
+            <div style="margin-top:8px;word-break:break-all">${escapeHtml(table.url)}</div>
+          </div>
+        `)
+        .join("");
+
+      popup.document.open();
+      popup.document.write(`
+        <!doctype html>
+        <html>
+        <head>
+          <title>${escapeHtml(tf("adminPage.tableLinks", "Table QR Links"))}</title>
+          <meta name="viewport" content="width=device-width,initial-scale=1" />
+        </head>
+        <body style="font-family:system-ui,sans-serif;padding:24px">
+          <h2>${escapeHtml(tf("adminPage.tableLinks", "Table QR Links"))}</h2>
+          ${cardsHtml}
+        </body>
+        </html>
+      `);
+      popup.document.close();
+      popup.focus();
+      popup.print();
+    }
+
+// Load and render the menu editor in both table and mobile card layouts.
+    async function loadMenu() {
+      try {
+        const result = await api("/api/admin/menu");
+        const items = Array.isArray(result.items) ? result.items : [];
+
+        const tableRowsHtml = items
+          .map((item) => `
+            <tr>
+              <td${menuCellStyle()}>${item.id}</td>
+              <td${menuCellStyle()}><input value="${escapeHtml(item.name)}" data-id="${item.id}" data-field="name"/></td>
+              <td${menuCellStyle()}><input value="${escapeHtml(item.description || "")}" data-id="${item.id}" data-field="description"/></td>
+              <td${menuCellStyle()}><input value="${(item.price_cents / 100).toFixed(2)}" data-id="${item.id}" data-field="price_eur" inputmode="decimal"/></td>
+              <td${menuCellStyle()}>
+                <label>
+                  <input type="checkbox" ${item.is_active ? "checked" : ""} onchange="toggleActive(${item.id}, this.checked)"/>
+                  ${escapeHtml(tf("common.active", "Active"))}
+                </label>
+              </td>
+              <td${menuCellStyle()}><button class="primary" onclick="saveRow(${item.id})">${escapeHtml(tf("common.save", "Save"))}</button></td>
+            </tr>
+          `)
+          .join("");
+
+        const cardsHtml = items
+          .map((item) => `
+            <div class="menuCard"${menuSurfaceStyle()}>
+              <div class="titleRow">
+                <div><b>#${item.id}</b></div>
+                <label style="display:flex;align-items:center;gap:8px;margin:0">
+                  <input type="checkbox" ${item.is_active ? "checked" : ""} onchange="toggleActive(${item.id}, this.checked)"/>
+                  <span class="muted">${escapeHtml(tf("common.active", "Active"))}</span>
+                </label>
+              </div>
+
+              <label class="muted">${escapeHtml(tf("common.name", "Name"))}</label>
+              <input type="text" value="${escapeHtml(item.name)}" data-id="${item.id}" data-field="name"/>
+
+              <label class="muted">${escapeHtml(tf("adminPage.description", "Description"))}</label>
+              <input type="text" value="${escapeHtml(item.description || "")}" data-id="${item.id}" data-field="description"/>
+
+              <label class="muted">${escapeHtml(tf("adminPage.price", "Price (€)"))}</label>
+              <input type="text" value="${(item.price_cents / 100).toFixed(2)}" data-id="${item.id}" data-field="price_eur" inputmode="decimal"/>
+
+              <div class="rowBtns">
+                <button class="primary" onclick="saveRow(${item.id})">${escapeHtml(tf("common.save", "Save"))}</button>
+              </div>
+            </div>
+          `)
+          .join("");
+
+        menuWrapEl.innerHTML = `
+          <div class="menuTableWrap"${menuSurfaceStyle()}>
+            <table${menuSurfaceStyle()}>
+              <thead>
+                <tr>
+                  <th${menuCellStyle()}>ID</th>
+                  <th${menuCellStyle()}>${escapeHtml(tf("common.name", "Name"))}</th>
+                  <th${menuCellStyle()}>${escapeHtml(tf("adminPage.description", "Description"))}</th>
+                  <th${menuCellStyle()}>${escapeHtml(tf("adminPage.price", "Price (€)"))}</th>
+                  <th${menuCellStyle()}>${escapeHtml(tf("adminPage.status", "Status"))}</th>
+                  <th${menuCellStyle()}></th>
+                </tr>
+              </thead>
+              <tbody>${tableRowsHtml}</tbody>
+            </table>
+            <div class="muted"${menuHintStyle()}>${escapeHtml(tf("admin.tipSaveRow", "Tip: Save after editing a row."))}</div>
+          </div>
+        `;
+      } catch (error) {
+        toastErr(tf("admin.loadMenuFailed", "Load menu failed"), translateError(error));
+        throw error;
+      }
+    }
+
+// Read the editable menu row inputs for one item and send the patch request to
+// persist the updated values.
+    async function saveRow(id) {
+      try {
+        const inputs = [
+          ...document.querySelectorAll(`input[data-id="${id}"]`),
+        ];
+
+        const payload = {};
+
+        for (const input of inputs) {
+          const field = input.dataset.field;
+
+          if (field === "name") {
+            payload.name = input.value;
+          }
+
+          if (field === "description") {
+            payload.description = input.value;
+          }
+
+          if (field === "price_eur") {
+            const cents = parseEuroToCents(input.value);
+
+            if (cents === null) {
+              throw new Error(tf("admin.invalidPrice", "Invalid price"));
+            }
+
+            payload.price_cents = cents;
+          }
+        }
+
+        await api(`/api/admin/menu/${id}`, {
+          method: "PATCH",
+          body: JSON.stringify(payload),
+        });
+
+        toastOk(tf("common.save", "Save"), tf("admin.menuItemUpdated", `Menu item #${id} updated`, { id }));
+        await loadMenu();
+      } catch (error) {
+        toastErr(tf("admin.saveFailed", "Save failed"), translateError(error));
+      }
+    }
+
+// Toggle a menu item's active state without changing the other editable fields.
+    async function toggleActive(id, checked) {
+      try {
+        await api(`/api/admin/menu/${id}`, {
+          method: "PATCH",
+          body: JSON.stringify({ is_active: checked }),
+        });
+
+        toastOk(tf("admin.updated", "Updated"), checked ? tf("admin.itemEnabled", `Item #${id} enabled`, { id }) : tf("admin.itemDisabled", `Item #${id} disabled`, { id }));
+      } catch (error) {
+        toastErr(tf("admin.updateFailed", "Update failed"), translateError(error));
+      }
+    }
+
+// Create a new menu item from the quick add controls and refresh the menu list.
+    async function addItem() {
+      const name = document.getElementById("newName").value.trim();
+      const description = document.getElementById("newDesc").value.trim();
+      const priceInput = document.getElementById("newPrice").value;
+
+      addMsgEl.innerText = "";
+
+      try {
+        const price_cents = parseEuroToCents(priceInput);
+
+        if (price_cents === null) {
+          throw new Error(tf("admin.invalidPriceHelp", "Invalid price. Use e.g. 10.00 or 10,00"));
+        }
+
+        await api("/api/admin/menu", {
+          method: "POST",
+          body: JSON.stringify({ name, description, price_cents }),
+        });
+
+        document.getElementById("newName").value = "";
+        document.getElementById("newDesc").value = "";
+        document.getElementById("newPrice").value = "";
+
+        await loadMenu();
+
+        addMsgEl.innerText = tf("admin.added", "Added.");
+        toastOk(tf("admin.added", "Added"), tf("admin.addedToMenu", `${name} added to menu`, { name }));
+      } catch (error) {
+        addMsgEl.innerText = translateError(error);
+        toastErr(tf("admin.addFailed", "Add failed"), translateError(error));
+      }
+    }
+
+// Create a new ingredient from the quick admin form shown to managers.
+    async function addIngredientQuick() {
+      const name = document.getElementById("ingName").value.trim();
+      const unit = document.getElementById("ingUnit").value.trim();
+      const stock_qty = parseMaybeNumber(document.getElementById("ingStock").value);
+      const low_stock_threshold = parseMaybeNumber(document.getElementById("ingLow").value);
+
+      ingredientMsgEl.innerText = "";
+
+      try {
+        if (!name) {
+          throw new Error(tf("inventory.ingredientNameRequired", "Ingredient name required"));
+        }
+
+        if (!unit) {
+          throw new Error(tf("inventory.unitRequired", "Unit required"));
+        }
+
+        if (stock_qty === null) {
+          throw new Error(tf("inventory.invalidStockQty", "Invalid stock quantity"));
+        }
+
+        if (low_stock_threshold === null) {
+          throw new Error(tf("inventory.invalidLowThreshold", "Invalid low threshold"));
+        }
+
+        await api("/api/admin/inventory/ingredients", {
+          method: "POST",
+          body: JSON.stringify({ name, unit, stock_qty, low_stock_threshold }),
+        });
+
+        document.getElementById("ingName").value = "";
+        document.getElementById("ingUnit").value = "g";
+        document.getElementById("ingStock").value = "";
+        document.getElementById("ingLow").value = "";
+
+        ingredientMsgEl.innerText = tf("admin.ingredientAdded", "Ingredient added.");
+        toastOk(tf("admin.ingredientAdded", "Ingredient added"), name);
+      } catch (error) {
+        ingredientMsgEl.innerText = translateError(error);
+        toastErr(tf("admin.addIngredientFailed", "Add ingredient failed"), translateError(error));
+      }
+    }
+
+// Parse a euro price string into integer cents while accepting both comma and
+// dot decimal separators.
+    function parseEuroToCents(input) {
+      const normalized = String(input)
+        .trim()
+        .replace(/\s+/g, "")
+        .replace(",", ".");
+
+      const value = Number(normalized);
+
+      if (!Number.isFinite(value)) {
+        return null;
+      }
+
+      return Math.round(value * 100);
+    }
+
+// Parse a numeric input field that may be left empty. Empty values default to
+// zero while invalid numeric input returns null.
+    function parseMaybeNumber(input) {
+      const normalized = String(input ?? "").trim();
+
+      if (normalized === "") {
+        return 0;
+      }
+
+      const parsed = Number(normalized.replace(",", "."));
+      return Number.isFinite(parsed) ? parsed : null;
+    }
+
+// Refresh settings and role-based UI when the page is shown again from browser
+// history or tab restore.
+    window.addEventListener("pageshow", async () => {
+      if (!getToken()) {
+        return;
+      }
+
+      try {
+        await loadAndApplySettings();
+        await loadWhoLine();
+        await applyRoleNav();
+      } catch {}
+    });
+
+// Refresh settings and role-based UI whenever the tab becomes visible again.
+    document.addEventListener("visibilitychange", async () => {
+      if (document.visibilityState !== "visible") {
+        return;
+      }
+
+      if (!getToken()) {
+        return;
+      }
+
+      try {
+        await loadAndApplySettings();
+        await loadWhoLine();
+        await applyRoleNav();
+      } catch {}
+    });
+
+    adminTabButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        setAdminTab(button.dataset.adminTabBtn);
+      });
+    });
+
+// Boot the admin page by restoring the stored session when present and loading
+// the authenticated admin interface.
+    (async () => {
+      await loadPublicConfig();
+      applyTranslations();
+      initializeTableBaseUrl();
+      setAdminTab(activeAdminTab);
+
+      if (getToken()) {
+        try {
+          showApp();
+          await loadAndApplySettings();
+          await loadWhoLine();
+          await applyRoleNav();
+          await loadMenu();
+        } catch {
+          clearToken();
+          showLogin();
+        }
+      } else {
+        showLogin();
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,241 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#f4efe7" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#121715" media="(prefers-color-scheme: dark)" />
+  <title>Order</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="order-page">
+  <main class="customer-shell">
+    <div class="page-actions">
+      <button onclick="location.href='/'" id="menuBtn" class="secondary"></button>
+      <button onclick="repeatOrder()" id="repeatBtn" class="secondary"></button>
+      <button onclick="location.href='/orders.html'" id="ordersBtn" class="secondary"></button>
+      <button id="receiptBtn" onclick="openReceipt()" class="primary" style="display:none"></button>
+    </div>
+
+    <section class="customer-hero">
+      <div class="customer-topbar">
+        <div>
+          <div class="customer-eyebrow" id="heroEyebrow"></div>
+          <h1 class="customer-heading"><span id="orderTitle"></span> <span id="num">#...</span></h1>
+          <div class="customer-subtitle" id="time"></div>
+        </div>
+        <div class="status-highlight">
+          <span id="statusLabel"></span>
+          <span class="pill" id="status">...</span>
+        </div>
+      </div>
+      <div id="destination" style="margin-top:20px"></div>
+    </section>
+
+    <section class="customer-panel">
+      <div class="customer-panel-title">
+        <div>
+          <h3 id="itemsTitle"></h3>
+          <div class="muted" id="itemsHint"></div>
+        </div>
+      </div>
+
+      <div id="items" class="order-item-list"></div>
+    </section>
+  </main>
+
+  <script src="/js/translations/en.js"></script>
+  <script src="/js/translations/pt.js"></script>
+  <script src="/js/translations/fi.js"></script>
+  <script src="/js/i18n.js"></script>
+  <script src="/js/kof.js"></script>
+
+  <script>
+    const t = window.kofI18n.t;
+    function tf(key, fallback, vars = {}) {
+      const value = t(key, vars);
+      return value === key ? fallback : value;
+    }
+
+    const menuBtnEl = document.getElementById("menuBtn");
+    const repeatBtnEl = document.getElementById("repeatBtn");
+    const ordersBtnEl = document.getElementById("ordersBtn");
+    const receiptBtnEl = document.getElementById("receiptBtn");
+    const orderTitleEl = document.getElementById("orderTitle");
+    const numEl = document.getElementById("num");
+    const statusLabelEl = document.getElementById("statusLabel");
+    const statusEl = document.getElementById("status");
+    const destinationEl = document.getElementById("destination");
+    const timeEl = document.getElementById("time");
+    const itemsTitleEl = document.getElementById("itemsTitle");
+    const itemsEl = document.getElementById("items");
+    const heroEyebrowEl = document.getElementById("heroEyebrow");
+    const itemsHintEl = document.getElementById("itemsHint");
+
+    const params = new URLSearchParams(location.search);
+    let id = Number(params.get("id")) || kof.getLastOrderId();
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+    }
+
+    function applyTranslations() {
+      document.title = tf("order.title", "Order");
+      menuBtnEl.innerText = `← ${tf("index.title", "Menu")}`;
+      repeatBtnEl.innerText = tf("order.repeat", "Repeat this order");
+      ordersBtnEl.innerText = tf("index.myOrders", "My orders");
+      receiptBtnEl.innerText = tf("common.receipt", "Receipt");
+      orderTitleEl.innerText = tf("order.title", "Order");
+      statusLabelEl.innerText = tf("order.statusLabel", tf("order.status", "Status"));
+      itemsTitleEl.innerText = tf("order.items", "Items");
+      heroEyebrowEl.innerText = tf("index.subtitle", "Coffee, fast and fresh.");
+      itemsHintEl.innerText = tf("order.items", "Items");
+
+      if (!id) {
+        itemsEl.innerText = tf("order.noOrderId", "No order id.");
+      } else {
+        itemsEl.innerText = tf("common.loading", "Loading...");
+      }
+    }
+
+    function formatTableLabel(value) {
+      const normalized = String(value || "").trim();
+      const tableWord = tf("fulfillment.tableLabel", "Table");
+      return normalized ? `${tableWord} ${normalized}` : tableWord;
+    }
+
+    function statusText(status) {
+      const fallback = status ? status.charAt(0).toUpperCase() + status.slice(1) : "";
+      return tf(`status.${status}`, fallback);
+    }
+
+    function statusPillClass(status) {
+      return `pill status-${String(status || "").trim() || "new"}`;
+    }
+
+    function openReceipt() {
+      location.href = `/receipt.html?id=${id}`;
+    }
+
+    function renderDestination(order) {
+      if (!destinationEl) {
+        return;
+      }
+
+      if (order.fulfillment_type === "table") {
+        destinationEl.innerHTML =
+          `<span class="pill paid">${escapeHtml(formatTableLabel(order.table_label))}</span>`;
+        return;
+      }
+
+      const pickupName = order.customer_label
+        ? ` · ${escapeHtml(order.customer_label)}`
+        : "";
+
+      destinationEl.innerHTML =
+        `<span class="pill paid">${escapeHtml(tf("fulfillment.counter", "Counter"))}</span>` +
+        `<span class="order-destination-note" style="margin-left:8px">${escapeHtml(tf("fulfillment.pickup", "Pickup"))}${pickupName}</span>`;
+    }
+
+    function setStatus(status) {
+      statusEl.innerText = statusText(status);
+      statusEl.className = statusPillClass(status);
+    }
+
+    async function load() {
+      const order = await kof.fetchOrder(id);
+
+      numEl.innerText = `#${order.order_number}`;
+      timeEl.innerText = order.created_at;
+      setStatus(order.status);
+      renderDestination(order);
+
+      if (receiptBtnEl) {
+        receiptBtnEl.style.display =
+          order.payment_status === "paid" ? "inline-flex" : "none";
+      }
+
+      itemsEl.innerHTML = (order.items || [])
+        .map((item) => {
+          const modifiers = (item.chosen_modifiers || []).join(", ");
+          return `
+            <div class="order-item">
+              <div class="order-meta-row">
+                <div>
+                  <b>${escapeHtml(item.item_name)}</b>
+                  <div class="muted">${modifiers ? escapeHtml(modifiers) : tf("common.noteOptional", "No modifiers")}</div>
+                </div>
+                <div><b>${escapeHtml(String(item.qty))}x</b></div>
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+    }
+
+    async function repeatOrder() {
+      try {
+        await kof.loadMenu();
+
+        const order = await kof.fetchOrder(id);
+
+        const newCart = [];
+        const missingItems = [];
+
+        for (const item of order.items || []) {
+          const menuItem = kof.menuById.get(item.menu_item_id);
+
+          if (!menuItem) {
+            missingItems.push(item.item_name || `ID ${item.menu_item_id}`);
+            continue;
+          }
+
+          newCart.push({
+            menu_item_id: item.menu_item_id,
+            name: menuItem.name,
+            price_cents: menuItem.price_cents,
+            qty: item.qty,
+            chosen_modifiers: item.chosen_modifiers || [],
+          });
+        }
+
+        if (newCart.length === 0) {
+          alert(tf("order.repeatUnavailable", "Sorry - none of the items from this order are available anymore."));
+          return;
+        }
+
+        kof.setCart(newCart);
+
+        if (missingItems.length) {
+          alert(tf("order.repeatSkippedPrefix", "Some items are no longer available and were skipped:\n- ") + missingItems.join("\n- "));
+        }
+
+        location.href = "/cart.html";
+      } catch (error) {
+        alert(error?.message || String(error));
+      }
+    }
+
+    kof.applyCustomerDarkMode();
+    applyTranslations();
+
+    if (!id) {
+      itemsEl.innerText = tf("order.noOrderId", "No order id.");
+    } else {
+      load();
+
+      kof.wsConnect((msg) => {
+        if (msg.type === "order_status_changed" && msg.payload?.id === id) {
+          setStatus(msg.payload.status);
+        }
+
+        if (msg.type === "order_payment_changed" && msg.payload?.id === id) {
+          load();
+        }
+      });
+    }
+  </script>
+</body>
+</html>

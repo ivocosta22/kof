@@ -1,0 +1,577 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#f4efe7" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#121715" media="(prefers-color-scheme: dark)" />
+  <title>Kof</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="index-page">
+  <main class="customer-shell">
+    <section class="customer-hero">
+      <div class="customer-topbar">
+        <div>
+          <div class="customer-eyebrow" id="heroEyebrow"></div>
+          <h1 class="customer-heading" id="pageTitle"></h1>
+          <p class="customer-subtitle" id="subtitle"></p>
+        </div>
+        <div class="hero-controls">
+          <button type="button" onclick="toggleDarkMode()" id="darkModeBtn" class="theme-toggle"></button>
+          <div class="language-picker">
+            <button type="button" id="languageBtn" class="language-toggle" aria-expanded="false" aria-controls="languageMenu">
+              <span class="toggle-icon" aria-hidden="true">&#127760;</span>
+              <span id="languageBtnCode" class="language-code">EN</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-highlights">
+        <div class="hero-stat">
+          <strong id="heroMenuCount">0</strong>
+          <span id="heroMenuLabel"></span>
+        </div>
+        <div class="hero-stat">
+          <strong id="heroAvailableCount">0</strong>
+          <span id="heroAvailableLabel"></span>
+        </div>
+        <div class="hero-stat">
+          <strong id="heroCartValue">EUR 0.00</strong>
+          <span id="heroCartLabel"></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="customer-panel">
+      <div class="customer-panel-title">
+        <div>
+          <h3 id="menuSectionTitle"></h3>
+          <div class="muted" id="menuSectionHint"></div>
+        </div>
+      </div>
+
+      <div id="menu" class="menu-grid"></div>
+    </section>
+  </main>
+
+  <div id="toast"></div>
+
+  <div id="languageMenu" class="language-menu" role="menu">
+    <button type="button" class="language-option" id="langEnBtn" role="menuitem">
+      <span class="language-flag" aria-hidden="true">&#127468;&#127463;</span>
+      <span class="language-name" id="langEnLabel">English</span>
+    </button>
+    <button type="button" class="language-option" id="langFiBtn" role="menuitem">
+      <span class="language-flag" aria-hidden="true">&#127467;&#127470;</span>
+      <span class="language-name" id="langFiLabel">Suomi</span>
+    </button>
+    <button type="button" class="language-option" id="langPtBtn" role="menuitem">
+      <span class="language-flag" aria-hidden="true">&#127477;&#127481;</span>
+      <span class="language-name" id="langPtLabel">Português</span>
+    </button>
+  </div>
+
+  <button type="button" id="cartFab" class="cart-fab" onclick="toggleCartPanel()" aria-expanded="false" aria-controls="stickyCart">
+    <span class="cart-fab-icon" aria-hidden="true">&#128722;</span>
+    <span id="cartFabCount" class="cart-fab-badge">0</span>
+  </button>
+
+  <div class="sticky-cart is-collapsed" id="stickyCart">
+    <div class="sticky-cart-head">
+      <div class="sticky-cart-title" id="cartPanelTitle"></div>
+      <button type="button" class="sticky-cart-close secondary" onclick="toggleCartPanel(false)" aria-label="Close cart">&times;</button>
+    </div>
+    <div class="sticky-cart-meta">
+      <div><b id="cartCount">0</b> <span id="cartItemsLabel"></span></div>
+      <div class="muted"><span id="totalLabel"></span>: EUR <span id="cartTotal">0.00</span></div>
+    </div>
+    <div class="sticky-cart-actions">
+      <button onclick="goOrders()" id="ordersBtn" class="secondary" style="display:none"></button>
+      <button onclick="goCart()" id="cartBtn" class="primary"></button>
+    </div>
+  </div>
+
+  <script src="/js/translations/en.js"></script>
+  <script src="/js/translations/pt.js"></script>
+  <script src="/js/translations/fi.js"></script>
+  <script src="/js/i18n.js"></script>
+  <script src="/js/kof.js"></script>
+
+  <script>
+    const t = window.kofI18n.t;
+
+    const pageTitleEl = document.getElementById("pageTitle");
+    const darkModeBtnEl = document.getElementById("darkModeBtn");
+    const subtitleEl = document.getElementById("subtitle");
+    const menuEl = document.getElementById("menu");
+    const toastEl = document.getElementById("toast");
+    const ordersBtnEl = document.getElementById("ordersBtn");
+    const cartBtnEl = document.getElementById("cartBtn");
+    const cartPanelTitleEl = document.getElementById("cartPanelTitle");
+    const cartItemsLabelEl = document.getElementById("cartItemsLabel");
+    const totalLabelEl = document.getElementById("totalLabel");
+    const cartFabEl = document.getElementById("cartFab");
+    const cartFabCountEl = document.getElementById("cartFabCount");
+    const stickyCartEl = document.getElementById("stickyCart");
+    const languageBtnEl = document.getElementById("languageBtn");
+    const languageBtnCodeEl = document.getElementById("languageBtnCode");
+    const languageMenuEl = document.getElementById("languageMenu");
+    const langEnBtnEl = document.getElementById("langEnBtn");
+    const langFiBtnEl = document.getElementById("langFiBtn");
+    const langPtBtnEl = document.getElementById("langPtBtn");
+    const langEnLabelEl = document.getElementById("langEnLabel");
+    const langFiLabelEl = document.getElementById("langFiLabel");
+    const langPtLabelEl = document.getElementById("langPtLabel");
+    const heroEyebrowEl = document.getElementById("heroEyebrow");
+    const heroMenuCountEl = document.getElementById("heroMenuCount");
+    const heroAvailableCountEl = document.getElementById("heroAvailableCount");
+    const heroCartValueEl = document.getElementById("heroCartValue");
+    const heroMenuLabelEl = document.getElementById("heroMenuLabel");
+    const heroAvailableLabelEl = document.getElementById("heroAvailableLabel");
+    const heroCartLabelEl = document.getElementById("heroCartLabel");
+    const menuSectionTitleEl = document.getElementById("menuSectionTitle");
+    const menuSectionHintEl = document.getElementById("menuSectionHint");
+
+    let isCartPanelOpen = false;
+    let isLanguageMenuOpen = false;
+    const CART_MORPH_MS = 340;
+    let cartMorphTimer = null;
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+    }
+
+    function getText(key, fallback, vars = {}) {
+      const value = t(key, vars);
+      return value === key ? fallback : value;
+    }
+
+    function money(cents) {
+      return `EUR ${(Number(cents || 0) / 100).toFixed(2)}`;
+    }
+
+    function updateHeroStats(menu = kof.menu || []) {
+      const availableCount = menu.filter((item) => getDisplayAvailability(item) !== "unavailable").length;
+      const { totalCents } = kof.cartTotals();
+
+      heroMenuCountEl.innerText = String(menu.length);
+      heroAvailableCountEl.innerText = String(availableCount);
+      heroCartValueEl.innerText = money(totalCents);
+      heroMenuLabelEl.innerText = t("index.items");
+      heroAvailableLabelEl.innerText = getText("availability.available", "Available");
+      heroCartLabelEl.innerText = t("common.total");
+    }
+
+    function positionLanguageMenu() {
+      const rect = languageBtnEl.getBoundingClientRect();
+      const menuWidth = Math.min(240, Math.max(190, languageMenuEl.offsetWidth || 190));
+      const top = rect.bottom + 10;
+      const maxLeft = window.innerWidth - menuWidth - 12 - (window.visualViewport ? window.visualViewport.offsetLeft : 0);
+      const left = Math.max(12, Math.min(rect.right - menuWidth, maxLeft));
+
+      languageMenuEl.style.top = `${top}px`;
+      languageMenuEl.style.left = `${left}px`;
+    }
+
+    function applyTranslations() {
+      document.title = t("index.title");
+      pageTitleEl.innerText = t("index.title");
+      heroEyebrowEl.innerText = getText("index.eyebrow", "Offline Ordering");
+      updateDarkModeButton();
+      subtitleEl.innerText = t("index.loadingMenu");
+      ordersBtnEl.innerText = t("index.myOrders");
+      cartBtnEl.innerText = t("index.viewCart");
+      cartPanelTitleEl.innerText = getText("index.cartTitle", "Cart");
+      cartItemsLabelEl.innerText = t("index.items");
+      totalLabelEl.innerText = t("common.total");
+      menuSectionTitleEl.innerText = t("index.title");
+      menuSectionHintEl.innerText = t("index.loadingMenu");
+      langEnLabelEl.innerText = "English";
+      langFiLabelEl.innerText = "Suomi";
+      langPtLabelEl.innerText = "Português";
+      updateLanguageButton();
+      updateHeroStats();
+      syncCartUi();
+    }
+
+    function updateDarkModeButton() {
+      if (!darkModeBtnEl) {
+        return;
+      }
+
+      const enabled = kof.getCustomerDarkMode();
+      darkModeBtnEl.innerHTML = enabled
+        ? `<span class="toggle-icon" aria-hidden="true">&#9728;</span>`
+        : `<span class="toggle-icon" aria-hidden="true">&#9790;</span>`;
+      darkModeBtnEl.title = `${t("settings.darkMode")}: ${enabled ? t("settings.on") : t("settings.off")}`;
+      darkModeBtnEl.setAttribute("aria-label", darkModeBtnEl.title);
+    }
+
+    function toggleDarkMode() {
+      const enabled = !kof.getCustomerDarkMode();
+      kof.setCustomerDarkMode(enabled);
+      kof.applyCustomerDarkMode();
+      updateDarkModeButton();
+    }
+
+    function updateOrdersButton() {
+      const myOrders = kof.getMyOrders ? kof.getMyOrders() : [];
+      ordersBtnEl.style.display = myOrders.length ? "inline-flex" : "none";
+    }
+
+    function updateLanguageButton() {
+      const currentLanguage = window.kofI18n.getLanguage();
+      const codeMap = { en: "EN", fi: "FI", pt: "PT" };
+
+      languageBtnCodeEl.innerText = codeMap[currentLanguage] || "EN";
+      languageBtnEl.title = getText("index.languagePicker", "Choose language");
+      languageBtnEl.setAttribute("aria-label", languageBtnEl.title);
+      languageBtnEl.setAttribute("aria-expanded", isLanguageMenuOpen ? "true" : "false");
+      langEnBtnEl.classList.toggle("active", currentLanguage === "en");
+      langFiBtnEl.classList.toggle("active", currentLanguage === "fi");
+      langPtBtnEl.classList.toggle("active", currentLanguage === "pt");
+    }
+
+    function toggleLanguageMenu(forceState) {
+      isLanguageMenuOpen = typeof forceState === "boolean" ? forceState : !isLanguageMenuOpen;
+      languageMenuEl.classList.toggle("is-open", isLanguageMenuOpen);
+
+      if (isLanguageMenuOpen) {
+        requestAnimationFrame(positionLanguageMenu);
+      }
+
+      updateLanguageButton();
+    }
+
+    function selectLanguage(lang) {
+      window.kofI18n.setLanguage(lang);
+      location.reload();
+    }
+
+    window.toggleLanguageMenu = toggleLanguageMenu;
+    window.selectLanguage = selectLanguage;
+
+    function syncCartUi() {
+      const { count, totalCents } = kof.cartTotals();
+      const fabMorphing =
+        cartFabEl.classList.contains("is-morphing-out") ||
+        cartFabEl.classList.contains("is-morphing-in");
+
+      cartFabCountEl.innerText = String(count);
+      cartFabEl.classList.toggle("is-hidden", count === 0 || (isCartPanelOpen && !fabMorphing));
+
+      if (count === 0 && !isCartPanelOpen) {
+        stickyCartEl.classList.add("is-collapsed");
+      }
+
+      cartFabEl.setAttribute("aria-expanded", isCartPanelOpen ? "true" : "false");
+      document.getElementById("cartCount").innerText = String(count);
+      document.getElementById("cartTotal").innerText = (totalCents / 100).toFixed(2);
+    }
+
+    function toggleCartPanel(forceState) {
+      const nextState = typeof forceState === "boolean" ? forceState : !isCartPanelOpen;
+
+      if (nextState === isCartPanelOpen) {
+        return;
+      }
+
+      const { count } = kof.cartTotals();
+      if (nextState && count === 0) {
+        return;
+      }
+
+      clearTimeout(cartMorphTimer);
+
+      if (nextState) {
+        isCartPanelOpen = true;
+        cartFabEl.classList.remove("is-hidden", "is-morphing-in");
+        stickyCartEl.classList.remove("is-collapsed", "is-closing");
+        stickyCartEl.classList.add("is-opening");
+
+        requestAnimationFrame(() => {
+          cartFabEl.classList.add("is-morphing-out");
+        });
+
+        cartMorphTimer = setTimeout(() => {
+          stickyCartEl.classList.remove("is-opening");
+          cartFabEl.classList.remove("is-morphing-out");
+          syncCartUi();
+        }, CART_MORPH_MS);
+
+        syncCartUi();
+        return;
+      }
+
+      isCartPanelOpen = false;
+      cartFabEl.classList.remove("is-hidden", "is-morphing-out");
+      stickyCartEl.classList.remove("is-opening");
+      stickyCartEl.classList.add("is-closing");
+
+      requestAnimationFrame(() => {
+        cartFabEl.classList.add("is-morphing-in");
+        stickyCartEl.classList.add("is-collapsed");
+
+        requestAnimationFrame(() => {
+          cartFabEl.classList.remove("is-morphing-in");
+        });
+      });
+
+      cartMorphTimer = setTimeout(() => {
+        stickyCartEl.classList.remove("is-closing");
+        syncCartUi();
+      }, CART_MORPH_MS);
+
+      syncCartUi();
+    }
+
+    function availabilityPill(value) {
+      if (value === "unavailable") {
+        return `<span class="pill unavailable">${escapeHtml(t("availability.unavailable"))}</span>`;
+      }
+
+      if (value === "low") {
+        return `<span class="pill low">${escapeHtml(t("availability.low"))}</span>`;
+      }
+
+      return `<span class="pill paid">${escapeHtml(getText("availability.available", "Available"))}</span>`;
+    }
+
+    function getDisplayAvailability(item) {
+      const currentQty = kof.getCart()
+        .filter((line) => line.menu_item_id === item.id)
+        .reduce((sum, line) => sum + Number(line.qty || 0), 0);
+      const maxMakeableUnits =
+        item?.max_makeable_units === null || item?.max_makeable_units === undefined
+          ? null
+          : Number(item.max_makeable_units);
+
+      if (item?.availability === "unavailable") {
+        return "unavailable";
+      }
+
+      if (maxMakeableUnits !== null && Number.isFinite(maxMakeableUnits)) {
+        const remainingUnits = maxMakeableUnits - currentQty;
+
+        if (remainingUnits <= 0) {
+          return "unavailable";
+        }
+
+        if (remainingUnits === 1) {
+          return "low";
+        }
+      }
+
+      return item?.availability === "low" ? "low" : "available";
+    }
+
+    function iconForItem(name = "") {
+      const normalized = String(name).toLowerCase();
+
+      if (normalized.includes("iced")) return "&#10052;";
+      if (normalized.includes("latte")) return "&#9749;";
+      if (normalized.includes("espresso")) return "&#9716;";
+      if (normalized.includes("mocha") || normalized.includes("chocolate")) return "&#10022;";
+      return "&#9749;";
+    }
+
+    function renderMenuActionButton({ action, itemId, label, variant, disabled, disabledTitle }) {
+      const buttonHtml = `<button onclick="${action}(${itemId})" class="${variant}" ${disabled ? "disabled" : ""}>${escapeHtml(label)}</button>`;
+
+      if (!disabled) {
+        return buttonHtml;
+      }
+
+      return `<span class="menu-action-tooltip" title="${escapeHtml(disabledTitle)}">${buttonHtml}</span>`;
+    }
+
+    function renderMenu(menu) {
+      menuEl.innerHTML = menu
+        .map((item) => {
+          const displayAvailability = getDisplayAvailability(item);
+          const unavailableTitle = t("index.itemUnavailable");
+
+          return `
+            <article class="menu-card">
+              <div class="menu-card-top">
+                <div class="menu-card-tag">${availabilityPill(displayAvailability)}</div>
+                <div class="menu-card-icon" aria-hidden="true">${iconForItem(item.name)}</div>
+              </div>
+              <h3 class="menu-card-name">${escapeHtml(item.name)}</h3>
+              <p class="menu-card-desc muted">${escapeHtml(item.description || "")}</p>
+              <div class="menu-card-bottom">
+                <div class="menu-price">
+                  <strong>${money(item.price_cents)}</strong>
+                  <span>${escapeHtml(getText("index.cardHint", "Made to order"))}</span>
+                </div>
+                <div class="menu-card-actions">
+                  ${renderMenuActionButton({
+                    action: "customize",
+                    itemId: item.id,
+                    label: t("index.customize"),
+                    variant: "secondary",
+                    disabled: displayAvailability === "unavailable",
+                    disabledTitle: unavailableTitle,
+                  })}
+                  ${renderMenuActionButton({
+                    action: "add",
+                    itemId: item.id,
+                    label: t("index.add"),
+                    variant: "primary",
+                    disabled: displayAvailability === "unavailable",
+                    disabledTitle: unavailableTitle,
+                  })}
+                </div>
+              </div>
+            </article>
+          `;
+        })
+        .join("");
+
+      menuSectionHintEl.innerText = getText("index.menuHint", "Browse the menu and add your favorites.");
+      updateHeroStats(menu);
+      syncCartUi();
+    }
+
+    window.addEventListener("pageshow", () => {
+      updateOrdersButton();
+      renderMenu(kof.menu);
+      updateHeroStats(kof.menu);
+      syncCartUi();
+    });
+
+    window.addEventListener("resize", () => {
+      if (isLanguageMenuOpen) {
+        positionLanguageMenu();
+      }
+    });
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", () => {
+        if (isLanguageMenuOpen) {
+          positionLanguageMenu();
+        }
+      });
+    }
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") {
+        updateOrdersButton();
+        renderMenu(kof.menu);
+        updateHeroStats(kof.menu);
+        syncCartUi();
+      }
+    });
+
+    document.addEventListener("click", (event) => {
+      if (
+        languageMenuEl.contains(event.target) ||
+        languageBtnEl.contains(event.target)
+      ) {
+        return;
+      }
+
+      toggleLanguageMenu(false);
+    });
+
+    languageBtnEl.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      toggleLanguageMenu();
+    });
+
+    for (const [button, lang] of [
+      [langEnBtnEl, "en"],
+      [langFiBtnEl, "fi"],
+      [langPtBtnEl, "pt"],
+    ]) {
+      const handleLanguagePick = (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        selectLanguage(lang);
+      };
+
+      button.addEventListener("click", handleLanguagePick);
+      button.addEventListener("pointerup", handleLanguagePick);
+      button.addEventListener("touchend", handleLanguagePick, { passive: false });
+    }
+
+    (async () => {
+      applyTranslations();
+      kof.applyCustomerDarkMode();
+      kof.syncTableSessionFromUrl();
+
+      const menu = await kof.loadMenu();
+
+      subtitleEl.innerText = getText("index.heroText", "Pick a drink, customize it, and send it straight to the bar.");
+      renderMenu(menu);
+
+      updateOrdersButton();
+      updateHeroStats(menu);
+      syncCartUi();
+    })();
+
+    function add(id) {
+      const item = kof.menuById.get(id);
+      const currentQty = kof.getCart()
+        .filter((line) => line.menu_item_id === id)
+        .reduce((sum, line) => sum + Number(line.qty || 0), 0);
+      const maxMakeableUnits =
+        item?.max_makeable_units === null || item?.max_makeable_units === undefined
+          ? null
+          : Number(item.max_makeable_units);
+
+      if (
+        item?.availability === "unavailable" ||
+        (maxMakeableUnits !== null && Number.isFinite(maxMakeableUnits) && currentQty + 1 > maxMakeableUnits)
+      ) {
+        showToast(t("availability.unavailable"));
+        return;
+      }
+
+      kof.cartAdd({
+        menu_item_id: id,
+        name: item.name,
+        price_cents: item.price_cents,
+        qty: 1,
+        chosen_modifiers: [],
+      });
+
+      updateOrdersButton();
+      renderMenu(kof.menu);
+      toggleCartPanel(true);
+      showToast(t("index.addedToCart"));
+    }
+
+    function showToast(text) {
+      if (!toastEl) {
+        return;
+      }
+
+      toastEl.textContent = text;
+      toastEl.style.display = "block";
+
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => {
+        toastEl.style.display = "none";
+      }, 1200);
+    }
+
+    function customize(id) {
+      location.href = `/item.html?id=${id}`;
+    }
+
+    function goCart() {
+      location.href = "/cart.html";
+    }
+
+    function goOrders() {
+      location.href = "/orders.html";
+    }
+  </script>
+</body>
+</html>

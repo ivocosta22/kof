@@ -1,0 +1,449 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#f4efe7" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#121715" media="(prefers-color-scheme: dark)" />
+  <title>Cart</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="cart-page">
+  <main class="customer-shell">
+    <button onclick="location.href='/'" id="menuBtn" class="customer-back secondary"></button>
+
+    <section class="customer-hero">
+      <div class="customer-topbar">
+        <div>
+          <div class="customer-eyebrow" id="heroEyebrow"></div>
+          <h1 class="customer-heading" id="pageTitle"></h1>
+          <p class="customer-subtitle" id="whereSendText"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-layout">
+      <section class="customer-panel">
+        <div class="customer-panel-title">
+          <div>
+            <h3 id="cartItemsTitle"></h3>
+            <div class="muted" id="cartItemsHint"></div>
+          </div>
+        </div>
+
+        <div id="lines" class="customer-list"></div>
+      </section>
+
+      <section class="customer-panel">
+        <div id="orderContext">
+          <div class="customer-panel-title">
+            <div>
+              <h3 id="checkoutTitle">Checkout</h3>
+              <div class="muted" id="checkoutHint"></div>
+            </div>
+            <div class="pill paid" id="checkoutModePill"></div>
+          </div>
+
+          <div class="option-grid">
+            <div class="field-card">
+              <label id="fulfillmentLabel"></label>
+              <div class="fulfillment-options" style="margin-top:10px">
+                <label class="fulfillment-option">
+                  <input type="radio" name="fulfillmentType" value="counter_pickup" checked onchange="onModeChange()" />
+                  <span id="counterPickupText"></span>
+                </label>
+                <label class="fulfillment-option" id="tableServiceOption">
+                  <input type="radio" name="fulfillmentType" value="table" onchange="onModeChange()" />
+                  <span id="tableServiceText"></span>
+                </label>
+              </div>
+            </div>
+
+            <div id="counterFields" class="field-card">
+              <label id="pickupNameLabel" for="label"></label>
+              <input id="label" maxlength="32" />
+              <div class="muted" style="margin-top:8px" id="pickupNameHelp"></div>
+            </div>
+
+            <div id="tableFields" class="field-card" style="display:none">
+              <label id="tableLabelText" for="tableLabel"></label>
+              <input
+                id="tableLabel"
+                maxlength="6"
+                inputmode="numeric"
+                pattern="[0-9]*"
+                autocomplete="off"
+              />
+            </div>
+
+            <div class="field-card">
+              <label id="noteLabel" for="note"></label>
+              <input id="note" maxlength="200" />
+            </div>
+          </div>
+
+          <div class="hr"></div>
+
+          <div class="customer-kpi-row">
+            <div class="customer-kpi">
+              <strong id="summaryCount">0</strong>
+              <span id="summaryCountLabel"></span>
+            </div>
+            <div class="customer-kpi">
+              <strong id="summaryTotal">EUR 0.00</strong>
+              <span id="summaryTotalLabel"></span>
+            </div>
+            <div class="customer-kpi">
+              <strong id="summaryMode">Counter</strong>
+              <span id="summaryModeLabel"></span>
+            </div>
+          </div>
+
+          <div class="hr"></div>
+
+          <div class="cta-row">
+            <button onclick="clearCart()" id="clearBtn" class="secondary"></button>
+            <button onclick="place()" id="placeOrderBtn" class="primary"></button>
+          </div>
+
+          <pre class="muted" id="err"></pre>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script src="/js/translations/en.js"></script>
+  <script src="/js/translations/pt.js"></script>
+  <script src="/js/translations/fi.js"></script>
+  <script src="/js/i18n.js"></script>
+  <script src="/js/kof.js"></script>
+
+  <script>
+    const t = window.kofI18n.t;
+
+    const menuBtnEl = document.getElementById("menuBtn");
+    const pageTitleEl = document.getElementById("pageTitle");
+    const linesEl = document.getElementById("lines");
+    const errEl = document.getElementById("err");
+    const whereSendTextEl = document.getElementById("whereSendText");
+    const counterPickupTextEl = document.getElementById("counterPickupText");
+    const tableServiceTextEl = document.getElementById("tableServiceText");
+    const tableServiceOptionEl = document.getElementById("tableServiceOption");
+    const counterFieldsEl = document.getElementById("counterFields");
+    const tableFieldsEl = document.getElementById("tableFields");
+    const pickupNameLabelEl = document.getElementById("pickupNameLabel");
+    const labelEl = document.getElementById("label");
+    const pickupNameHelpEl = document.getElementById("pickupNameHelp");
+    const tableLabelTextEl = document.getElementById("tableLabelText");
+    const tableLabelEl = document.getElementById("tableLabel");
+    const noteLabelEl = document.getElementById("noteLabel");
+    const noteEl = document.getElementById("note");
+    const clearBtnEl = document.getElementById("clearBtn");
+    const placeOrderBtnEl = document.getElementById("placeOrderBtn");
+    const fulfillmentTypeEls = [...document.querySelectorAll('input[name="fulfillmentType"]')];
+    const cartItemsTitleEl = document.getElementById("cartItemsTitle");
+    const cartItemsHintEl = document.getElementById("cartItemsHint");
+    const checkoutTitleEl = document.getElementById("checkoutTitle");
+    const checkoutHintEl = document.getElementById("checkoutHint");
+    const checkoutModePillEl = document.getElementById("checkoutModePill");
+    const fulfillmentLabelEl = document.getElementById("fulfillmentLabel");
+    const summaryCountEl = document.getElementById("summaryCount");
+    const summaryCountLabelEl = document.getElementById("summaryCountLabel");
+    const summaryTotalEl = document.getElementById("summaryTotal");
+    const summaryTotalLabelEl = document.getElementById("summaryTotalLabel");
+    const summaryModeEl = document.getElementById("summaryMode");
+    const summaryModeLabelEl = document.getElementById("summaryModeLabel");
+    const heroEyebrowEl = document.getElementById("heroEyebrow");
+
+    function getCartLineAvailability(item) {
+      const menuItem = kof.menuById.get(item.menu_item_id);
+
+      if (!menuItem) {
+        return "unavailable";
+      }
+
+      const requestedQty = kof.getCart()
+        .filter((line) => line.menu_item_id === item.menu_item_id)
+        .reduce((sum, line) => sum + Number(line.qty || 0), 0);
+      const maxMakeableUnits =
+        menuItem.max_makeable_units === null || menuItem.max_makeable_units === undefined
+          ? null
+          : Number(menuItem.max_makeable_units);
+
+      if (
+        menuItem.availability === "unavailable" ||
+        (maxMakeableUnits !== null && Number.isFinite(maxMakeableUnits) && requestedQty > maxMakeableUnits)
+      ) {
+        return "unavailable";
+      }
+
+      return menuItem.availability === "low" ? "low" : "available";
+    }
+
+    function availabilityPill(value) {
+      if (value === "unavailable") {
+        return `<span class="pill unavailable">${escapeHtml(t("availability.unavailable"))}</span>`;
+      }
+
+      if (value === "low") {
+        return `<span class="pill low">${escapeHtml(t("availability.low"))}</span>`;
+      }
+
+      return `<span class="pill paid">${escapeHtml(getText("availability.available", "Available"))}</span>`;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+    }
+
+    function money(cents) {
+      return `EUR ${(Number(cents || 0) / 100).toFixed(2)}`;
+    }
+
+    function getText(key, fallback, vars = {}) {
+      const value = t(key, vars);
+      return value === key ? fallback : value;
+    }
+
+    function updateSummary() {
+      const { count, totalCents } = kof.cartTotals();
+      const mode = getFulfillmentType();
+
+      summaryCountEl.innerText = String(count);
+      summaryTotalEl.innerText = money(totalCents);
+      summaryModeEl.innerText = mode === "table"
+        ? getText("cart.tableService", "Table service")
+        : getText("cart.counterPickup", "Counter pickup");
+      checkoutModePillEl.innerText = summaryModeEl.innerText;
+    }
+
+    function applyTranslations() {
+      document.title = t("cart.title");
+      menuBtnEl.innerText = `← ${t("index.title")}`;
+      pageTitleEl.innerText = t("cart.title");
+      const tableSession = kof.getTableSession ? kof.getTableSession() : null;
+      whereSendTextEl.innerText = tableSession
+        ? t("cart.tableLockedTo", { table: tableSession.table_label })
+        : t("cart.whereSend");
+      counterPickupTextEl.innerText = t("cart.counterPickup");
+      tableServiceTextEl.innerText = t("cart.tableService");
+      tableServiceOptionEl.title = t("cart.tableServiceQrOnly");
+      pickupNameLabelEl.innerText = t("fulfillment.pickupName");
+      labelEl.placeholder = t("cart.exampleName");
+      pickupNameHelpEl.innerText = t("cart.pickupNameHelp");
+      tableLabelTextEl.innerText = t("fulfillment.tableLabel");
+      tableLabelEl.placeholder = t("cart.exampleTable");
+      noteLabelEl.innerText = t("common.noteOptional");
+      noteEl.placeholder = t("cart.exampleNote");
+      clearBtnEl.innerText = t("common.clear");
+      placeOrderBtnEl.innerText = t("cart.placeOrder");
+      cartItemsTitleEl.innerText = t("cart.title");
+      cartItemsHintEl.innerText = getText("cart.whereSend", "Review your drinks before placing the order.");
+      checkoutTitleEl.innerText = getText("cart.placeOrder", "Place order");
+      checkoutHintEl.innerText = getText("index.subtitle", "Review your drinks before placing the order.");
+      fulfillmentLabelEl.innerText = getText("cart.whereSend", "How should we prepare this order?");
+      summaryCountLabelEl.innerText = t("index.items");
+      summaryTotalLabelEl.innerText = t("common.total");
+      summaryModeLabelEl.innerText = getText("cart.whereSend", "Fulfillment");
+      heroEyebrowEl.innerText = getText("index.subtitle", "Coffee, fast and fresh.");
+      updateSummary();
+    }
+
+    function applyTableSession() {
+      const tableSession = kof.getTableSession ? kof.getTableSession() : null;
+      const counterRadio = fulfillmentTypeEls.find((input) => input.value === "counter_pickup");
+      const tableRadio = fulfillmentTypeEls.find((input) => input.value === "table");
+
+      if (!counterRadio || !tableRadio) {
+        return;
+      }
+
+      if (tableSession?.table_label) {
+        counterRadio.checked = false;
+        counterRadio.disabled = true;
+        tableRadio.checked = true;
+        tableRadio.disabled = true;
+        counterFieldsEl.style.display = "none";
+        tableFieldsEl.style.display = "block";
+        tableLabelEl.value = tableSession.table_label;
+        tableLabelEl.readOnly = true;
+        labelEl.value = "";
+        updateSummary();
+        return;
+      }
+
+      counterRadio.checked = true;
+      counterRadio.disabled = false;
+      tableRadio.checked = false;
+      tableRadio.disabled = true;
+      counterFieldsEl.style.display = "block";
+      tableFieldsEl.style.display = "none";
+      tableLabelEl.value = "";
+      tableLabelEl.readOnly = false;
+      updateSummary();
+    }
+
+    function render() {
+      const cart = kof.getCart();
+
+      if (cart.length === 0) {
+        linesEl.innerHTML = `<div class="muted">${escapeHtml(t("cart.empty"))}</div>`;
+        placeOrderBtnEl.disabled = false;
+        errEl.innerText = "";
+        updateSummary();
+        return;
+      }
+
+      linesEl.innerHTML = cart
+        .map((item, index) => `
+          <article class="card">
+            <div class="order-meta-row">
+              <div>
+                <div class="row">
+                  <b>${escapeHtml(item.name)}</b>
+                  ${availabilityPill(getCartLineAvailability(item))}
+                </div>
+                <div class="muted">${(item.chosen_modifiers || []).map(escapeHtml).join(", ") || "-"}</div>
+              </div>
+              <div><b>${money(Number(item.price_cents || 0) * Number(item.qty || 1))}</b></div>
+            </div>
+            <div class="row" style="margin-top:14px">
+              <div style="min-width:104px">
+                <label>${escapeHtml(t("common.quantity"))}</label>
+                <div class="qty-stepper">
+                  <input
+                    type="number"
+                    min="1"
+                    value="${item.qty}"
+                    inputmode="numeric"
+                    pattern="[0-9]*"
+                    id="qty-input-${index}"
+                    onchange="qty(${index}, this.value)"
+                  />
+                  <div class="qty-stepper-btns">
+                    <button type="button" class="qty-stepper-btn" onclick="stepCartQty(${index}, 1)" tabindex="-1">▲</button>
+                    <button type="button" class="qty-stepper-btn" onclick="stepCartQty(${index}, -1)" tabindex="-1">▼</button>
+                  </div>
+                </div>
+              </div>
+              <button onclick="removeLine(${index})" class="secondary remove-line-btn">${escapeHtml(t("cart.remove"))}</button>
+            </div>
+          </article>
+        `)
+        .join("");
+
+      const hasUnavailableItems = cart.some((item) => getCartLineAvailability(item) === "unavailable");
+
+      placeOrderBtnEl.disabled = hasUnavailableItems;
+
+      if (hasUnavailableItems) {
+        errEl.innerText = t("cart.unavailableItems");
+      } else if (errEl.innerText === t("cart.unavailableItems")) {
+        errEl.innerText = "";
+      }
+
+      updateSummary();
+    }
+
+    function getFulfillmentType() {
+      const checked = document.querySelector('input[name="fulfillmentType"]:checked');
+      return checked ? checked.value : "counter_pickup";
+    }
+
+    function onModeChange() {
+      const tableSession = kof.getTableSession ? kof.getTableSession() : null;
+
+      if (tableSession?.table_label) {
+        applyTableSession();
+        return;
+      }
+
+      const mode = getFulfillmentType();
+
+      if (mode === "table") {
+        counterFieldsEl.style.display = "none";
+        tableFieldsEl.style.display = "block";
+
+        if (labelEl) {
+          labelEl.value = "";
+        }
+      } else {
+        counterFieldsEl.style.display = "block";
+        tableFieldsEl.style.display = "none";
+
+        if (tableLabelEl) {
+          tableLabelEl.value = "";
+        }
+      }
+
+      updateSummary();
+    }
+
+    function qty(index, value) {
+      kof.cartUpdateQty(index, value);
+      render();
+    }
+
+    function stepCartQty(index, delta) {
+      const inputEl = document.getElementById(`qty-input-${index}`);
+      if (!inputEl) return;
+      const newVal = Math.max(1, Number(inputEl.value || 1) + delta);
+      inputEl.value = String(newVal);
+      qty(index, newVal);
+    }
+
+    function removeLine(index) {
+      kof.cartRemove(index);
+      render();
+    }
+
+    function clearCart() {
+      kof.clearCart();
+      render();
+    }
+
+    async function place() {
+      errEl.innerText = "";
+
+      try {
+        const fulfillment_type = getFulfillmentType();
+        const customer_label = labelEl.value || "";
+        const table_label = tableLabelEl.value || "";
+        const table_token = kof.getTableSession ? (kof.getTableSession()?.table_token || "") : "";
+        const note = noteEl.value || "";
+
+        const order = await kof.placeOrder({
+          fulfillment_type,
+          customer_label,
+          table_label,
+          table_token,
+          note,
+        });
+
+        location.href = `/order.html?id=${order.id}`;
+      } catch (error) {
+        errEl.innerText = error.message;
+      }
+    }
+
+    if (tableLabelEl) {
+      tableLabelEl.addEventListener("input", () => {
+        tableLabelEl.value = String(tableLabelEl.value || "")
+          .replace(/\D+/g, "")
+          .slice(0, 6);
+      });
+    }
+
+    (async () => {
+      kof.syncTableSessionFromUrl();
+      kof.applyCustomerDarkMode();
+      applyTranslations();
+      await kof.loadMenu();
+      render();
+      applyTableSession();
+    })();
+  </script>
+</body>
+</html>

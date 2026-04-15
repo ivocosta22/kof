@@ -1,0 +1,452 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#f4efe7" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#121715" media="(prefers-color-scheme: dark)" />
+  <title>Kof Settings</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="settings-page">
+  <main class="admin-shell">
+    <section class="ops-hero">
+      <div>
+        <div class="ops-eyebrow" id="opsEyebrow">Preferences</div>
+        <h1 class="ops-title" id="pageTitle"></h1>
+        <p class="ops-subtitle" id="whoLine"></p>
+      </div>
+      <div class="ops-toolbar">
+        <button onclick="goStaff()" id="staffBtn" class="secondary"></button>
+        <button onclick="goInventory()" id="inventoryBtn" class="secondary"></button>
+        <button id="adminBtn" style="display:none" onclick="goAdmin()" class="secondary"></button>
+        <button onclick="logout()" id="logoutBtn" class="secondary danger-soft"></button>
+      </div>
+    </section>
+
+    <section class="ops-grid ops-grid-2">
+      <section class="ops-panel">
+        <div class="ops-panel-title">
+          <div>
+            <h3 id="languageTitle"></h3>
+            <div class="muted" id="languageHint"></div>
+          </div>
+        </div>
+        <div class="field-card">
+          <label class="muted" id="languageLabel" for="languageSelect"></label>
+          <select id="languageSelect"></select>
+        </div>
+      </section>
+
+      <section class="ops-panel">
+        <div class="ops-panel-title">
+          <div>
+            <h3 id="appearanceTitle"></h3>
+            <div class="muted" id="darkLabel"></div>
+          </div>
+        </div>
+        <label class="toggle-card" for="darkToggle">
+          <span>
+            <strong id="darkModeLabel"></strong>
+          </span>
+          <input type="checkbox" id="darkToggle" />
+        </label>
+      </section>
+
+      <section class="ops-panel">
+        <div class="ops-panel-title">
+          <div>
+            <h3 id="soundTitle"></h3>
+            <div class="muted" id="soundHint"></div>
+          </div>
+        </div>
+        <div class="field-card">
+          <label class="muted" id="volumeLabel" for="vol"></label>
+          <div class="range-field">
+            <input type="range" id="vol" min="0" max="100" step="5" />
+            <span class="pill paid" id="volLabel"></span>
+          </div>
+        </div>
+      </section>
+
+      <section class="ops-panel">
+        <div class="ops-panel-title">
+          <div>
+            <h3 id="securityTitle"></h3>
+            <div class="muted" id="changePinText"></div>
+          </div>
+        </div>
+        <div class="auth-form-grid compact">
+          <div class="field-card">
+            <label for="oldPin" id="oldPinLabel"></label>
+            <div class="pin-field">
+              <input id="oldPin" type="password" inputmode="numeric" />
+              <button type="button" class="pin-toggle-btn" onclick="togglePin('oldPin', this)" tabindex="-1" aria-label="Show PIN"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+            </div>
+          </div>
+          <div class="field-card">
+            <label for="newPin" id="newPinLabel"></label>
+            <div class="pin-field">
+              <input id="newPin" type="password" inputmode="numeric" />
+              <button type="button" class="pin-toggle-btn" onclick="togglePin('newPin', this)" tabindex="-1" aria-label="Show PIN"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+            </div>
+          </div>
+        </div>
+        <div class="cta-row settings-pin-actions">
+          <button onclick="changePin()" id="changePinBtn" class="primary"></button>
+        </div>
+        <div class="muted auth-message" id="pinMsg"></div>
+      </section>
+    </section>
+  </main>
+
+  <div id="toastWrap"></div>
+
+  <script src="/js/translations/en.js"></script>
+  <script src="/js/translations/pt.js"></script>
+  <script src="/js/translations/fi.js"></script>
+  <script src="/js/i18n.js"></script>
+
+  <script>
+// Cache browser storage keys, i18n helpers, and repeated DOM references used by
+// the settings page.
+    const TOKEN_KEY = "kof_admin_token_v1";
+    const WHO_KEY = "kof_admin_who_v1";
+
+    const PIN_EYE = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+    const PIN_EYE_OFF = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+
+    function togglePin(inputId, btn) {
+      const input = document.getElementById(inputId);
+      const reveal = input.type === "password";
+      input.type = reveal ? "text" : "password";
+      btn.innerHTML = reveal ? PIN_EYE_OFF : PIN_EYE;
+      btn.setAttribute("aria-label", reveal ? "Hide PIN" : "Show PIN");
+    }
+
+    const t = window.kofI18n.t;
+    const translateError = window.kofI18n.translateError;
+
+    const pageTitleEl = document.getElementById("pageTitle");
+    const opsEyebrowEl = document.getElementById("opsEyebrow");
+    const whoLineEl = document.getElementById("whoLine");
+    const staffBtnEl = document.getElementById("staffBtn");
+    const inventoryBtnEl = document.getElementById("inventoryBtn");
+    const adminBtnEl = document.getElementById("adminBtn");
+    const logoutBtnEl = document.getElementById("logoutBtn");
+    const languageTitleEl = document.getElementById("languageTitle");
+    const languageLabelEl = document.getElementById("languageLabel");
+    const languageSelectEl = document.getElementById("languageSelect");
+    const languageHintEl = document.getElementById("languageHint");
+    const appearanceTitleEl = document.getElementById("appearanceTitle");
+    const darkModeLabelEl = document.getElementById("darkModeLabel");
+    const darkToggleEl = document.getElementById("darkToggle");
+    const darkLabelEl = document.getElementById("darkLabel");
+    const soundTitleEl = document.getElementById("soundTitle");
+    const volumeLabelEl = document.getElementById("volumeLabel");
+    const volEl = document.getElementById("vol");
+    const volLabelEl = document.getElementById("volLabel");
+    const soundHintEl = document.getElementById("soundHint");
+    const securityTitleEl = document.getElementById("securityTitle");
+    const changePinTextEl = document.getElementById("changePinText");
+    const oldPinLabelEl = document.getElementById("oldPinLabel");
+    const newPinLabelEl = document.getElementById("newPinLabel");
+    const oldPinEl = document.getElementById("oldPin");
+    const newPinEl = document.getElementById("newPin");
+    const changePinBtnEl = document.getElementById("changePinBtn");
+    const pinMsgEl = document.getElementById("pinMsg");
+    const toastWrapEl = document.getElementById("toastWrap");
+
+    let currentMe = null;
+
+// Read the current admin auth token from browser storage.
+    function getToken() {
+      return localStorage.getItem(TOKEN_KEY);
+    }
+
+// Clear the stored admin session from browser storage.
+    function clearToken() {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(WHO_KEY);
+    }
+
+// Escape user-controlled text before injecting it into HTML strings.
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+    }
+
+// Apply localized static UI labels for the settings page.
+    function applyTranslations() {
+      document.title = t("settings.title");
+      pageTitleEl.innerText = t("settings.title");
+      opsEyebrowEl.innerText = t("common.settings");
+      staffBtnEl.innerText = t("common.staff");
+      inventoryBtnEl.innerText = t("common.inventory");
+      adminBtnEl.innerText = t("common.admin");
+      logoutBtnEl.innerText = t("common.logout");
+      languageTitleEl.innerText = t("settings.language");
+      languageLabelEl.innerText = t("settings.language");
+      languageHintEl.innerText = t("settings.languageHint");
+      appearanceTitleEl.innerText = t("settings.appearance");
+      darkModeLabelEl.innerText = t("settings.darkMode");
+      soundTitleEl.innerText = t("settings.sound");
+      volumeLabelEl.innerText = t("settings.volume");
+      soundHintEl.innerText = t("settings.soundHint");
+      securityTitleEl.innerText = t("settings.security");
+      changePinTextEl.innerText = t("settings.changePin");
+      oldPinLabelEl.innerText = t("settings.oldPin");
+      newPinLabelEl.innerText = t("settings.newPin");
+      oldPinEl.placeholder = t("settings.oldPin");
+      newPinEl.placeholder = t("settings.newPin");
+      changePinBtnEl.innerText = t("settings.changePin");
+
+      if (currentMe) {
+        whoLineEl.innerText = t("settings.loggedInAs", {
+          username: currentMe.username,
+          role: currentMe.role,
+        });
+      }
+
+      renderLanguageOptions();
+      applyDarkMode(darkToggleEl.checked);
+    }
+
+// Render a toast message using the shared fade-out only toast system.
+    function toast(type, title, msg) {
+      if (!toastWrapEl) {
+        return;
+      }
+
+      const toastEl = document.createElement("div");
+      toastEl.className = `toast ${type === "err" ? "err" : "ok"}`;
+      toastEl.innerHTML = `
+        <div class="tTitle">${escapeHtml(title || (type === "err" ? t("common.error") : t("common.done")))}</div>
+        <div class="tMsg">${escapeHtml(msg || "")}</div>
+      `;
+
+      toastWrapEl.appendChild(toastEl);
+
+      const ttlMs = type === "err" ? 4200 : 2200;
+
+      setTimeout(() => {
+        toastEl.classList.add("fade-out");
+
+        setTimeout(() => {
+          try {
+            toastEl.remove();
+          } catch {}
+        }, 350);
+      }, ttlMs);
+    }
+
+    function toastOk(title, msg) {
+      toast("ok", title, msg);
+    }
+
+    function toastErr(title, msg) {
+      toast("err", title, msg);
+    }
+
+// Call a protected admin API endpoint with the current bearer token and parse
+// JSON responses consistently.
+    async function api(path, opts = {}) {
+      const headers = Object.assign(
+        { "Content-Type": "application/json" },
+        opts.headers || {}
+      );
+
+      const token = getToken();
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      const response = await fetch(path, {
+        ...opts,
+        headers,
+      });
+
+      let data = {};
+
+      try {
+        data = await response.json();
+      } catch {
+        const text = await response.text().catch(() => "");
+        data = text ? { error: text } : {};
+      }
+
+      if (!response.ok) {
+        throw new Error(translateError(data.error || `Request failed (${response.status})`));
+      }
+
+      return data;
+    }
+
+// Populate the language selector from the registered i18n languages.
+    function renderLanguageOptions() {
+      const available = window.kofI18n.getAvailableLanguages();
+      const current = window.kofI18n.getLanguage();
+
+      languageSelectEl.innerHTML = available
+        .map((lang) => `<option value="${escapeHtml(lang)}">${escapeHtml(t(`languages.${lang}`, {}, lang))}</option>`)
+        .join("");
+
+      languageSelectEl.value = current;
+    }
+
+// Apply the current dark mode state to the page and keep the visible controls
+// in sync with that state.
+    function applyDarkMode(enabled) {
+      document.body.classList.toggle("dark", !!enabled);
+      darkLabelEl.innerText = enabled ? t("settings.on") : t("settings.off");
+      darkToggleEl.checked = !!enabled;
+    }
+
+// Persist one or more settings fields for the current admin user.
+    async function saveSettings(patch) {
+      await api("/api/admin/me/settings", {
+        method: "PATCH",
+        body: JSON.stringify(patch),
+      });
+    }
+
+// Change the current UI language for the authenticated admin user, then keep
+// local i18n state in sync so the new language applies immediately.
+    async function changeLanguage() {
+      const previousLang = window.kofI18n.getLanguage();
+      const nextLang = languageSelectEl.value;
+
+      try {
+        await saveSettings({ language: nextLang });
+
+        const appliedLang = window.kofI18n.setLanguage(nextLang);
+        if (appliedLang !== nextLang) {
+          languageSelectEl.value = appliedLang;
+        }
+
+        applyTranslations();
+        toastOk(t("settings.languageSaved"), t(`languages.${appliedLang}`, {}, appliedLang));
+      } catch (error) {
+        window.kofI18n.setLanguage(previousLang);
+        renderLanguageOptions();
+        toastErr(t("common.error"), translateError(error));
+      }
+    }
+
+// Load the authenticated user and current settings, then wire the page controls
+// for live settings updates.
+    async function load() {
+      if (!getToken()) {
+        location.href = "/login.html";
+        return;
+      }
+
+      currentMe = await api("/api/admin/me");
+      const settings = await api("/api/admin/me/settings");
+
+      window.kofI18n.setLanguage(settings.language || "en");
+      applyTranslations();
+
+      whoLineEl.innerText = t("settings.loggedInAs", {
+        username: currentMe.username,
+        role: currentMe.role,
+      });
+      adminBtnEl.style.display = currentMe.role === "manager" ? "inline-flex" : "none";
+
+      const volumePercent = Math.round(Number(settings.volume ?? 0.5) * 100);
+      volEl.value = volumePercent;
+      volLabelEl.innerText = `${volumePercent}%`;
+
+      applyDarkMode(!!settings.dark_mode);
+      renderLanguageOptions();
+
+      languageSelectEl.addEventListener("change", changeLanguage);
+
+      volEl.addEventListener("input", (event) => {
+        const percent = Number(event.target.value);
+        volLabelEl.innerText = `${percent}%`;
+      });
+
+      volEl.addEventListener("change", async (event) => {
+        const percent = Number(event.target.value);
+        const volume = Math.max(0, Math.min(1, percent / 100));
+
+        volLabelEl.innerText = `${percent}%`;
+
+        try {
+          await saveSettings({ volume });
+          toastOk(t("settings.volumeSaved"), `${percent}%`);
+        } catch (error) {
+          toastErr(t("settings.volumeSaveFailed"), translateError(error));
+        }
+      });
+
+      darkToggleEl.addEventListener("change", async (event) => {
+        const enabled = !!event.target.checked;
+
+        applyDarkMode(enabled);
+
+        try {
+          await saveSettings({ dark_mode: enabled });
+          toastOk(
+            t("settings.themeSaved"),
+            enabled ? t("settings.darkModeOn") : t("settings.darkModeOff")
+          );
+        } catch (error) {
+          toastErr(t("settings.themeSaveFailed"), translateError(error));
+        }
+      });
+    }
+
+// Change the currently authenticated admin user's PIN.
+    async function changePin() {
+      pinMsgEl.innerText = "";
+
+      try {
+        const old_pin = oldPinEl.value.trim();
+        const new_pin = newPinEl.value.trim();
+
+        await api("/api/admin/change-pin", {
+          method: "POST",
+          body: JSON.stringify({ old_pin, new_pin }),
+        });
+
+        oldPinEl.value = "";
+        newPinEl.value = "";
+        pinMsgEl.innerText = t("settings.pinChanged");
+
+        toastOk(t("settings.pinChanged"), t("settings.pinChangedToast"));
+      } catch (error) {
+        pinMsgEl.innerText = translateError(error);
+        toastErr(t("settings.pinChangeFailed"), translateError(error));
+      }
+    }
+
+// Clear the current admin session and return to the login page.
+    function logout() {
+      clearToken();
+      toastOk(t("common.logout"), t("common.sessionCleared"));
+      location.href = "/login.html";
+    }
+
+    function goStaff() {
+      location.href = "/staff.html";
+    }
+
+    function goInventory() {
+      location.href = "/inventory.html";
+    }
+
+    function goAdmin() {
+      location.href = "/admin.html";
+    }
+
+    load().catch((error) => {
+      clearToken();
+      toastErr(t("common.sessionError"), error?.message || t("settings.sessionError"));
+      location.href = "/login.html";
+    });
+  </script>
+</body>
+</html>

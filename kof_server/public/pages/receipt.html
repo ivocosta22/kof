@@ -1,0 +1,267 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#f4efe7" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#121715" media="(prefers-color-scheme: dark)" />
+  <title>Receipt</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="receipt-page">
+  <main class="customer-shell receipt-shell">
+    <section id="actions" class="ops-toolbar receipt-toolbar">
+      <button onclick="goBack()" id="backBtn" class="secondary"></button>
+      <button onclick="printReceipt()" id="printBtn" class="primary"></button>
+    </section>
+
+    <div id="error" class="ops-panel receipt-error" style="display:none;"></div>
+
+    <section id="receipt" class="ops-panel receipt-card" style="display:none;">
+      <div class="receipt-headline">
+        <div class="receipt-brand" id="appTitle"></div>
+        <div class="muted" id="receiptTitle"></div>
+        <div class="receipt-order-line"><span id="orderTitle"></span> #<span id="orderNumber"></span></div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="receipt-meta">
+        <div class="muted" id="createdAt"></div>
+        <div id="destination" style="margin-top:8px;"></div>
+        <div id="noteBlock" class="muted" style="margin-top:8px; display:none;"></div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div id="items" class="receipt-items"></div>
+
+      <div class="hr"></div>
+
+      <div class="row customer-row-between receipt-total-row">
+        <b id="totalLabel"></b>
+        <b>EUR <span id="total">0.00</span></b>
+      </div>
+
+      <div class="receipt-payment">
+        <span class="pill paid" id="paidPill"></span>
+      </div>
+
+      <div class="receipt-thanks muted" id="thankYouText"></div>
+    </section>
+  </main>
+
+  <script src="/js/translations/en.js"></script>
+  <script src="/js/translations/pt.js"></script>
+  <script src="/js/translations/fi.js"></script>
+  <script src="/js/i18n.js"></script>
+
+  <script>
+// Cache query string values, i18n helpers, storage keys, and repeated DOM
+// references used by the receipt page.
+    const t = window.kofI18n.t;
+    const translateError = window.kofI18n.translateError;
+
+    const params = new URLSearchParams(location.search);
+    const id = Number(params.get("id")) || 0;
+    const TOKEN_KEY = "kof_admin_token_v1";
+
+    const actionsEl = document.getElementById("actions");
+    const backBtnEl = document.getElementById("backBtn");
+    const printBtnEl = document.getElementById("printBtn");
+    const errorEl = document.getElementById("error");
+    const receiptEl = document.getElementById("receipt");
+    const appTitleEl = document.getElementById("appTitle");
+    const receiptTitleEl = document.getElementById("receiptTitle");
+    const orderTitleEl = document.getElementById("orderTitle");
+    const orderNumberEl = document.getElementById("orderNumber");
+    const createdAtEl = document.getElementById("createdAt");
+    const destinationEl = document.getElementById("destination");
+    const noteBlockEl = document.getElementById("noteBlock");
+    const itemsEl = document.getElementById("items");
+    const totalLabelEl = document.getElementById("totalLabel");
+    const totalEl = document.getElementById("total");
+    const paidPillEl = document.getElementById("paidPill");
+    const thankYouTextEl = document.getElementById("thankYouText");
+
+// Escape user-controlled text before injecting it into HTML strings.
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+    }
+
+// Apply localized static UI labels for the receipt page.
+    function applyTranslations() {
+      document.title = t("receipt.title");
+      backBtnEl.innerText = `< ${t("common.back")}`;
+      printBtnEl.innerText = t("common.print");
+      appTitleEl.innerText = t("common.appName").toUpperCase();
+      receiptTitleEl.innerText = t("receipt.title");
+      orderTitleEl.innerText = t("order.title");
+      totalLabelEl.innerText = t("common.total");
+      paidPillEl.innerText = t("payment.paid");
+      thankYouTextEl.innerText = t("receipt.thankYou");
+    }
+
+// Format integer cents into a euro string with two decimal places.
+    function formatMoney(cents) {
+      return (Number(cents || 0) / 100).toFixed(2);
+    }
+
+// Format stored numeric table values into the UI label expected by receipts.
+    function formatTableLabel(value) {
+      const normalized = String(value || "").trim();
+      return normalized ? `${t("fulfillment.tableLabel")} ${normalized}` : t("fulfillment.tableLabel");
+    }
+
+// Return to the previous browser page.
+    function goBack() {
+      const sameOriginReferrer =
+        document.referrer && document.referrer.startsWith(location.origin)
+          ? document.referrer
+          : "";
+
+      if (window.history.length > 1) {
+        history.back();
+        return;
+      }
+
+      if (window.opener && !window.opener.closed) {
+        window.close();
+        return;
+      }
+
+      if (sameOriginReferrer) {
+        location.href = sameOriginReferrer;
+        return;
+      }
+
+      location.href = "/staff.html";
+    }
+
+// Open the browser print dialog for the current receipt page.
+    function printReceipt() {
+      window.print();
+    }
+
+// Show or hide the receipt action buttons depending on normal view versus print
+// mode.
+    function setActionsVisible(visible) {
+      if (!actionsEl) {
+        return;
+      }
+
+      actionsEl.style.display = visible ? "flex" : "none";
+    }
+
+    window.addEventListener("beforeprint", () => setActionsVisible(false));
+    window.addEventListener("afterprint", () => setActionsVisible(true));
+
+// Load the paid receipt payload for the requested order id. Includes admin
+// bearer token when one exists.
+    async function loadReceipt() {
+      if (!Number.isFinite(id) || id <= 0) {
+        throw new Error(t("receipt.invalidOrderId"));
+      }
+
+      const headers = {};
+      const token = localStorage.getItem(TOKEN_KEY);
+
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      const response = await fetch(`/api/orders/${id}/receipt`, { headers });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data?.error || t("receipt.couldNotLoad"));
+      }
+
+      return data.order;
+    }
+
+// Render the receipt destination block for either table service or counter
+// pickup.
+    function renderDestination(order) {
+      if (!destinationEl) {
+        return;
+      }
+
+      if (order.fulfillment_type === "table") {
+        destinationEl.innerHTML =
+          `<span class="pill">${escapeHtml(formatTableLabel(order.table_label))}</span>`;
+        return;
+      }
+
+      const pickupName = order.customer_label ? escapeHtml(order.customer_label) : "?";
+
+      destinationEl.innerHTML = `
+        <div class="row">
+          <span class="pill paid">${escapeHtml(t("fulfillment.counter"))}</span>
+          <span class="pill">${escapeHtml(t("fulfillment.name"))}: ${pickupName}</span>
+        </div>
+      `;
+    }
+
+// Render the receipt item list including optional chosen modifiers and line
+// totals.
+    function renderItems(items) {
+      if (!itemsEl) {
+        return;
+      }
+
+      itemsEl.innerHTML = items
+        .map((item) => {
+          const modifiersHtml =
+            Array.isArray(item.chosen_modifiers) && item.chosen_modifiers.length
+              ? `<div class="muted receipt-modifiers">+ ${item.chosen_modifiers.map(escapeHtml).join(", ")}</div>`
+              : "";
+
+          return `
+            <div class="receipt-line">
+              <div class="row customer-row-between" style="align-items:flex-start;">
+                <div style="flex:1;">
+                  <div>${item.qty}x ${escapeHtml(item.item_name)}</div>
+                  ${modifiersHtml}
+                </div>
+                <div class="receipt-line-price">EUR ${formatMoney(item.line_total_cents)}</div>
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+    }
+
+// Boot the receipt page by loading the receipt payload and rendering the print-
+// friendly receipt card.
+    async function boot() {
+      applyTranslations();
+
+      try {
+        const order = await loadReceipt();
+
+        orderNumberEl.textContent = String(order.order_number);
+        createdAtEl.textContent = order.created_at || "";
+        totalEl.textContent = formatMoney(order.total_cents);
+
+        renderDestination(order);
+        renderItems(order.items || []);
+
+        if (order.note) {
+          noteBlockEl.style.display = "block";
+          noteBlockEl.textContent = t("receipt.notePrefix", { note: order.note });
+        }
+
+        receiptEl.style.display = "block";
+      } catch (error) {
+        errorEl.style.display = "block";
+        errorEl.textContent = translateError(error?.message || t("receipt.couldNotLoad"));
+      }
+    }
+
+    boot();
+  </script>
+</body>
+</html>

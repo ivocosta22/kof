@@ -1,0 +1,186 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#f4efe7" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#121715" media="(prefers-color-scheme: dark)" />
+  <title>Kof Login</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="login-page">
+  <main class="admin-shell auth-shell staff-login-shell">
+    <section class="ops-panel auth-panel staff-login-panel">
+      <h1 class="staff-login-title" id="pageTitle"></h1>
+
+      <div class="staff-login-art-slot" aria-hidden="true"></div>
+
+      <div class="staff-login-form">
+        <div class="staff-login-field">
+          <label for="username" id="usernameLabel"></label>
+          <input id="username" autocomplete="username" />
+        </div>
+        <div class="staff-login-field">
+          <label for="pin" id="pinLabel"></label>
+          <div class="pin-field">
+            <input id="pin" type="password" inputmode="numeric" autocomplete="current-password" />
+            <button type="button" class="pin-toggle-btn" onclick="togglePin('pin', this)" tabindex="-1" aria-label="Show PIN"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          </div>
+        </div>
+      </div>
+
+      <button onclick="login()" id="loginBtn" class="primary staff-login-button"></button>
+
+      <div class="muted auth-message staff-login-message" id="msg"></div>
+    </section>
+  </main>
+
+  <script src="/js/translations/en.js"></script>
+  <script src="/js/translations/pt.js"></script>
+  <script src="/js/translations/fi.js"></script>
+  <script src="/js/i18n.js"></script>
+
+  <script>
+// Cache browser storage keys, i18n helpers, and repeated DOM references used
+// by the login page.
+    const TOKEN_KEY = "kof_admin_token_v1";
+    const WHO_KEY = "kof_admin_who_v1";
+
+    const PIN_EYE = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+    const PIN_EYE_OFF = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+
+    function togglePin(inputId, btn) {
+      const input = document.getElementById(inputId);
+      const reveal = input.type === "password";
+      input.type = reveal ? "text" : "password";
+      btn.innerHTML = reveal ? PIN_EYE_OFF : PIN_EYE;
+      btn.setAttribute("aria-label", reveal ? "Hide PIN" : "Show PIN");
+    }
+    
+    window.kofI18n.setLanguage("en");
+    const t = window.kofI18n.t;
+    const translateError = window.kofI18n.translateError;
+
+    const pageTitleEl = document.getElementById("pageTitle");
+    const usernameLabelEl = document.getElementById("usernameLabel");
+    const pinLabelEl = document.getElementById("pinLabel");
+    const usernameEl = document.getElementById("username");
+    const pinEl = document.getElementById("pin");
+    const loginBtnEl = document.getElementById("loginBtn");
+    const msgEl = document.getElementById("msg");
+
+// Apply localized static UI labels for the login page.
+    function applyTranslations() {
+      document.title = t("login.title");
+      pageTitleEl.innerText = t("login.title");
+      usernameLabelEl.innerText = t("login.username");
+      pinLabelEl.innerText = t("login.pin");
+      usernameEl.placeholder = t("login.username");
+      pinEl.placeholder = t("login.pin");
+      loginBtnEl.innerText = t("login.login");
+    }
+
+// Persist the admin auth token in browser storage.
+    function setToken(token) {
+      localStorage.setItem(TOKEN_KEY, token);
+    }
+
+// Clear the stored admin session from browser storage.
+    function clearToken() {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(WHO_KEY);
+    }
+
+// Call an admin API endpoint and include the current bearer token when present.
+    async function api(path, opts = {}) {
+      const headers = Object.assign(
+        { "Content-Type": "application/json" },
+        opts.headers || {}
+      );
+
+      const token = localStorage.getItem(TOKEN_KEY);
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      const response = await fetch(path, {
+        ...opts,
+        headers,
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(translateError(data.error || "Request failed"));
+      }
+
+      return data;
+    }
+
+// Send the login request, persist the returned session, and route the user to
+// the correct page based on role.
+    async function login() {
+      const username = usernameEl.value.trim();
+      const pin = pinEl.value.trim();
+
+      msgEl.innerText = "";
+
+      try {
+        const result = await api("/api/admin/login", {
+          method: "POST",
+          body: JSON.stringify({ username, pin })
+        });
+
+        setToken(result.token);
+        localStorage.setItem(WHO_KEY, `${result.username} (${result.role})`);
+
+        try {
+          const settings = await api("/api/admin/me/settings");
+          window.kofI18n.setLanguage(settings?.language || window.kofI18n.DEFAULT_LANG);
+        } catch {
+          window.kofI18n.setLanguage(window.kofI18n.DEFAULT_LANG);
+        }
+
+        if (result.role === "manager") {
+          location.href = "/admin.html";
+        } else {
+          location.href = "/staff.html";
+        }
+      } catch (error) {
+        clearToken();
+        msgEl.innerText = translateError(error);
+      }
+    }
+
+// Restore an existing session when a valid token is already stored locally and
+// redirect directly to the appropriate destination page.
+    (async () => {
+      applyTranslations();
+
+      const token = localStorage.getItem(TOKEN_KEY);
+
+      if (!token) {
+        return;
+      }
+
+      try {
+        const me = await api("/api/admin/me");
+
+        try {
+          const settings = await api("/api/admin/me/settings");
+          window.kofI18n.setLanguage(settings?.language || window.kofI18n.DEFAULT_LANG);
+        } catch {
+          window.kofI18n.setLanguage(window.kofI18n.DEFAULT_LANG);
+        }
+
+        if (me.role === "manager") {
+          location.href = "/admin.html";
+        } else {
+          location.href = "/staff.html";
+        }
+      } catch {
+        clearToken();
+      }
+    })();
+  </script>
+</body>
+</html>
