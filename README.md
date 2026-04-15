@@ -1,4 +1,4 @@
-# Kof — Table Ordering for Coffee Shops
+# Kof — Offline First Table Ordering for Coffee Shops
 
 Kof is a mobile ordering system for coffee shops. Customers scan a QR code on their table, browse the menu, and place orders directly from their phone — no app download required for the shop owner, no third-party platform fees.
 
