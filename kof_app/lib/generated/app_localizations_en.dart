@@ -419,4 +419,115 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loginSelectTheme => 'Theme';
+
+  @override
+  String get authErrorInvalidEmail => 'That email address looks invalid.';
+
+  @override
+  String get authErrorUserDisabled => 'This account has been disabled.';
+
+  @override
+  String get authErrorUserNotFound => 'No account found with this email.';
+
+  @override
+  String get authErrorWrongPassword => 'Incorrect email or password.';
+
+  @override
+  String get authErrorInvalidCredential => 'Incorrect email or password.';
+
+  @override
+  String get authErrorEmailInUse =>
+      'An account with this email already exists.';
+
+  @override
+  String get authErrorWeakPassword => 'Password is too weak. Try a longer one.';
+
+  @override
+  String get authErrorNetwork => 'No internet connection. Please try again.';
+
+  @override
+  String get authErrorTooManyRequests =>
+      'Too many attempts. Please wait a moment and try again.';
+
+  @override
+  String get authErrorGoogleCancelled => 'Google Sign-In was cancelled.';
+
+  @override
+  String get authErrorGoogleFailed =>
+      'Google Sign-In failed. Please try again.';
+
+  @override
+  String get authErrorUnknown => 'Something went wrong. Please try again.';
+
+  @override
+  String get verifyEmailTitle => 'Verify your email';
+
+  @override
+  String verifyEmailSentTo(String email) {
+    return 'We sent a verification link to $email. Tap the link to activate your account.';
+  }
+
+  @override
+  String get verifyEmailCheck => 'I\'ve verified — continue';
+
+  @override
+  String get verifyEmailResend => 'Resend email';
+
+  @override
+  String get verifyEmailResent => 'Verification email sent.';
+
+  @override
+  String get verifyEmailNotYet =>
+      'Email not verified yet. Check your inbox and spam folder.';
+
+  @override
+  String get verifyEmailChangeAccount => 'Use a different account';
+
+  @override
+  String get drawerFollowedShops => 'Followed Shops';
+
+  @override
+  String get shopFollow => 'Follow';
+
+  @override
+  String get shopUnfollow => 'Following';
+
+  @override
+  String get shopFollowRequiresAccount =>
+      'Sign in to follow shops and get updates.';
+
+  @override
+  String get shopFollowFailed => 'Couldn\'t update follow. Please try again.';
+
+  @override
+  String get shopAboutHeading => 'About';
+
+  @override
+  String get shopMenuPreviewHeading => 'Menu preview';
+
+  @override
+  String get shopReviewsHeading => 'Reviews';
+
+  @override
+  String get shopDiscountsHeading => 'Discounts';
+
+  @override
+  String get shopSectionComingSoon => 'Coming soon';
+
+  @override
+  String get followedShopsTitle => 'Followed Shops';
+
+  @override
+  String get followedShopsGuestTitle => 'Sign in to follow shops';
+
+  @override
+  String get followedShopsGuestBody =>
+      'Create an account to follow shops and get notified about news and offers.';
+
+  @override
+  String get followedShopsEmptyTitle => 'No followed shops yet';
+
+  @override
+  String get followedShopsEmptyBody =>
+      'Open the map to find shops and tap Follow to get their updates.';
 }

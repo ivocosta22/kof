@@ -174,5 +174,49 @@
   "settingsLanguageSystem": "System default",
 
   "loginSelectLanguage": "Language",
-  "loginSelectTheme": "Theme"
+  "loginSelectTheme": "Theme",
+
+  "authErrorInvalidEmail": "That email address looks invalid.",
+  "authErrorUserDisabled": "This account has been disabled.",
+  "authErrorUserNotFound": "No account found with this email.",
+  "authErrorWrongPassword": "Incorrect email or password.",
+  "authErrorInvalidCredential": "Incorrect email or password.",
+  "authErrorEmailInUse": "An account with this email already exists.",
+  "authErrorWeakPassword": "Password is too weak. Try a longer one.",
+  "authErrorNetwork": "No internet connection. Please try again.",
+  "authErrorTooManyRequests": "Too many attempts. Please wait a moment and try again.",
+  "authErrorGoogleCancelled": "Google Sign-In was cancelled.",
+  "authErrorGoogleFailed": "Google Sign-In failed. Please try again.",
+  "authErrorUnknown": "Something went wrong. Please try again.",
+
+  "verifyEmailTitle": "Verify your email",
+  "verifyEmailSentTo": "We sent a verification link to {email}. Tap the link to activate your account.",
+  "@verifyEmailSentTo": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "verifyEmailCheck": "I've verified — continue",
+  "verifyEmailResend": "Resend email",
+  "verifyEmailResent": "Verification email sent.",
+  "verifyEmailNotYet": "Email not verified yet. Check your inbox and spam folder.",
+  "verifyEmailChangeAccount": "Use a different account",
+
+  "drawerFollowedShops": "Followed Shops",
+
+  "shopFollow": "Follow",
+  "shopUnfollow": "Following",
+  "shopFollowRequiresAccount": "Sign in to follow shops and get updates.",
+  "shopFollowFailed": "Couldn't update follow. Please try again.",
+  "shopAboutHeading": "About",
+  "shopMenuPreviewHeading": "Menu preview",
+  "shopReviewsHeading": "Reviews",
+  "shopDiscountsHeading": "Discounts",
+  "shopSectionComingSoon": "Coming soon",
+
+  "followedShopsTitle": "Followed Shops",
+  "followedShopsGuestTitle": "Sign in to follow shops",
+  "followedShopsGuestBody": "Create an account to follow shops and get notified about news and offers.",
+  "followedShopsEmptyTitle": "No followed shops yet",
+  "followedShopsEmptyBody": "Open the map to find shops and tap Follow to get their updates."
 }

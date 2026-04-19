@@ -45,13 +45,26 @@ dependencies:
   google_maps_flutter: ^2.10.0
   geolocator: ^13.0.2
   firebase_core: ^3.13.1
+  firebase_auth: ^5.3.4
   firebase_messaging: 15.2.10
+  cloud_firestore: ^5.6.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.3
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/logo_app.png"
+  adaptive_icon_background: "#3D6B52"
+  adaptive_icon_foreground: "assets/logo_app.png"
+  min_sdk_android: 21
 
 flutter:
   generate: true
   uses-material-design: true
+  assets:
+    - assets/logo_app.png

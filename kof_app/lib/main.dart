@@ -8,6 +8,7 @@ import 'providers/auth_provider.dart';
 import 'providers/cart_provider.dart';
 import 'providers/session_provider.dart';
 import 'providers/settings_provider.dart';
+import 'screens/auth/email_verification_screen.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/home_screen.dart';
 
@@ -110,12 +111,18 @@ class _StartupGateState extends State<_StartupGate> {
     await FirebaseMessaging.instance.requestPermission();
 
     if (!mounted) return;
-    final isLoggedIn = context.read<AuthProvider>().isLoggedIn;
+    final auth = context.read<AuthProvider>();
+    final Widget next;
+    if (!auth.isLoggedIn) {
+      next = const LoginScreen();
+    } else if (!auth.isGuest && !auth.emailVerified) {
+      next = const EmailVerificationScreen();
+    } else {
+      next = const HomeScreen();
+    }
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(
-        builder: (_) => isLoggedIn ? const HomeScreen() : const LoginScreen(),
-      ),
+      MaterialPageRoute(builder: (_) => next),
     );
   }
 

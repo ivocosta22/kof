@@ -885,6 +885,210 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Theme'**
   String get loginSelectTheme;
+
+  /// No description provided for @authErrorInvalidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'That email address looks invalid.'**
+  String get authErrorInvalidEmail;
+
+  /// No description provided for @authErrorUserDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'This account has been disabled.'**
+  String get authErrorUserDisabled;
+
+  /// No description provided for @authErrorUserNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No account found with this email.'**
+  String get authErrorUserNotFound;
+
+  /// No description provided for @authErrorWrongPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect email or password.'**
+  String get authErrorWrongPassword;
+
+  /// No description provided for @authErrorInvalidCredential.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect email or password.'**
+  String get authErrorInvalidCredential;
+
+  /// No description provided for @authErrorEmailInUse.
+  ///
+  /// In en, this message translates to:
+  /// **'An account with this email already exists.'**
+  String get authErrorEmailInUse;
+
+  /// No description provided for @authErrorWeakPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Password is too weak. Try a longer one.'**
+  String get authErrorWeakPassword;
+
+  /// No description provided for @authErrorNetwork.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection. Please try again.'**
+  String get authErrorNetwork;
+
+  /// No description provided for @authErrorTooManyRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many attempts. Please wait a moment and try again.'**
+  String get authErrorTooManyRequests;
+
+  /// No description provided for @authErrorGoogleCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Sign-In was cancelled.'**
+  String get authErrorGoogleCancelled;
+
+  /// No description provided for @authErrorGoogleFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Sign-In failed. Please try again.'**
+  String get authErrorGoogleFailed;
+
+  /// No description provided for @authErrorUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get authErrorUnknown;
+
+  /// No description provided for @verifyEmailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify your email'**
+  String get verifyEmailTitle;
+
+  /// No description provided for @verifyEmailSentTo.
+  ///
+  /// In en, this message translates to:
+  /// **'We sent a verification link to {email}. Tap the link to activate your account.'**
+  String verifyEmailSentTo(String email);
+
+  /// No description provided for @verifyEmailCheck.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'ve verified — continue'**
+  String get verifyEmailCheck;
+
+  /// No description provided for @verifyEmailResend.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend email'**
+  String get verifyEmailResend;
+
+  /// No description provided for @verifyEmailResent.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification email sent.'**
+  String get verifyEmailResent;
+
+  /// No description provided for @verifyEmailNotYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Email not verified yet. Check your inbox and spam folder.'**
+  String get verifyEmailNotYet;
+
+  /// No description provided for @verifyEmailChangeAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a different account'**
+  String get verifyEmailChangeAccount;
+
+  /// No description provided for @drawerFollowedShops.
+  ///
+  /// In en, this message translates to:
+  /// **'Followed Shops'**
+  String get drawerFollowedShops;
+
+  /// No description provided for @shopFollow.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow'**
+  String get shopFollow;
+
+  /// No description provided for @shopUnfollow.
+  ///
+  /// In en, this message translates to:
+  /// **'Following'**
+  String get shopUnfollow;
+
+  /// No description provided for @shopFollowRequiresAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to follow shops and get updates.'**
+  String get shopFollowRequiresAccount;
+
+  /// No description provided for @shopFollowFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t update follow. Please try again.'**
+  String get shopFollowFailed;
+
+  /// No description provided for @shopAboutHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get shopAboutHeading;
+
+  /// No description provided for @shopMenuPreviewHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Menu preview'**
+  String get shopMenuPreviewHeading;
+
+  /// No description provided for @shopReviewsHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviews'**
+  String get shopReviewsHeading;
+
+  /// No description provided for @shopDiscountsHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Discounts'**
+  String get shopDiscountsHeading;
+
+  /// No description provided for @shopSectionComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get shopSectionComingSoon;
+
+  /// No description provided for @followedShopsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Followed Shops'**
+  String get followedShopsTitle;
+
+  /// No description provided for @followedShopsGuestTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to follow shops'**
+  String get followedShopsGuestTitle;
+
+  /// No description provided for @followedShopsGuestBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Create an account to follow shops and get notified about news and offers.'**
+  String get followedShopsGuestBody;
+
+  /// No description provided for @followedShopsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No followed shops yet'**
+  String get followedShopsEmptyTitle;
+
+  /// No description provided for @followedShopsEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the map to find shops and tap Follow to get their updates.'**
+  String get followedShopsEmptyBody;
 }
 
 class _AppLocalizationsDelegate

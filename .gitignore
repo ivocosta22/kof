@@ -6,6 +6,12 @@ scripts.txt
 .env
 .env.local
 .env.*.local
+**/.env
+
+# ── Database runtime files ──────────────────────────────────────────────────
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
 
 # ── OS ─────────────────────────────────────────────────────────────────────
 .DS_Store

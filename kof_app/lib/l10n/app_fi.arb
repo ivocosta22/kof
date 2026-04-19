@@ -173,5 +173,49 @@
   "settingsThemeDark": "Tumma",
 
   "settingsLanguage": "Kieli",
-  "settingsLanguageSystem": "Järjestelmän oletus"
+  "settingsLanguageSystem": "Järjestelmän oletus",
+
+  "authErrorInvalidEmail": "Sähköpostiosoite näyttää virheelliseltä.",
+  "authErrorUserDisabled": "Tämä tili on poistettu käytöstä.",
+  "authErrorUserNotFound": "Tällä sähköpostilla ei löydy tiliä.",
+  "authErrorWrongPassword": "Virheellinen sähköposti tai salasana.",
+  "authErrorInvalidCredential": "Virheellinen sähköposti tai salasana.",
+  "authErrorEmailInUse": "Tili tällä sähköpostilla on jo olemassa.",
+  "authErrorWeakPassword": "Salasana on liian heikko. Kokeile pidempää.",
+  "authErrorNetwork": "Ei internet-yhteyttä. Yritä uudelleen.",
+  "authErrorTooManyRequests": "Liian monta yritystä. Odota hetki ja yritä uudelleen.",
+  "authErrorGoogleCancelled": "Google-kirjautuminen peruutettiin.",
+  "authErrorGoogleFailed": "Google-kirjautuminen epäonnistui. Yritä uudelleen.",
+  "authErrorUnknown": "Jotain meni pieleen. Yritä uudelleen.",
+
+  "verifyEmailTitle": "Vahvista sähköpostisi",
+  "verifyEmailSentTo": "Lähetimme vahvistuslinkin osoitteeseen {email}. Aktivoi tilisi napauttamalla linkkiä.",
+  "@verifyEmailSentTo": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "verifyEmailCheck": "Olen vahvistanut — jatka",
+  "verifyEmailResend": "Lähetä uudelleen",
+  "verifyEmailResent": "Vahvistusviesti lähetetty.",
+  "verifyEmailNotYet": "Sähköpostia ei ole vielä vahvistettu. Tarkista myös roskaposti.",
+  "verifyEmailChangeAccount": "Käytä toista tiliä",
+
+  "drawerFollowedShops": "Seuratut kahvilat",
+
+  "shopFollow": "Seuraa",
+  "shopUnfollow": "Seuraat",
+  "shopFollowRequiresAccount": "Kirjaudu sisään seurataksesi kahviloita ja saadaksesi päivityksiä.",
+  "shopFollowFailed": "Päivitys epäonnistui. Yritä uudelleen.",
+  "shopAboutHeading": "Tietoja",
+  "shopMenuPreviewHeading": "Menun esikatselu",
+  "shopReviewsHeading": "Arvostelut",
+  "shopDiscountsHeading": "Tarjoukset",
+  "shopSectionComingSoon": "Tulossa pian",
+
+  "followedShopsTitle": "Seuratut kahvilat",
+  "followedShopsGuestTitle": "Kirjaudu seurataksesi kahviloita",
+  "followedShopsGuestBody": "Luo tili seurataksesi kahviloita ja saadaksesi ilmoituksia uutisista ja tarjouksista.",
+  "followedShopsEmptyTitle": "Ei seurattuja kahviloita",
+  "followedShopsEmptyBody": "Avaa kartta löytääksesi kahviloita ja napauta Seuraa saadaksesi päivityksiä."
 }

@@ -5,6 +5,7 @@ import '../providers/auth_provider.dart';
 import '../providers/cart_provider.dart';
 import '../providers/session_provider.dart';
 import '../screens/auth/login_screen.dart';
+import '../screens/followed_shops_screen.dart';
 import '../screens/my_orders_screen.dart';
 import '../screens/settings_screen.dart';
 
@@ -21,6 +22,7 @@ class AppDrawer extends StatelessWidget {
     final initial = (user != null && user.name.isNotEmpty)
         ? user.name[0].toUpperCase()
         : '?';
+    final photoUrl = user?.photoUrl;
 
     // Local helper — replaces Navigator.pop which was used for the Scaffold drawer
     void close() => onClose?.call();
@@ -36,18 +38,10 @@ class AppDrawer extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
               child: Row(
                 children: [
-                  CircleAvatar(
+                  _Avatar(
                     radius: 26,
-                    backgroundColor:
-                        theme.colorScheme.primary.withValues(alpha: 0.15),
-                    child: Text(
-                      initial,
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
-                        color: theme.colorScheme.primary,
-                      ),
-                    ),
+                    initial: initial,
+                    photoUrl: photoUrl,
                   ),
                   const SizedBox(width: 14),
                   Expanded(
@@ -89,6 +83,18 @@ class AppDrawer extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const MyOrdersScreen()),
+                );
+              },
+            ),
+            _DrawerItem(
+              icon: Icons.favorite_outline,
+              label: l10n.drawerFollowedShops,
+              onTap: () {
+                close();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => const FollowedShopsScreen()),
                 );
               },
             ),
@@ -209,6 +215,72 @@ class _DrawerItem extends StatelessWidget {
       onTap: onTap,
       dense: small,
       contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+    );
+  }
+}
+
+class _Avatar extends StatelessWidget {
+  final double radius;
+  final String initial;
+  final String? photoUrl;
+
+  const _Avatar({
+    required this.radius,
+    required this.initial,
+    required this.photoUrl,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final bg = theme.colorScheme.primary.withValues(alpha: 0.15);
+    final fg = theme.colorScheme.primary;
+    final size = radius * 2;
+
+    final fallback = Text(
+      initial,
+      style: TextStyle(
+        fontSize: radius * 0.85,
+        fontWeight: FontWeight.w700,
+        color: fg,
+      ),
+    );
+
+    final hasPhoto = photoUrl != null && photoUrl!.isNotEmpty;
+
+    final spinner = SizedBox(
+      width: size,
+      height: size,
+      child: Center(
+        child: SizedBox(
+          width: radius * 0.8,
+          height: radius * 0.8,
+          child: CircularProgressIndicator(
+            strokeWidth: 2.5,
+            color: fg,
+          ),
+        ),
+      ),
+    );
+
+    return CircleAvatar(
+      radius: radius,
+      backgroundColor: bg,
+      child: hasPhoto
+          ? ClipOval(
+              child: Image.network(
+                photoUrl!,
+                width: size,
+                height: size,
+                fit: BoxFit.cover,
+                frameBuilder: (_, child, frame, wasSynchronouslyLoaded) {
+                  if (wasSynchronouslyLoaded || frame != null) return child;
+                  return spinner;
+                },
+                errorBuilder: (_, _, _) => Center(child: fallback),
+              ),
+            )
+          : fallback,
     );
   }
 }

@@ -421,4 +421,117 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get loginSelectTheme => 'Teema';
+
+  @override
+  String get authErrorInvalidEmail =>
+      'Sähköpostiosoite näyttää virheelliseltä.';
+
+  @override
+  String get authErrorUserDisabled => 'Tämä tili on poistettu käytöstä.';
+
+  @override
+  String get authErrorUserNotFound => 'Tällä sähköpostilla ei löydy tiliä.';
+
+  @override
+  String get authErrorWrongPassword => 'Virheellinen sähköposti tai salasana.';
+
+  @override
+  String get authErrorInvalidCredential =>
+      'Virheellinen sähköposti tai salasana.';
+
+  @override
+  String get authErrorEmailInUse => 'Tili tällä sähköpostilla on jo olemassa.';
+
+  @override
+  String get authErrorWeakPassword =>
+      'Salasana on liian heikko. Kokeile pidempää.';
+
+  @override
+  String get authErrorNetwork => 'Ei internet-yhteyttä. Yritä uudelleen.';
+
+  @override
+  String get authErrorTooManyRequests =>
+      'Liian monta yritystä. Odota hetki ja yritä uudelleen.';
+
+  @override
+  String get authErrorGoogleCancelled => 'Google-kirjautuminen peruutettiin.';
+
+  @override
+  String get authErrorGoogleFailed =>
+      'Google-kirjautuminen epäonnistui. Yritä uudelleen.';
+
+  @override
+  String get authErrorUnknown => 'Jotain meni pieleen. Yritä uudelleen.';
+
+  @override
+  String get verifyEmailTitle => 'Vahvista sähköpostisi';
+
+  @override
+  String verifyEmailSentTo(String email) {
+    return 'Lähetimme vahvistuslinkin osoitteeseen $email. Aktivoi tilisi napauttamalla linkkiä.';
+  }
+
+  @override
+  String get verifyEmailCheck => 'Olen vahvistanut — jatka';
+
+  @override
+  String get verifyEmailResend => 'Lähetä uudelleen';
+
+  @override
+  String get verifyEmailResent => 'Vahvistusviesti lähetetty.';
+
+  @override
+  String get verifyEmailNotYet =>
+      'Sähköpostia ei ole vielä vahvistettu. Tarkista myös roskaposti.';
+
+  @override
+  String get verifyEmailChangeAccount => 'Käytä toista tiliä';
+
+  @override
+  String get drawerFollowedShops => 'Seuratut kahvilat';
+
+  @override
+  String get shopFollow => 'Seuraa';
+
+  @override
+  String get shopUnfollow => 'Seuraat';
+
+  @override
+  String get shopFollowRequiresAccount =>
+      'Kirjaudu sisään seurataksesi kahviloita ja saadaksesi päivityksiä.';
+
+  @override
+  String get shopFollowFailed => 'Päivitys epäonnistui. Yritä uudelleen.';
+
+  @override
+  String get shopAboutHeading => 'Tietoja';
+
+  @override
+  String get shopMenuPreviewHeading => 'Menun esikatselu';
+
+  @override
+  String get shopReviewsHeading => 'Arvostelut';
+
+  @override
+  String get shopDiscountsHeading => 'Tarjoukset';
+
+  @override
+  String get shopSectionComingSoon => 'Tulossa pian';
+
+  @override
+  String get followedShopsTitle => 'Seuratut kahvilat';
+
+  @override
+  String get followedShopsGuestTitle => 'Kirjaudu seurataksesi kahviloita';
+
+  @override
+  String get followedShopsGuestBody =>
+      'Luo tili seurataksesi kahviloita ja saadaksesi ilmoituksia uutisista ja tarjouksista.';
+
+  @override
+  String get followedShopsEmptyTitle => 'Ei seurattuja kahviloita';
+
+  @override
+  String get followedShopsEmptyBody =>
+      'Avaa kartta löytääksesi kahviloita ja napauta Seuraa saadaksesi päivityksiä.';
 }

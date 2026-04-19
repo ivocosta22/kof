@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../l10n/l10n.dart';
+import '../../services/auth_error_messages.dart';
 import '../../services/auth_service.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
@@ -42,7 +43,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = e.toString().replaceFirst('Exception: ', '');
+        _error = localizedAuthError(context.l10n, e);
         _loading = false;
       });
     }

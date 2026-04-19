@@ -173,5 +173,49 @@
   "settingsThemeDark": "Escuro",
 
   "settingsLanguage": "Idioma",
-  "settingsLanguageSystem": "Padrão do sistema"
+  "settingsLanguageSystem": "Padrão do sistema",
+
+  "authErrorInvalidEmail": "O email parece inválido.",
+  "authErrorUserDisabled": "Esta conta foi desativada.",
+  "authErrorUserNotFound": "Nenhuma conta encontrada com este email.",
+  "authErrorWrongPassword": "Email ou senha incorretos.",
+  "authErrorInvalidCredential": "Email ou senha incorretos.",
+  "authErrorEmailInUse": "Já existe uma conta com este email.",
+  "authErrorWeakPassword": "Senha demasiado fraca. Experimente uma mais longa.",
+  "authErrorNetwork": "Sem ligação à internet. Tente novamente.",
+  "authErrorTooManyRequests": "Demasiadas tentativas. Aguarde um momento e tente novamente.",
+  "authErrorGoogleCancelled": "Login com Google cancelado.",
+  "authErrorGoogleFailed": "Login com Google falhou. Tente novamente.",
+  "authErrorUnknown": "Algo correu mal. Tente novamente.",
+
+  "verifyEmailTitle": "Verifique o seu email",
+  "verifyEmailSentTo": "Enviámos um link de verificação para {email}. Toque no link para ativar a sua conta.",
+  "@verifyEmailSentTo": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "verifyEmailCheck": "Já verifiquei — continuar",
+  "verifyEmailResend": "Reenviar email",
+  "verifyEmailResent": "Email de verificação enviado.",
+  "verifyEmailNotYet": "Email ainda não verificado. Verifique a caixa de entrada e o spam.",
+  "verifyEmailChangeAccount": "Usar outra conta",
+
+  "drawerFollowedShops": "Lojas seguidas",
+
+  "shopFollow": "Seguir",
+  "shopUnfollow": "A seguir",
+  "shopFollowRequiresAccount": "Inicie sessão para seguir lojas e receber novidades.",
+  "shopFollowFailed": "Não foi possível atualizar. Tente novamente.",
+  "shopAboutHeading": "Sobre",
+  "shopMenuPreviewHeading": "Pré-visualização do menu",
+  "shopReviewsHeading": "Avaliações",
+  "shopDiscountsHeading": "Descontos",
+  "shopSectionComingSoon": "Em breve",
+
+  "followedShopsTitle": "Lojas seguidas",
+  "followedShopsGuestTitle": "Inicie sessão para seguir lojas",
+  "followedShopsGuestBody": "Crie uma conta para seguir lojas e receber novidades e ofertas.",
+  "followedShopsEmptyTitle": "Ainda não segue nenhuma loja",
+  "followedShopsEmptyBody": "Abra o mapa para descobrir lojas e toque em Seguir para receber atualizações."
 }

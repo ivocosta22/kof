@@ -12,7 +12,20 @@
           "package_name": "com.ivocosta.kof"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "761198795495-bvs04gda00ep9rftclu2ga395b4ti660.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ivocosta.kof",
+            "certificate_hash": "1b9891dc989f03055fa5773761b16f0b5b5bdef2"
+          }
+        },
+        {
+          "client_id": "761198795495-bih4ubfi354a0s836ma05ev0898m93kg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAA8v2aPqFeWAl2pN7jf4WVjkVRUH4SI4k"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "761198795495-bih4ubfi354a0s836ma05ev0898m93kg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "761198795495-ps1vvqtt6bb22ll5nnlagasmkuiletrq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ivocosta.kof"
+              }
+            }
+          ]
         }
       }
     }

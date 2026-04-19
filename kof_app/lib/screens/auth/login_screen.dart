@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 import '../../l10n/l10n.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/settings_provider.dart';
+import '../../services/auth_error_messages.dart';
 import '../home_screen.dart';
+import 'email_verification_screen.dart';
 import 'forgot_password_screen.dart';
 import 'register_screen.dart';
 
@@ -43,11 +45,11 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       await context.read<AuthProvider>().login(email, password);
       if (!mounted) return;
-      _goHome();
+      _routeAfterLogin();
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = e.toString().replaceFirst('Exception: ', '');
+        _error = localizedAuthError(context.l10n, e);
         _loading = false;
       });
     }
@@ -61,11 +63,11 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       await context.read<AuthProvider>().loginWithGoogle();
       if (!mounted) return;
-      _goHome();
+      _routeAfterLogin();
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = e.toString().replaceFirst('Exception: ', '');
+        _error = localizedAuthError(context.l10n, e);
         _loading = false;
       });
     }
@@ -87,6 +89,18 @@ class _LoginScreenState extends State<LoginScreen> {
       context,
       MaterialPageRoute(builder: (_) => const HomeScreen()),
     );
+  }
+
+  void _routeAfterLogin() {
+    final auth = context.read<AuthProvider>();
+    if (auth.user != null && !auth.isGuest && !auth.emailVerified) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const EmailVerificationScreen()),
+      );
+      return;
+    }
+    _goHome();
   }
 
   @override
