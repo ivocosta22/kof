@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/l10n.dart';
@@ -20,11 +22,43 @@ class _MenuScreenState extends State<MenuScreen> {
   List<MenuItem> _items = [];
   bool _loading = true;
   String? _error;
+  bool _showQrHint = false;
+  bool _hintOpaque = false;
+  Timer? _hintTimer;
+
+  static const _hintFadeDuration = Duration(milliseconds: 350);
 
   @override
   void initState() {
     super.initState();
     _loadMenu();
+    // Show the coachmark only for walk-in (counter_pickup) sessions
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final session = context.read<SessionProvider>().session;
+      if (session?.fulfillmentType == 'counter_pickup') {
+        setState(() {
+          _showQrHint = true;
+          _hintOpaque = true;
+        });
+        _hintTimer = Timer(const Duration(seconds: 6), _dismissHint);
+      }
+    });
+  }
+
+  void _dismissHint() {
+    _hintTimer?.cancel();
+    if (!mounted) return;
+    // Fade out first, then remove widget after animation completes
+    setState(() => _hintOpaque = false);
+    Future.delayed(_hintFadeDuration, () {
+      if (mounted) setState(() => _showQrHint = false);
+    });
+  }
+
+  @override
+  void dispose() {
+    _hintTimer?.cancel();
+    super.dispose();
   }
 
   Future<void> _loadMenu() async {
@@ -83,7 +117,9 @@ class _MenuScreenState extends State<MenuScreen> {
             ),
             if (session != null)
               Text(
-                l10n.tableLabel(session.tableLabel),
+                session.fulfillmentType == 'counter_pickup'
+                    ? l10n.menuPickupOrder
+                    : l10n.tableLabel(session.tableLabel),
                 style: theme.textTheme.labelSmall?.copyWith(
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
@@ -105,7 +141,24 @@ class _MenuScreenState extends State<MenuScreen> {
           ),
         ],
       ),
-      body: _buildBody(theme, l10n),
+      body: Stack(
+        children: [
+          _buildBody(theme, l10n),
+          if (_showQrHint)
+            Positioned(
+              top: 8,
+              right: 8,
+              child: AnimatedOpacity(
+                opacity: _hintOpaque ? 1.0 : 0.0,
+                duration: _hintFadeDuration,
+                child: GestureDetector(
+                  onTap: _dismissHint,
+                  child: _QrHintBubble(text: l10n.menuQrHint, theme: theme),
+                ),
+              ),
+            ),
+        ],
+      ),
       bottomNavigationBar:
           cart.isEmpty ? null : _buildCartBar(context, cart, theme, l10n),
     );
@@ -225,4 +278,84 @@ class _MenuScreenState extends State<MenuScreen> {
       ),
     );
   }
+}
+
+class _QrHintBubble extends StatelessWidget {
+  final String text;
+  final ThemeData theme;
+
+  const _QrHintBubble({required this.text, required this.theme});
+
+  @override
+  Widget build(BuildContext context) {
+    final bg = theme.colorScheme.inverseSurface;
+    final fg = theme.colorScheme.onInverseSurface;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        // Tail pointing up toward the QR icon (right-aligned)
+        Padding(
+          padding: const EdgeInsets.only(right: 14),
+          child: CustomPaint(
+            size: const Size(12, 8),
+            painter: _UpArrowPainter(color: bg),
+          ),
+        ),
+        // Bubble body
+        Container(
+          constraints: const BoxConstraints(maxWidth: 220),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.18),
+                blurRadius: 8,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                child: Text(
+                  text,
+                  style: TextStyle(
+                    color: fg,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    height: 1.4,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(Icons.close, size: 14, color: fg.withValues(alpha: 0.6)),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _UpArrowPainter extends CustomPainter {
+  final Color color;
+  const _UpArrowPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = color;
+    final path = Path()
+      ..moveTo(0, size.height)
+      ..lineTo(size.width / 2, 0)
+      ..lineTo(size.width, size.height)
+      ..close();
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(_UpArrowPainter old) => old.color != color;
 }

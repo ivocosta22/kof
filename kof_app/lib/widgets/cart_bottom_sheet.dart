@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/l10n.dart';
 import '../providers/cart_provider.dart';
 import '../providers/session_provider.dart';
+import '../models/past_order.dart';
 import '../services/api_service.dart';
+import '../services/order_history_service.dart';
 import '../screens/order_status_screen.dart';
 
 class CartBottomSheet extends StatefulWidget {
@@ -36,13 +39,22 @@ class _CartBottomSheetState extends State<CartBottomSheet> {
 
     try {
       final order = await ApiService(session.serverUrl).placeOrder(
+        fulfillmentType: session.fulfillmentType,
         tableLabel: session.tableLabel,
         tableToken: session.tableToken,
+        customerLabel: session.customerLabel,
         items: cart.toOrderItems(),
         note: _noteController.text.trim(),
       );
 
       cart.clear();
+      unawaited(OrderHistoryService().save(
+        PastOrder.fromOrder(
+          order,
+          shopName: session.shopName,
+          serverUrl: session.serverUrl,
+        ),
+      ));
 
       if (!context.mounted) return;
       Navigator.pop(context);
@@ -104,7 +116,9 @@ class _CartBottomSheetState extends State<CartBottomSheet> {
                     ),
                     if (session != null)
                       Text(
-                        l10n.tableLabel(session.tableLabel),
+                        session.fulfillmentType == 'counter_pickup'
+                            ? session.customerLabel
+                            : l10n.tableLabel(session.tableLabel),
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.onSurface
                               .withValues(alpha: 0.6),

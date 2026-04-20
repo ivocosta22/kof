@@ -102,6 +102,8 @@
   "scanNotKofQr": "Não é um QR code de mesa Kof.\nPor favor, leia o QR code na sua mesa.",
   "scanWrongServer": "O QR code não aponta para um servidor Kof.",
 
+  "menuPickupOrder": "Pedido de balcão",
+  "menuQrHint": "A pedir de uma mesa? Leia o QR code da mesa aqui!",
   "menuNoItems": "Sem itens disponíveis",
   "menuRetry": "Tentar novamente",
   "menuReviewOrder": "Rever Pedido",
@@ -140,6 +142,8 @@
   "myOrdersEmpty": "Sem pedidos ainda",
   "myOrdersEmptySubtitle": "Os pedidos que fizer em cafetarias aparecerão aqui.",
   "myOrdersScanCta": "Ler um QR code de mesa",
+  "myOrdersActive": "Em curso",
+  "myOrdersHistory": "Histórico",
 
   "notificationsTitle": "Notificações",
   "notificationsEmpty": "Sem notificações ainda",
@@ -165,6 +169,7 @@
   "mapNoShopsNearby": "Nenhuma cafetaria por perto ainda",
   "mapNoShopsSubtitle": "As cafetarias que usam o Kof aparecerão aqui quando a plataforma for lançada.",
   "mapOpenSettings": "Abrir Definições",
+  "mapNoShopsCountryHint": "Sem lojas? Pode estar a ver um país diferente da sua localização atual. Atualize o seu país nas Definições.",
 
   "settingsAppearance": "Aparência",
   "settingsThemeMode": "Tema",
@@ -217,5 +222,24 @@
   "followedShopsGuestTitle": "Inicie sessão para seguir lojas",
   "followedShopsGuestBody": "Crie uma conta para seguir lojas e receber novidades e ofertas.",
   "followedShopsEmptyTitle": "Ainda não segue nenhuma loja",
-  "followedShopsEmptyBody": "Abra o mapa para descobrir lojas e toque em Seguir para receber atualizações."
+  "followedShopsEmptyBody": "Abra o mapa para descobrir lojas e toque em Seguir para receber atualizações.",
+
+  "countryLabel": "País",
+  "countryHint": "Selecione o seu país",
+  "countrySearch": "Pesquisar países...",
+  "settingsCountry": "País",
+
+  "shopWalkInButton": "Pedir Aqui",
+  "shopWalkInConnecting": "A ligar...",
+  "shopWalkInDialogTitle": "Pedir nesta loja",
+  "shopWalkInNameLabel": "O seu nome",
+  "shopWalkInNameHint": "ex: João",
+  "shopWalkInWifi": "Certifique-se de que está ligado ao Wi-Fi da loja",
+  "shopWalkInError": "Não foi possível ligar ao servidor da loja. Está ligado ao Wi-Fi da loja?",
+  "shopWalkInDistanceLabel": "{meters}m de distância",
+  "@shopWalkInDistanceLabel": {
+    "placeholders": {
+      "meters": { "type": "int" }
+    }
+  }
 }

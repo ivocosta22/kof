@@ -10,9 +10,12 @@ class ShopService {
   CollectionReference<Map<String, dynamic>> _followingCol(String uid) =>
       _db.collection('users').doc(uid).collection('following');
 
-  Stream<List<Shop>> streamShops() {
-    return _shops.snapshots().map((snap) =>
-        snap.docs.map(Shop.fromDoc).toList(growable: false));
+  Stream<List<Shop>> streamShops({String? country}) {
+    final query = country != null
+        ? _shops.where('country', isEqualTo: country)
+        : _shops as Query<Map<String, dynamic>>;
+    return query.snapshots().map(
+        (snap) => snap.docs.map(Shop.fromDoc).toList(growable: false));
   }
 
   Future<Shop?> getShop(String shopId) async {

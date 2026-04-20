@@ -11,6 +11,8 @@ class Shop {
   final List<String> tags;
   final double? rating;
   final String? phone;
+  final String? country;
+  final String? serverUrl;
 
   const Shop({
     required this.id,
@@ -23,6 +25,8 @@ class Shop {
     this.tags = const [],
     this.rating,
     this.phone,
+    this.country,
+    this.serverUrl,
   });
 
   factory Shop.fromDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
@@ -50,6 +54,8 @@ class Shop {
           .toList(growable: false),
       rating: (data['rating'] as num?)?.toDouble(),
       phone: data['phone'] as String?,
+      country: data['country'] as String?,
+      serverUrl: data['serverUrl'] as String?,
     );
   }
 }

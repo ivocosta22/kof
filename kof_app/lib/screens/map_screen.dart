@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 import '../l10n/l10n.dart';
 import '../models/shop.dart';
+import '../providers/auth_provider.dart';
 import '../services/shop_service.dart';
 import 'shop_detail_screen.dart';
 
@@ -26,6 +28,8 @@ class _MapScreenState extends State<MapScreen> {
   List<Shop> _shops = const [];
   StreamSubscription<List<Shop>>? _shopsSub;
   BitmapDescriptor? _markerIcon;
+  String? _activeCountry;
+  bool _shopSubInitialized = false;
 
   static const _defaultLatLng = LatLng(38.7169, -9.1399); // Lisbon fallback
 
@@ -37,10 +41,21 @@ class _MapScreenState extends State<MapScreen> {
       if (!mounted) return;
       setState(() => _markerIcon = icon);
     });
-    _shopsSub = _shopService.streamShops().listen((shops) {
-      if (!mounted) return;
-      setState(() => _shops = shops);
-    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final country = context.read<AuthProvider>().user?.country;
+    if (!_shopSubInitialized || country != _activeCountry) {
+      _shopSubInitialized = true;
+      _activeCountry = country;
+      _shopsSub?.cancel();
+      _shopsSub = _shopService.streamShops(country: country).listen((shops) {
+        if (!mounted) return;
+        setState(() => _shops = shops);
+      });
+    }
   }
 
   Future<BitmapDescriptor> _buildCustomMarker() async {
@@ -290,6 +305,16 @@ class _MapScreenState extends State<MapScreen> {
                                 ),
                               ),
                             ),
+                            if (context.read<AuthProvider>().user?.country != null) ...[
+                              const SizedBox(height: 6),
+                              Text(
+                                l10n.mapNoShopsCountryHint,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: theme.colorScheme.primary,
+                                ),
+                              ),
+                            ],
                           ],
                         ),
                       ),

@@ -2,9 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import '../data/countries.dart';
 import '../l10n/l10n.dart';
 import '../providers/auth_provider.dart';
 import '../providers/cart_provider.dart';
+import '../widgets/country_picker_field.dart';
 import '../providers/session_provider.dart';
 import '../providers/settings_provider.dart';
 import 'auth/login_screen.dart';
@@ -25,6 +27,7 @@ class SettingsScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final l10n = context.l10n;
     final settings = context.watch<SettingsProvider>();
+    final auth = context.watch<AuthProvider>();
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settingsTitle)),
@@ -59,6 +62,26 @@ class SettingsScreen extends StatelessWidget {
             ),
             onTap: () => _pickLanguage(context, settings, l10n),
           ),
+          if (!auth.isGuest)
+            ListTile(
+              leading: const Icon(Icons.flag_outlined),
+              title: Text(l10n.settingsCountry),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    _currentCountryLabel(auth.user?.country),
+                    style: TextStyle(
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  const Icon(Icons.chevron_right),
+                ],
+              ),
+              onTap: () => _pickCountry(context, auth),
+            ),
 
           // ── Preferences ────────────────────────────────────────────
           _SectionHeader(label: l10n.settingsPreferences),
@@ -129,6 +152,18 @@ class SettingsScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _currentCountryLabel(String? code) {
+    if (code == null) return '';
+    return kCountries.where((c) => c.code == code).firstOrNull?.name ?? code;
+  }
+
+  Future<void> _pickCountry(BuildContext context, AuthProvider auth) async {
+    final code = await showCountryPicker(context, selected: auth.user?.country);
+    if (code != null && context.mounted) {
+      await context.read<AuthProvider>().saveCountry(code);
+    }
   }
 
   String _currentLanguageLabel(Locale? locale, AppLocalizations l10n) {

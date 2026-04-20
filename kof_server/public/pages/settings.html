@@ -96,6 +96,70 @@
         </div>
         <div class="muted auth-message" id="pinMsg"></div>
       </section>
+
+      <!-- Kof Platform registration — manager only -->
+      <section class="ops-panel" id="kofPlatformPanel" style="display:none; grid-column: 1 / -1;">
+        <div class="ops-panel-title">
+          <div>
+            <h3 id="platformTitle"></h3>
+            <div class="muted" id="platformHint"></div>
+          </div>
+        </div>
+
+        <div id="platformStatus" style="margin-bottom:12px;"></div>
+        <div id="platformOfflineWarning" style="display:none; margin-bottom:12px; padding:10px 14px; border-radius:8px; background:#fff3cd; border:1px solid #f0c040; color:#7a5c00; font-size:13px;">
+          ⚠️ <strong>No internet access detected.</strong> The server cannot reach Firebase. You can still save your details locally — they will be ready to publish once the connection is restored.
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="field-card">
+            <label class="muted" for="fbName" id="fbNameLabel"></label>
+            <input id="fbName" type="text" autocomplete="off" />
+          </div>
+          <div class="field-card">
+            <label class="muted" for="fbDescription" id="fbDescriptionLabel"></label>
+            <input id="fbDescription" type="text" autocomplete="off" />
+          </div>
+          <div class="field-card">
+            <label class="muted" for="fbAddress" id="fbAddressLabel"></label>
+            <input id="fbAddress" type="text" autocomplete="off" />
+          </div>
+          <div class="field-card">
+            <label class="muted" for="fbCountry" id="fbCountryLabel"></label>
+            <select id="fbCountry"></select>
+          </div>
+          <div class="field-card">
+            <label class="muted" for="fbLat" id="fbLatLabel"></label>
+            <input id="fbLat" type="number" step="0.0001" min="-90" max="90" autocomplete="off" placeholder="38.7500" />
+          </div>
+          <div class="field-card">
+            <label class="muted" for="fbLng" id="fbLngLabel"></label>
+            <input id="fbLng" type="number" step="0.0001" min="-180" max="180" autocomplete="off" placeholder="-9.1400" />
+          </div>
+          <div class="field-card">
+            <label class="muted" for="fbPhone" id="fbPhoneLabel"></label>
+            <input id="fbPhone" type="tel" autocomplete="off" />
+          </div>
+          <div class="field-card">
+            <label class="muted" for="fbPhotoUrl" id="fbPhotoUrlLabel"></label>
+            <input id="fbPhotoUrl" type="url" autocomplete="off" />
+          </div>
+          <div class="field-card" style="grid-column: 1 / -1;">
+            <label class="muted" for="fbTags" id="fbTagsLabel"></label>
+            <input id="fbTags" type="text" autocomplete="off" />
+          </div>
+          <div class="field-card" style="grid-column: 1 / -1;">
+            <label class="muted" for="fbServerUrl" id="fbServerUrlLabel"></label>
+            <input id="fbServerUrl" type="url" autocomplete="off" placeholder="http://192.168.1.10:3000" />
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:14px;">
+          <button onclick="savePlatform()" id="savePlatformBtn" class="primary"></button>
+          <button onclick="removePlatform()" id="removePlatformBtn" class="secondary danger-soft" style="display:none;"></button>
+        </div>
+        <div class="muted auth-message" id="platformMsg"></div>
+      </section>
     </section>
   </main>
 
@@ -155,8 +219,25 @@
     const changePinBtnEl = document.getElementById("changePinBtn");
     const pinMsgEl = document.getElementById("pinMsg");
     const toastWrapEl = document.getElementById("toastWrap");
+    const kofPlatformPanelEl = document.getElementById("kofPlatformPanel");
+    const platformStatusEl = document.getElementById("platformStatus");
+    const platformMsgEl = document.getElementById("platformMsg");
+    const fbNameEl = document.getElementById("fbName");
+    const fbDescriptionEl = document.getElementById("fbDescription");
+    const fbAddressEl = document.getElementById("fbAddress");
+    const fbCountryEl = document.getElementById("fbCountry");
+    const fbLatEl = document.getElementById("fbLat");
+    const fbLngEl = document.getElementById("fbLng");
+    const fbPhoneEl = document.getElementById("fbPhone");
+    const fbPhotoUrlEl = document.getElementById("fbPhotoUrl");
+    const fbTagsEl = document.getElementById("fbTags");
+    const fbServerUrlEl = document.getElementById("fbServerUrl");
+    const savePlatformBtnEl = document.getElementById("savePlatformBtn");
+    const removePlatformBtnEl = document.getElementById("removePlatformBtn");
+    const platformOfflineWarningEl = document.getElementById("platformOfflineWarning");
 
     let currentMe = null;
+    let _platformOffline = false;
 
 // Read the current admin auth token from browser storage.
     function getToken() {
@@ -201,6 +282,21 @@
       oldPinEl.placeholder = t("settings.oldPin");
       newPinEl.placeholder = t("settings.newPin");
       changePinBtnEl.innerText = t("settings.changePin");
+
+      document.getElementById("platformTitle").innerText = "Kof Platform";
+      document.getElementById("platformHint").innerText = "Register this shop so it appears on the Kof app map.";
+      document.getElementById("fbNameLabel").innerText = "Shop name";
+      document.getElementById("fbDescriptionLabel").innerText = "Description (optional)";
+      document.getElementById("fbAddressLabel").innerText = "Address";
+      document.getElementById("fbCountryLabel").innerText = "Country";
+      document.getElementById("fbLatLabel").innerText = "Latitude (N/S) — e.g. 38.7500";
+      document.getElementById("fbLngLabel").innerText = "Longitude (E/W) — e.g. -9.1400";
+      document.getElementById("fbPhoneLabel").innerText = "Phone (optional)";
+      document.getElementById("fbPhotoUrlLabel").innerText = "Photo URL (optional)";
+      document.getElementById("fbTagsLabel").innerText = "Tags — comma separated (e.g. coffee, specialty)";
+      document.getElementById("fbServerUrlLabel").innerText = "Server URL (optional — enables in-app ordering)";
+      savePlatformBtnEl.innerText = "Save & Publish";
+      removePlatformBtnEl.innerText = "Remove from Map";
 
       if (currentMe) {
         whoLineEl.innerText = t("settings.loggedInAs", {
@@ -354,6 +450,11 @@
       });
       adminBtnEl.style.display = currentMe.role === "manager" ? "inline-flex" : "none";
 
+      if (currentMe.role === "manager") {
+        kofPlatformPanelEl.style.display = "";
+        loadPlatform();
+      }
+
       const volumePercent = Math.round(Number(settings.volume ?? 0.5) * 100);
       volEl.value = volumePercent;
       volLabelEl.innerText = `${volumePercent}%`;
@@ -440,6 +541,126 @@
 
     function goAdmin() {
       location.href = "/admin.html";
+    }
+
+    const COUNTRIES = [
+      ["AF","Afghanistan"],["AL","Albania"],["DZ","Algeria"],["AR","Argentina"],
+      ["AU","Australia"],["AT","Austria"],["BE","Belgium"],["BR","Brazil"],
+      ["CA","Canada"],["CL","Chile"],["CN","China"],["CO","Colombia"],
+      ["HR","Croatia"],["CZ","Czech Republic"],["DK","Denmark"],["EG","Egypt"],
+      ["FI","Finland"],["FR","France"],["DE","Germany"],["GR","Greece"],
+      ["HU","Hungary"],["IN","India"],["ID","Indonesia"],["IE","Ireland"],
+      ["IL","Israel"],["IT","Italy"],["JP","Japan"],["KE","Kenya"],
+      ["MX","Mexico"],["NL","Netherlands"],["NZ","New Zealand"],["NG","Nigeria"],
+      ["NO","Norway"],["PK","Pakistan"],["PE","Peru"],["PH","Philippines"],
+      ["PL","Poland"],["PT","Portugal"],["RO","Romania"],["ZA","South Africa"],
+      ["KR","South Korea"],["ES","Spain"],["SE","Sweden"],["CH","Switzerland"],
+      ["TH","Thailand"],["TR","Turkey"],["UA","Ukraine"],["GB","United Kingdom"],
+      ["US","United States"],["VN","Vietnam"],
+    ];
+
+    function populateCountries(selectedCode) {
+      fbCountryEl.innerHTML = `<option value="">— Select country —</option>` +
+        COUNTRIES.map(([code, name]) =>
+          `<option value="${code}"${code === selectedCode ? " selected" : ""}>${name}</option>`
+        ).join("");
+    }
+
+    async function loadPlatform() {
+      // Check internet connectivity first
+      try {
+        const conn = await api("/api/admin/firebase/connectivity");
+        _platformOffline = !conn.online;
+      } catch {
+        _platformOffline = false;
+      }
+      platformOfflineWarningEl.style.display = _platformOffline ? "" : "none";
+      savePlatformBtnEl.disabled = false;
+      savePlatformBtnEl.innerText = _platformOffline ? "Save Draft" : "Save & Publish";
+
+      try {
+        const data = await api("/api/admin/firebase/shop");
+        populateCountries(data.country || "");
+        fbNameEl.value = data.name || "";
+        fbDescriptionEl.value = data.description || "";
+        fbAddressEl.value = data.address || "";
+        fbLatEl.value = data.latitude ?? "";
+        fbLngEl.value = data.longitude ?? "";
+        fbPhoneEl.value = data.phone || "";
+        fbPhotoUrlEl.value = data.photo_url || "";
+        fbTagsEl.value = (data.tags || []).join(", ");
+        fbServerUrlEl.value = data.server_url || "";
+
+        if (data.registered) {
+          platformStatusEl.innerHTML =
+            `<span class="pill paid">✓ Registered on Kof Platform</span>`;
+          removePlatformBtnEl.style.display = "inline-flex";
+        } else {
+          platformStatusEl.innerHTML =
+            `<span class="pill pending">Not registered yet</span>`;
+          removePlatformBtnEl.style.display = "none";
+        }
+      } catch {
+        platformStatusEl.innerHTML =
+          `<span class="pill cancelled">Firestore not configured on server</span>`;
+      }
+    }
+
+    async function savePlatform() {
+      platformMsgEl.innerText = "";
+      const name = fbNameEl.value.trim();
+      const description = fbDescriptionEl.value.trim();
+      const address = fbAddressEl.value.trim();
+      const country = fbCountryEl.value;
+      const latitude = parseFloat(parseFloat(fbLatEl.value).toFixed(4));
+      const longitude = parseFloat(parseFloat(fbLngEl.value).toFixed(4));
+      const phone = fbPhoneEl.value.trim();
+      const photo_url = fbPhotoUrlEl.value.trim();
+      const tags = fbTagsEl.value.split(",").map(s => s.trim()).filter(Boolean);
+      const server_url = fbServerUrlEl.value.trim();
+      const payload = { name, description, address, country, latitude, longitude, phone, photo_url, tags, server_url };
+
+      if (!name || !address || !country || !latitude || !longitude) {
+        platformMsgEl.innerText = "Name, address, country, latitude and longitude are required.";
+        return;
+      }
+
+      try {
+        savePlatformBtnEl.disabled = true;
+
+        if (_platformOffline) {
+          // No internet — save locally only so the form is pre-filled when back online
+          await api("/api/admin/firebase/shop/draft", {
+            method: "PATCH",
+            body: JSON.stringify(payload),
+          });
+          toastOk("Kof Platform", "Details saved locally. Publish when internet is available.");
+          platformMsgEl.innerText = "Saved locally. Come back when the server has internet to publish.";
+        } else {
+          await api("/api/admin/firebase/shop", {
+            method: "PUT",
+            body: JSON.stringify(payload),
+          });
+          toastOk("Kof Platform", "Shop registered successfully.");
+          loadPlatform();
+        }
+      } catch (error) {
+        platformMsgEl.innerText = translateError(error);
+        toastErr("Kof Platform", translateError(error));
+      } finally {
+        savePlatformBtnEl.disabled = false;
+      }
+    }
+
+    async function removePlatform() {
+      if (!confirm("Remove this shop from the Kof Platform map?")) return;
+      try {
+        await api("/api/admin/firebase/shop", { method: "DELETE" });
+        toastOk("Kof Platform", "Shop removed from platform.");
+        loadPlatform();
+      } catch (error) {
+        toastErr("Kof Platform", translateError(error));
+      }
     }
 
     load().catch((error) => {

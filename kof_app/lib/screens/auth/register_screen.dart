@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../l10n/l10n.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/auth_error_messages.dart';
+import '../../widgets/country_picker_field.dart';
 import 'email_verification_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -20,6 +21,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _obscurePassword = true;
   bool _loading = false;
   String? _error;
+  String? _selectedCountry;
 
   @override
   void dispose() {
@@ -52,12 +54,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
 
     try {
-      await context.read<AuthProvider>().register(
-            name,
-            email,
-            password,
-            phone: phone.isEmpty ? null : phone,
-          );
+      final auth = context.read<AuthProvider>();
+      await auth.register(
+        name,
+        email,
+        password,
+        phone: phone.isEmpty ? null : phone,
+      );
+      if (_selectedCountry != null && mounted) {
+        await auth.saveCountry(_selectedCountry!);
+      }
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
@@ -147,6 +153,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 keyboardType: TextInputType.phone,
                 textInputAction: TextInputAction.done,
                 onSubmitted: (_) => _register(),
+              ),
+              const SizedBox(height: 12),
+              CountryPickerField(
+                value: _selectedCountry,
+                onChanged: (c) => setState(() => _selectedCountry = c),
               ),
               const SizedBox(height: 24),
               if (_error != null) ...[

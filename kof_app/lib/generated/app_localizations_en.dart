@@ -246,6 +246,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scanWrongServer => 'QR code does not point to a Kof server.';
 
   @override
+  String get menuPickupOrder => 'Pickup order';
+
+  @override
+  String get menuQrHint =>
+      'Ordering from a table? Scan the table\'s QR code here!';
+
+  @override
   String get menuNoItems => 'No items available';
 
   @override
@@ -323,6 +330,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myOrdersScanCta => 'Scan a table QR code';
 
   @override
+  String get myOrdersActive => 'Active';
+
+  @override
+  String get myOrdersHistory => 'History';
+
+  @override
   String get notificationsTitle => 'Notifications';
 
   @override
@@ -392,6 +405,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mapOpenSettings => 'Open Settings';
+
+  @override
+  String get mapNoShopsCountryHint =>
+      'Not seeing any shops? You may be browsing a different country than your current location. Update your country in Settings.';
 
   @override
   String get settingsAppearance => 'Appearance';
@@ -530,4 +547,44 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get followedShopsEmptyBody =>
       'Open the map to find shops and tap Follow to get their updates.';
+
+  @override
+  String get countryLabel => 'Country';
+
+  @override
+  String get countryHint => 'Select your country';
+
+  @override
+  String get countrySearch => 'Search countries...';
+
+  @override
+  String get settingsCountry => 'Country';
+
+  @override
+  String get shopWalkInButton => 'Order Here';
+
+  @override
+  String get shopWalkInConnecting => 'Connecting...';
+
+  @override
+  String get shopWalkInDialogTitle => 'Order at this shop';
+
+  @override
+  String get shopWalkInNameLabel => 'Your name';
+
+  @override
+  String get shopWalkInNameHint => 'e.g. Jane';
+
+  @override
+  String get shopWalkInWifi =>
+      'Make sure you\'re connected to the shop\'s Wi-Fi';
+
+  @override
+  String get shopWalkInError =>
+      'Could not connect to the shop server. Are you on the shop\'s Wi-Fi?';
+
+  @override
+  String shopWalkInDistanceLabel(int meters) {
+    return '${meters}m away';
+  }
 }

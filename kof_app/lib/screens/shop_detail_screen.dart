@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import '../l10n/l10n.dart';
 import '../models/shop.dart';
+import '../models/table_session.dart';
 import '../providers/auth_provider.dart';
+import '../providers/cart_provider.dart';
+import '../providers/session_provider.dart';
+import '../services/api_service.dart';
 import '../services/shop_service.dart';
+import 'menu_screen.dart';
 
 class ShopDetailScreen extends StatefulWidget {
   final Shop shop;
@@ -15,13 +22,149 @@ class ShopDetailScreen extends StatefulWidget {
 
 class _ShopDetailScreenState extends State<ShopDetailScreen> {
   final ShopService _service = ShopService();
+  final _scrollCtrl = ScrollController();
   bool? _isFollowing;
   bool _busy = false;
+  bool _headerVisible = true;
+
+  // Walk-in proximity
+  double? _distanceMeters;
+  bool _connectingWalkIn = false;
+
+  static const _expandedHeight = 220.0;
+  static const _proximityThresholdMeters = 150.0;
 
   @override
   void initState() {
     super.initState();
     _loadFollowState();
+    _scrollCtrl.addListener(_onScroll);
+    if (widget.shop.serverUrl != null && widget.shop.serverUrl!.isNotEmpty) {
+      _computeDistance();
+    }
+  }
+
+  Future<void> _computeDistance() async {
+    try {
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        return;
+      }
+
+      final pos = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.medium,
+          timeLimit: Duration(seconds: 8),
+        ),
+      );
+      final dist = Geolocator.distanceBetween(
+        pos.latitude,
+        pos.longitude,
+        widget.shop.latitude,
+        widget.shop.longitude,
+      );
+      if (mounted) setState(() => _distanceMeters = dist);
+    } catch (_) {
+      // Location unavailable — walk-in button simply won't show
+    }
+  }
+
+  Future<void> _startWalkIn() async {
+    final l10n = context.l10n;
+    final nameCtrl = TextEditingController();
+    final auth = context.read<AuthProvider>();
+    // Pre-fill with user's display name if available
+    nameCtrl.text = auth.user?.name ?? '';
+
+    final confirmed = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.shopWalkInDialogTitle),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.shopWalkInWifi,
+              style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(ctx).colorScheme.primary,
+                  ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: nameCtrl,
+              autofocus: true,
+              textCapitalization: TextCapitalization.words,
+              decoration: InputDecoration(
+                labelText: l10n.shopWalkInNameLabel,
+                hintText: l10n.shopWalkInNameHint,
+              ),
+              onSubmitted: (v) => Navigator.pop(ctx, v.trim()),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, nameCtrl.text.trim()),
+            child: Text(l10n.shopWalkInButton),
+          ),
+        ],
+      ),
+    );
+
+    final name = confirmed?.trim() ?? '';
+    if (name.isEmpty || !mounted) return;
+
+    setState(() => _connectingWalkIn = true);
+    try {
+      final serverUrl = widget.shop.serverUrl!;
+      final info = await ApiService(serverUrl).walkin();
+      if (!mounted) return;
+      if (info['ok'] != true) throw Exception(l10n.shopWalkInError);
+
+      context.read<CartProvider>().clear();
+      context.read<SessionProvider>().setSession(
+            TableSession(
+              serverUrl: serverUrl,
+              shopName: widget.shop.name,
+              fulfillmentType: 'counter_pickup',
+              customerLabel: name,
+            ),
+          );
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const MenuScreen()),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _connectingWalkIn = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.shopWalkInError)),
+      );
+    }
+  }
+
+  void _onScroll() {
+    final collapsed =
+        _scrollCtrl.offset > _expandedHeight - kToolbarHeight;
+    if (collapsed == _headerVisible) {
+      setState(() => _headerVisible = !collapsed);
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollCtrl.dispose();
+    super.dispose();
   }
 
   Future<void> _loadFollowState() async {
@@ -73,16 +216,42 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
     final l10n = context.l10n;
     final shop = widget.shop;
 
-    return Scaffold(
+    final overlayStyle = _headerVisible
+        ? SystemUiOverlayStyle.light
+        : (theme.brightness == Brightness.dark
+            ? SystemUiOverlayStyle.light
+            : SystemUiOverlayStyle.dark);
+
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: overlayStyle,
+      child: Scaffold(
       body: CustomScrollView(
+        controller: _scrollCtrl,
         slivers: [
           SliverAppBar(
-            expandedHeight: 220,
+            expandedHeight: _expandedHeight,
             pinned: true,
+            backgroundColor: _headerVisible
+                ? Colors.transparent
+                : theme.colorScheme.surface,
+            foregroundColor: _headerVisible
+                ? Colors.white
+                : theme.colorScheme.onSurface,
+            systemOverlayStyle: overlayStyle,
             flexibleSpace: FlexibleSpaceBar(
-              title: Text(shop.name,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontWeight: FontWeight.w700)),
+              title: Text(
+                shop.name,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  color: _headerVisible
+                      ? Colors.white
+                      : theme.colorScheme.onSurface,
+                  shadows: _headerVisible
+                      ? const [Shadow(color: Colors.black54, blurRadius: 8)]
+                      : null,
+                ),
+              ),
               centerTitle: true,
               background: _header(theme),
             ),
@@ -147,6 +316,10 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
                     const SizedBox(height: 20),
                   ],
                   _followButton(theme, l10n),
+                  if (_walkInAvailable) ...[
+                    const SizedBox(height: 12),
+                    _walkInButton(theme, l10n),
+                  ],
                   const SizedBox(height: 28),
                   if (shop.description.isNotEmpty) ...[
                     Text(l10n.shopAboutHeading,
@@ -171,26 +344,43 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
           ),
         ],
       ),
+      ), // AnnotatedRegion
     );
   }
 
   Widget _header(ThemeData theme) {
     final url = widget.shop.photoUrl;
-    if (url != null && url.isNotEmpty) {
-      return Image.network(
-        url,
-        fit: BoxFit.cover,
-        errorBuilder: (_, _, _) => _fallbackHeader(theme),
-        loadingBuilder: (_, child, progress) {
-          if (progress == null) return child;
-          return Container(
-            color: theme.colorScheme.primary.withValues(alpha: 0.1),
-            child: const Center(child: CircularProgressIndicator()),
-          );
-        },
-      );
-    }
-    return _fallbackHeader(theme);
+    final image = (url != null && url.isNotEmpty)
+        ? Image.network(
+            url,
+            fit: BoxFit.cover,
+            errorBuilder: (_, _, _) => _fallbackHeader(theme),
+            loadingBuilder: (_, child, progress) {
+              if (progress == null) return child;
+              return Container(
+                color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                child: const Center(child: CircularProgressIndicator()),
+              );
+            },
+          )
+        : _fallbackHeader(theme);
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        image,
+        const DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Colors.transparent, Colors.black54],
+              stops: [0.4, 1.0],
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _fallbackHeader(ThemeData theme) {
@@ -200,6 +390,50 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
         child: Icon(Icons.storefront_outlined,
             size: 72,
             color: theme.colorScheme.primary.withValues(alpha: 0.6)),
+      ),
+    );
+  }
+
+  bool get _walkInAvailable {
+    final url = widget.shop.serverUrl;
+    if (url == null || url.isEmpty) return false;
+    final d = _distanceMeters;
+    return d != null && d <= _proximityThresholdMeters;
+  }
+
+  Widget _walkInButton(ThemeData theme, AppLocalizations l10n) {
+    final dist = _distanceMeters;
+    return SizedBox(
+      width: double.infinity,
+      child: FilledButton.icon(
+        onPressed: _connectingWalkIn ? null : _startWalkIn,
+        icon: _connectingWalkIn
+            ? const SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+              )
+            : const Icon(Icons.storefront_outlined),
+        label: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              _connectingWalkIn ? l10n.shopWalkInConnecting : l10n.shopWalkInButton,
+              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+            ),
+            if (dist != null && !_connectingWalkIn)
+              Text(
+                l10n.shopWalkInDistanceLabel(dist.round()),
+                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.normal),
+              ),
+          ],
+        ),
+        style: FilledButton.styleFrom(
+          minimumSize: const Size.fromHeight(52),
+          backgroundColor: theme.colorScheme.secondary,
+          foregroundColor: theme.colorScheme.onSecondary,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        ),
       ),
     );
   }

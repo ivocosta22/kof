@@ -248,6 +248,12 @@ class AppLocalizationsFi extends AppLocalizations {
   String get scanWrongServer => 'QR-koodi ei osoita Kof-palvelimeen.';
 
   @override
+  String get menuPickupOrder => 'Noutoasiakas';
+
+  @override
+  String get menuQrHint => 'Tilaatko pöydältä? Skannaa pöydän QR-koodi täältä!';
+
+  @override
   String get menuNoItems => 'Ei saatavilla olevia tuotteita';
 
   @override
@@ -325,6 +331,12 @@ class AppLocalizationsFi extends AppLocalizations {
   String get myOrdersScanCta => 'Skannaa pöydän QR-koodi';
 
   @override
+  String get myOrdersActive => 'Aktiiviset';
+
+  @override
+  String get myOrdersHistory => 'Historia';
+
+  @override
   String get notificationsTitle => 'Ilmoitukset';
 
   @override
@@ -394,6 +406,10 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get mapOpenSettings => 'Avaa asetukset';
+
+  @override
+  String get mapNoShopsCountryHint =>
+      'Ei kahviloita? Selaat ehkä eri maata kuin sijaintisi. Päivitä maasi Asetuksissa.';
 
   @override
   String get settingsAppearance => 'Ulkoasu';
@@ -534,4 +550,44 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get followedShopsEmptyBody =>
       'Avaa kartta löytääksesi kahviloita ja napauta Seuraa saadaksesi päivityksiä.';
+
+  @override
+  String get countryLabel => 'Maa';
+
+  @override
+  String get countryHint => 'Valitse maasi';
+
+  @override
+  String get countrySearch => 'Hae maita...';
+
+  @override
+  String get settingsCountry => 'Maa';
+
+  @override
+  String get shopWalkInButton => 'Tilaa tässä';
+
+  @override
+  String get shopWalkInConnecting => 'Yhdistetään...';
+
+  @override
+  String get shopWalkInDialogTitle => 'Tilaa tästä kahvilasta';
+
+  @override
+  String get shopWalkInNameLabel => 'Nimesi';
+
+  @override
+  String get shopWalkInNameHint => 'esim. Matti';
+
+  @override
+  String get shopWalkInWifi =>
+      'Varmista, että olet liittyneenä kahvilan Wi-Fi-verkkoon';
+
+  @override
+  String get shopWalkInError =>
+      'Kahvilan palvelimeen ei saatu yhteyttä. Oletko kahvilan Wi-Fi-verkossa?';
+
+  @override
+  String shopWalkInDistanceLabel(int meters) {
+    return '${meters}m päässä';
+  }
 }

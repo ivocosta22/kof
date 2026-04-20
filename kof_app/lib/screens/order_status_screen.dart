@@ -4,6 +4,7 @@ import '../l10n/l10n.dart';
 import '../models/order.dart';
 import '../providers/session_provider.dart';
 import '../providers/cart_provider.dart';
+import '../services/order_history_service.dart';
 import '../services/websocket_service.dart';
 import 'scan_screen.dart';
 import 'menu_screen.dart';
@@ -55,6 +56,7 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
     final newStatus = msg['status'] as String?;
     if (newStatus == null) return;
 
+    OrderHistoryService().updateStatus(_order.id, newStatus);
     if (mounted) {
       setState(() => _order.status = newStatus);
     }

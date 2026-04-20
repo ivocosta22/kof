@@ -9,6 +9,7 @@ import db from "./db.js";
 import adminRouter from "./routes/admin.js";
 import menuRouter from "./routes/menu.js";
 import createOrdersRouter from "./routes/orders.js";
+import firebaseRouter from "./routes/firebase.js";
 import { createRealtimeServer } from "./realtime.js";
 
 const app = express();
@@ -95,6 +96,16 @@ app.get("/api/config", (req, res) => {
   });
 });
 
+// Walk-in confirmation endpoint — lets the Kof app verify it can reach this server
+// before presenting the "Order Here" counter-pickup flow to the user.
+app.get("/api/walkin", (req, res) => {
+  const rows = db
+    .prepare(`SELECT key, value FROM shop_settings WHERE key IN ('shop_name', 'shop_description')`)
+    .all();
+  const s = Object.fromEntries(rows.map((r) => [r.key, r.value]));
+  res.json({ ok: true, shop_name: s.shop_name || "" });
+});
+
 // Service discovery endpoint for Flutter clients on the local network.
 // Returns server identity and shop profile so clients can confirm they found the right Kof instance.
 app.get("/api/info", (req, res) => {
@@ -114,6 +125,7 @@ app.get("/api/info", (req, res) => {
 });
 
 app.use("/api/admin", adminRouter);
+app.use("/api/admin/firebase", firebaseRouter);
 app.use("/api/menu", menuRouter);
 app.use("/api/orders", createOrdersRouter({ broadcast }));
 

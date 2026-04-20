@@ -1,13 +1,16 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/foundation.dart';
+import 'package:flutter/scheduler.dart';
 import '../models/user.dart';
 import '../services/auth_service.dart';
 import '../services/fcm_service.dart';
+import '../services/user_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthService _service = AuthService();
   final FcmService _fcm = FcmService();
+  final UserService _userService = UserService();
   StreamSubscription<fb.User?>? _sub;
   User? _user;
 
@@ -22,11 +25,11 @@ class AuthProvider extends ChangeNotifier {
     _attachListener();
     final fbUser = _service.currentFirebaseUser;
     if (fbUser != null) _user = _userFromFirebase(fbUser);
-    notifyListeners();
+    SchedulerBinding.instance.addPostFrameCallback((_) => notifyListeners());
   }
 
   void _attachListener() {
-    _sub ??= _service.authStateChanges().listen((fbUser) {
+    _sub ??= _service.authStateChanges().listen((fbUser) async {
       // Don't clobber an active guest session when Firebase reports null.
       if (fbUser == null) {
         if (_user != null && !_user!.isGuest) {
@@ -39,7 +42,21 @@ class AuthProvider extends ChangeNotifier {
       _user = _userFromFirebase(fbUser);
       _fcm.registerForUser(fbUser.uid);
       notifyListeners();
+      // Load country from Firestore and update if present
+      final country = await _userService.getCountry(fbUser.uid);
+      if (country != null && _user != null && !_user!.isGuest) {
+        _user = _user!.copyWith(country: country);
+        notifyListeners();
+      }
     });
+  }
+
+  Future<void> saveCountry(String country) async {
+    final uid = _user?.id;
+    if (uid == null || (_user?.isGuest ?? true)) return;
+    await _userService.saveCountry(uid, country);
+    _user = _user!.copyWith(country: country);
+    notifyListeners();
   }
 
   User _userFromFirebase(fb.User f) => User(

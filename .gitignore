@@ -7,6 +7,8 @@ scripts.txt
 .env.local
 .env.*.local
 **/.env
+firebase-service-account.json
+*-service-account.json
 
 # ── Database runtime files ──────────────────────────────────────────────────
 *.sqlite

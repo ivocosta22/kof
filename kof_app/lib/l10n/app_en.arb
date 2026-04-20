@@ -100,6 +100,8 @@
   "scanNotKofQr": "Not a Kof table QR code.\nPlease scan the QR code on your table.",
   "scanWrongServer": "QR code does not point to a Kof server.",
 
+  "menuPickupOrder": "Pickup order",
+  "menuQrHint": "Ordering from a table? Scan the table's QR code here!",
   "menuNoItems": "No items available",
   "menuRetry": "Retry",
   "menuReviewOrder": "Review Order",
@@ -138,6 +140,8 @@
   "myOrdersEmpty": "No orders yet",
   "myOrdersEmptySubtitle": "Orders you place at coffee shops will appear here.",
   "myOrdersScanCta": "Scan a table QR code",
+  "myOrdersActive": "Active",
+  "myOrdersHistory": "History",
 
   "notificationsTitle": "Notifications",
   "notificationsEmpty": "No notifications yet",
@@ -163,6 +167,7 @@
   "mapNoShopsNearby": "No coffee shops nearby yet",
   "mapNoShopsSubtitle": "Shops using Kof will appear here once the platform launches.",
   "mapOpenSettings": "Open Settings",
+  "mapNoShopsCountryHint": "Not seeing any shops? You may be browsing a different country than your current location. Update your country in Settings.",
 
   "settingsAppearance": "Appearance",
   "settingsThemeMode": "Theme",
@@ -218,5 +223,24 @@
   "followedShopsGuestTitle": "Sign in to follow shops",
   "followedShopsGuestBody": "Create an account to follow shops and get notified about news and offers.",
   "followedShopsEmptyTitle": "No followed shops yet",
-  "followedShopsEmptyBody": "Open the map to find shops and tap Follow to get their updates."
+  "followedShopsEmptyBody": "Open the map to find shops and tap Follow to get their updates.",
+
+  "countryLabel": "Country",
+  "countryHint": "Select your country",
+  "countrySearch": "Search countries...",
+  "settingsCountry": "Country",
+
+  "shopWalkInButton": "Order Here",
+  "shopWalkInConnecting": "Connecting...",
+  "shopWalkInDialogTitle": "Order at this shop",
+  "shopWalkInNameLabel": "Your name",
+  "shopWalkInNameHint": "e.g. Jane",
+  "shopWalkInWifi": "Make sure you're connected to the shop's Wi-Fi",
+  "shopWalkInError": "Could not connect to the shop server. Are you on the shop's Wi-Fi?",
+  "shopWalkInDistanceLabel": "{meters}m away",
+  "@shopWalkInDistanceLabel": {
+    "placeholders": {
+      "meters": { "type": "int" }
+    }
+  }
 }

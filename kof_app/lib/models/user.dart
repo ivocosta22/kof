@@ -4,6 +4,7 @@ class User {
   final String email;
   final String? phone;
   final String? photoUrl;
+  final String? country;
   final bool isGuest;
   final bool emailVerified;
 
@@ -13,6 +14,7 @@ class User {
     required this.email,
     this.phone,
     this.photoUrl,
+    this.country,
     this.isGuest = false,
     this.emailVerified = false,
   });
@@ -29,6 +31,7 @@ class User {
     String? email,
     String? phone,
     String? photoUrl,
+    String? country,
     bool? emailVerified,
   }) =>
       User(
@@ -37,6 +40,7 @@ class User {
         email: email ?? this.email,
         phone: phone ?? this.phone,
         photoUrl: photoUrl ?? this.photoUrl,
+        country: country ?? this.country,
         isGuest: isGuest,
         emailVerified: emailVerified ?? this.emailVerified,
       );
@@ -47,6 +51,7 @@ class User {
         'email': email,
         if (phone != null) 'phone': phone,
         if (photoUrl != null) 'photoUrl': photoUrl,
+        if (country != null) 'country': country,
         'isGuest': isGuest,
         'emailVerified': emailVerified,
       };
@@ -57,6 +62,7 @@ class User {
         email: json['email'] as String,
         phone: json['phone'] as String?,
         photoUrl: json['photoUrl'] as String?,
+        country: json['country'] as String?,
         isGuest: json['isGuest'] as bool? ?? false,
         emailVerified: json['emailVerified'] as bool? ?? false,
       );

@@ -250,6 +250,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get scanWrongServer => 'O QR code não aponta para um servidor Kof.';
 
   @override
+  String get menuPickupOrder => 'Pedido de balcão';
+
+  @override
+  String get menuQrHint => 'A pedir de uma mesa? Leia o QR code da mesa aqui!';
+
+  @override
   String get menuNoItems => 'Sem itens disponíveis';
 
   @override
@@ -327,6 +333,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get myOrdersScanCta => 'Ler um QR code de mesa';
 
   @override
+  String get myOrdersActive => 'Em curso';
+
+  @override
+  String get myOrdersHistory => 'Histórico';
+
+  @override
   String get notificationsTitle => 'Notificações';
 
   @override
@@ -397,6 +409,10 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get mapOpenSettings => 'Abrir Definições';
+
+  @override
+  String get mapNoShopsCountryHint =>
+      'Sem lojas? Pode estar a ver um país diferente da sua localização atual. Atualize o seu país nas Definições.';
 
   @override
   String get settingsAppearance => 'Aparência';
@@ -536,4 +552,44 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get followedShopsEmptyBody =>
       'Abra o mapa para descobrir lojas e toque em Seguir para receber atualizações.';
+
+  @override
+  String get countryLabel => 'País';
+
+  @override
+  String get countryHint => 'Selecione o seu país';
+
+  @override
+  String get countrySearch => 'Pesquisar países...';
+
+  @override
+  String get settingsCountry => 'País';
+
+  @override
+  String get shopWalkInButton => 'Pedir Aqui';
+
+  @override
+  String get shopWalkInConnecting => 'A ligar...';
+
+  @override
+  String get shopWalkInDialogTitle => 'Pedir nesta loja';
+
+  @override
+  String get shopWalkInNameLabel => 'O seu nome';
+
+  @override
+  String get shopWalkInNameHint => 'ex: João';
+
+  @override
+  String get shopWalkInWifi =>
+      'Certifique-se de que está ligado ao Wi-Fi da loja';
+
+  @override
+  String get shopWalkInError =>
+      'Não foi possível ligar ao servidor da loja. Está ligado ao Wi-Fi da loja?';
+
+  @override
+  String shopWalkInDistanceLabel(int meters) {
+    return '${meters}m de distância';
+  }
 }

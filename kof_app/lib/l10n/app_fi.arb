@@ -102,6 +102,8 @@
   "scanNotKofQr": "Ei Kof-pöydän QR-koodi.\nSkannaa pöydälläsi oleva QR-koodi.",
   "scanWrongServer": "QR-koodi ei osoita Kof-palvelimeen.",
 
+  "menuPickupOrder": "Noutoasiakas",
+  "menuQrHint": "Tilaatko pöydältä? Skannaa pöydän QR-koodi täältä!",
   "menuNoItems": "Ei saatavilla olevia tuotteita",
   "menuRetry": "Yritä uudelleen",
   "menuReviewOrder": "Tarkista tilaus",
@@ -140,6 +142,8 @@
   "myOrdersEmpty": "Ei vielä tilauksia",
   "myOrdersEmptySubtitle": "Kahviloissa tekemäsi tilaukset näkyvät täällä.",
   "myOrdersScanCta": "Skannaa pöydän QR-koodi",
+  "myOrdersActive": "Aktiiviset",
+  "myOrdersHistory": "Historia",
 
   "notificationsTitle": "Ilmoitukset",
   "notificationsEmpty": "Ei vielä ilmoituksia",
@@ -165,6 +169,7 @@
   "mapNoShopsNearby": "Ei lähellä olevia kahviloita vielä",
   "mapNoShopsSubtitle": "Kof-kahvilat näkyvät täällä kun alusta on lanseerattu.",
   "mapOpenSettings": "Avaa asetukset",
+  "mapNoShopsCountryHint": "Ei kahviloita? Selaat ehkä eri maata kuin sijaintisi. Päivitä maasi Asetuksissa.",
 
   "settingsAppearance": "Ulkoasu",
   "settingsThemeMode": "Teema",
@@ -217,5 +222,24 @@
   "followedShopsGuestTitle": "Kirjaudu seurataksesi kahviloita",
   "followedShopsGuestBody": "Luo tili seurataksesi kahviloita ja saadaksesi ilmoituksia uutisista ja tarjouksista.",
   "followedShopsEmptyTitle": "Ei seurattuja kahviloita",
-  "followedShopsEmptyBody": "Avaa kartta löytääksesi kahviloita ja napauta Seuraa saadaksesi päivityksiä."
+  "followedShopsEmptyBody": "Avaa kartta löytääksesi kahviloita ja napauta Seuraa saadaksesi päivityksiä.",
+
+  "countryLabel": "Maa",
+  "countryHint": "Valitse maasi",
+  "countrySearch": "Hae maita...",
+  "settingsCountry": "Maa",
+
+  "shopWalkInButton": "Tilaa tässä",
+  "shopWalkInConnecting": "Yhdistetään...",
+  "shopWalkInDialogTitle": "Tilaa tästä kahvilasta",
+  "shopWalkInNameLabel": "Nimesi",
+  "shopWalkInNameHint": "esim. Matti",
+  "shopWalkInWifi": "Varmista, että olet liittyneenä kahvilan Wi-Fi-verkkoon",
+  "shopWalkInError": "Kahvilan palvelimeen ei saatu yhteyttä. Oletko kahvilan Wi-Fi-verkossa?",
+  "shopWalkInDistanceLabel": "{meters}m päässä",
+  "@shopWalkInDistanceLabel": {
+    "placeholders": {
+      "meters": { "type": "int" }
+    }
+  }
 }

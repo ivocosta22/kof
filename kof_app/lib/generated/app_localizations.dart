@@ -556,6 +556,18 @@ abstract class AppLocalizations {
   /// **'QR code does not point to a Kof server.'**
   String get scanWrongServer;
 
+  /// No description provided for @menuPickupOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Pickup order'**
+  String get menuPickupOrder;
+
+  /// No description provided for @menuQrHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Ordering from a table? Scan the table\'s QR code here!'**
+  String get menuQrHint;
+
   /// No description provided for @menuNoItems.
   ///
   /// In en, this message translates to:
@@ -700,6 +712,18 @@ abstract class AppLocalizations {
   /// **'Scan a table QR code'**
   String get myOrdersScanCta;
 
+  /// No description provided for @myOrdersActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get myOrdersActive;
+
+  /// No description provided for @myOrdersHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get myOrdersHistory;
+
   /// No description provided for @notificationsTitle.
   ///
   /// In en, this message translates to:
@@ -831,6 +855,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open Settings'**
   String get mapOpenSettings;
+
+  /// No description provided for @mapNoShopsCountryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Not seeing any shops? You may be browsing a different country than your current location. Update your country in Settings.'**
+  String get mapNoShopsCountryHint;
 
   /// No description provided for @settingsAppearance.
   ///
@@ -1089,6 +1119,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open the map to find shops and tap Follow to get their updates.'**
   String get followedShopsEmptyBody;
+
+  /// No description provided for @countryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Country'**
+  String get countryLabel;
+
+  /// No description provided for @countryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select your country'**
+  String get countryHint;
+
+  /// No description provided for @countrySearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Search countries...'**
+  String get countrySearch;
+
+  /// No description provided for @settingsCountry.
+  ///
+  /// In en, this message translates to:
+  /// **'Country'**
+  String get settingsCountry;
+
+  /// No description provided for @shopWalkInButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Here'**
+  String get shopWalkInButton;
+
+  /// No description provided for @shopWalkInConnecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting...'**
+  String get shopWalkInConnecting;
+
+  /// No description provided for @shopWalkInDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Order at this shop'**
+  String get shopWalkInDialogTitle;
+
+  /// No description provided for @shopWalkInNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Your name'**
+  String get shopWalkInNameLabel;
+
+  /// No description provided for @shopWalkInNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Jane'**
+  String get shopWalkInNameHint;
+
+  /// No description provided for @shopWalkInWifi.
+  ///
+  /// In en, this message translates to:
+  /// **'Make sure you\'re connected to the shop\'s Wi-Fi'**
+  String get shopWalkInWifi;
+
+  /// No description provided for @shopWalkInError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not connect to the shop server. Are you on the shop\'s Wi-Fi?'**
+  String get shopWalkInError;
+
+  /// No description provided for @shopWalkInDistanceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{meters}m away'**
+  String shopWalkInDistanceLabel(int meters);
 }
 
 class _AppLocalizationsDelegate
