@@ -159,7 +159,7 @@
 
       itemsEl.innerHTML = (order.items || [])
         .map((item) => {
-          const modifiers = (item.chosen_modifiers || []).join(", ");
+          const modifiers = kof.formatModifiers(item.chosen_modifiers).join(", ");
           return `
             <div class="order-item">
               <div class="order-meta-row">

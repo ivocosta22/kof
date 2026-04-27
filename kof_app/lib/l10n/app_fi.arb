@@ -241,5 +241,61 @@
     "placeholders": {
       "meters": { "type": "int" }
     }
-  }
+  },
+
+  "menuFeatured": "Suositellut",
+  "menuCategories": "Kategoriat",
+  "menuAllItems": "Kaikki tuotteet",
+  "menuSearchHint": "Etsi juomia tai ruokaa",
+
+  "categoryAll": "Kaikki",
+  "categoryEspresso": "Espresso",
+  "categoryHotDrinks": "Kuumat juomat",
+  "categoryColdDrinks": "Kylmät juomat",
+  "categoryPastries": "Leivonnaiset",
+  "categoryFood": "Ruoka",
+  "categoryOther": "Muut",
+
+  "itemDetailSize": "Koko",
+  "itemDetailQuantity": "Määrä",
+  "itemDetailAddToCart": "Lisää koriin",
+  "itemDetailPlaceOrder": "Tilaa",
+  "itemDetailUnavailable": "Ei juuri nyt saatavilla",
+  "itemDetailBack": "Takaisin",
+
+  "sizeSmall": "Pieni",
+  "sizeMedium": "Keskikokoinen",
+  "sizeLarge": "Suuri",
+  "sizeXtraLarge": "Erittäin suuri",
+
+  "orderStatusItems": "Tuotteet",
+  "orderStatusNote": "Huomio",
+  "orderStatusPlacedAt": "Tilattu klo {time}",
+  "@orderStatusPlacedAt": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "orderStatusPickupFor": "Nouto: {name}",
+  "@orderStatusPickupFor": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "orderStatusItemCount": "{count} tuote(tta)",
+  "@orderStatusItemCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "orderStatusPaid": "Maksettu",
+  "orderStatusUnpaid": "Maksamatta",
+  "orderStatusOffline": "Ei yhteyttä — päivitä",
+
+  "receiptTitle": "Kuitti",
+  "receiptPaidStamp": "MAKSETTU",
+  "receiptThankYou": "Kiitos käynnistäsi",
+  "receiptViewButton": "Näytä kuitti",
+
+  "statusReadyTable": "Tulossa pöytääsi"
 }

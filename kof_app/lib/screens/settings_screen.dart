@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../data/countries.dart';
 import '../l10n/l10n.dart';
+import '../providers/active_orders_provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/cart_provider.dart';
 import '../widgets/country_picker_field.dart';
@@ -219,6 +220,7 @@ class SettingsScreen extends StatelessWidget {
     if (!context.mounted) return;
     context.read<CartProvider>().clear();
     context.read<SessionProvider>().clearSession();
+    context.read<ActiveOrdersProvider>().clear();
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => const LoginScreen()),

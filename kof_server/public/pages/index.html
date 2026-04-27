@@ -51,7 +51,7 @@
         </div>
       </div>
 
-      <div id="menu" class="menu-grid"></div>
+      <div id="menu" class="menu-categories"></div>
     </section>
   </main>
 
@@ -369,14 +369,69 @@
       return item?.availability === "low" ? "low" : "available";
     }
 
-    function iconForItem(name = "") {
-      const normalized = String(name).toLowerCase();
+    // Pick a glyph for an item — uses category as the primary signal so an
+    // Avocado Toast doesn't end up with a coffee cup. Falls back to per-name
+    // matches inside the drink categories.
+    function iconForItem(item = {}) {
+      const name = String(item.name || "").toLowerCase();
+      const category = String(item.category || "").toLowerCase();
 
-      if (normalized.includes("iced")) return "&#10052;";
-      if (normalized.includes("latte")) return "&#9749;";
-      if (normalized.includes("espresso")) return "&#9716;";
-      if (normalized.includes("mocha") || normalized.includes("chocolate")) return "&#10022;";
-      return "&#9749;";
+      if (category === "pastries") {
+        if (name.includes("muffin")) return "&#129374;"; // 🧁 cupcake
+        if (name.includes("croissant")) return "&#129360;"; // 🥐
+        if (name.includes("cinnamon") || name.includes("roll")) return "&#127837;"; // 🍯
+        return "&#127857;"; // 🍰
+      }
+
+      if (category === "food") {
+        if (name.includes("avocado")) return "&#129361;"; // 🥑
+        if (name.includes("toast") || name.includes("toastie") || name.includes("sandwich")) return "&#129386;"; // 🥪
+        return "&#127869;"; // 🍽
+      }
+
+      if (category === "cold drinks" || name.includes("iced") || name.includes("cold")) {
+        return "&#129371;"; // 🧊 ice cube
+      }
+
+      if (category === "espresso" || name.includes("espresso") || name.includes("americano")) {
+        return "&#9749;"; // ☕
+      }
+
+      if (name.includes("mocha") || name.includes("chocolate")) return "&#127852;"; // 🍫
+      if (name.includes("tea")) return "&#127861;"; // 🍵
+      return "&#9749;"; // ☕ default for hot drinks
+    }
+
+    // Stable display order for category section headers on the menu.
+    const CATEGORY_ORDER = ["Espresso", "Hot Drinks", "Cold Drinks", "Pastries", "Food", "Other"];
+
+    // Group menu items by their category, preserving CATEGORY_ORDER and dropping
+    // empty groups. Items missing a category fall into "Other".
+    function groupMenuByCategory(menu) {
+      const groups = new Map();
+      for (const item of menu) {
+        const cat = item.category && CATEGORY_ORDER.includes(item.category)
+          ? item.category
+          : "Other";
+        if (!groups.has(cat)) groups.set(cat, []);
+        groups.get(cat).push(item);
+      }
+      return CATEGORY_ORDER
+        .filter((cat) => groups.has(cat))
+        .map((cat) => ({ category: cat, items: groups.get(cat) }));
+    }
+
+    function localizedCategoryLabel(category) {
+      // Reuse i18n keys when available, otherwise fall back to the literal.
+      const key = {
+        "Espresso": "categories.espresso",
+        "Hot Drinks": "categories.hotDrinks",
+        "Cold Drinks": "categories.coldDrinks",
+        "Pastries": "categories.pastries",
+        "Food": "categories.food",
+        "Other": "categories.other",
+      }[category];
+      return key ? getText(key, category) : category;
     }
 
     function renderMenuActionButton({ action, itemId, label, variant, disabled, disabledTitle }) {
@@ -389,47 +444,65 @@
       return `<span class="menu-action-tooltip" title="${escapeHtml(disabledTitle)}">${buttonHtml}</span>`;
     }
 
-    function renderMenu(menu) {
-      menuEl.innerHTML = menu
-        .map((item) => {
-          const displayAvailability = getDisplayAvailability(item);
-          const unavailableTitle = t("index.itemUnavailable");
+    function renderMenuCard(item) {
+      const displayAvailability = getDisplayAvailability(item);
+      const unavailableTitle = t("index.itemUnavailable");
+      // Customize is only meaningful for items that have size or other
+      // drink-only options. Food and pastries get a single Add button.
+      const showCustomize = !!item.has_sizes;
 
-          return `
-            <article class="menu-card">
-              <div class="menu-card-top">
-                <div class="menu-card-tag">${availabilityPill(displayAvailability)}</div>
-                <div class="menu-card-icon" aria-hidden="true">${iconForItem(item.name)}</div>
-              </div>
-              <h3 class="menu-card-name">${escapeHtml(item.name)}</h3>
-              <p class="menu-card-desc muted">${escapeHtml(item.description || "")}</p>
-              <div class="menu-card-bottom">
-                <div class="menu-price">
-                  <strong>${money(item.price_cents)}</strong>
-                  <span>${escapeHtml(getText("index.cardHint", "Made to order"))}</span>
-                </div>
-                <div class="menu-card-actions">
-                  ${renderMenuActionButton({
-                    action: "customize",
-                    itemId: item.id,
-                    label: t("index.customize"),
-                    variant: "secondary",
-                    disabled: displayAvailability === "unavailable",
-                    disabledTitle: unavailableTitle,
-                  })}
-                  ${renderMenuActionButton({
-                    action: "add",
-                    itemId: item.id,
-                    label: t("index.add"),
-                    variant: "primary",
-                    disabled: displayAvailability === "unavailable",
-                    disabledTitle: unavailableTitle,
-                  })}
-                </div>
-              </div>
-            </article>
-          `;
-        })
+      const customizeBtn = showCustomize
+        ? renderMenuActionButton({
+            action: "customize",
+            itemId: item.id,
+            label: t("index.customize"),
+            variant: "secondary",
+            disabled: displayAvailability === "unavailable",
+            disabledTitle: unavailableTitle,
+          })
+        : "";
+
+      return `
+        <article class="menu-card">
+          <div class="menu-card-top">
+            <div class="menu-card-tag">${availabilityPill(displayAvailability)}</div>
+            <div class="menu-card-icon" aria-hidden="true">${iconForItem(item)}</div>
+          </div>
+          <h3 class="menu-card-name">${escapeHtml(item.name)}</h3>
+          <p class="menu-card-desc muted">${escapeHtml(item.description || "")}</p>
+          <div class="menu-card-bottom">
+            <div class="menu-price">
+              <strong>${money(item.price_cents)}</strong>
+              <span>${escapeHtml(getText("index.cardHint", "Made to order"))}</span>
+            </div>
+            <div class="menu-card-actions">
+              ${customizeBtn}
+              ${renderMenuActionButton({
+                action: "add",
+                itemId: item.id,
+                label: t("index.add"),
+                variant: "primary",
+                disabled: displayAvailability === "unavailable",
+                disabledTitle: unavailableTitle,
+              })}
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderMenu(menu) {
+      const groups = groupMenuByCategory(menu);
+
+      menuEl.innerHTML = groups
+        .map((group) => `
+          <section class="menu-category-section">
+            <h3 class="menu-category-title">${escapeHtml(localizedCategoryLabel(group.category))}</h3>
+            <div class="menu-grid">
+              ${group.items.map(renderMenuCard).join("")}
+            </div>
+          </section>
+        `)
         .join("");
 
       menuSectionHintEl.innerText = getText("index.menuHint", "Browse the menu and add your favorites.");

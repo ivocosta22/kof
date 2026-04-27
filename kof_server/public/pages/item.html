@@ -43,7 +43,12 @@
             </div>
           </div>
 
-          <div class="field-card">
+          <div class="field-card" id="sizeFieldCard" style="display:none">
+            <label id="sizeLabel" for="size">Size</label>
+            <select id="size"></select>
+          </div>
+
+          <div class="field-card" id="milkFieldCard">
             <label id="milkLabel" for="milk"></label>
             <select id="milk">
               <option value="regular" id="milkRegularOption"></option>
@@ -52,7 +57,7 @@
             </select>
           </div>
 
-          <div class="field-card">
+          <div class="field-card" id="shotFieldCard">
             <label id="extraShotLabel" for="shot"></label>
             <select id="shot">
               <option value="no" id="shotNoOption"></option>
@@ -98,7 +103,37 @@ const extraShotLabelEl = document.getElementById("extraShotLabel");
 const shotEl = document.getElementById("shot");
 const shotNoOptionEl = document.getElementById("shotNoOption");
 const shotYesOptionEl = document.getElementById("shotYesOption");
+const milkFieldCardEl = document.getElementById("milkFieldCard");
+const shotFieldCardEl = document.getElementById("shotFieldCard");
+const sizeFieldCardEl = document.getElementById("sizeFieldCard");
+const sizeLabelEl = document.getElementById("sizeLabel");
+const sizeEl = document.getElementById("size");
 const addToCartBtnEl = document.getElementById("addToCartBtn");
+
+// Drink categories where milk + extra shot make sense.
+const DRINK_CATEGORIES = new Set(["Espresso", "Hot Drinks", "Cold Drinks"]);
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
+// Live-update the displayed price as the user changes size.
+function updatePrice() {
+  if (!item) return;
+  const delta = item.has_sizes ? sizeDeltaFor(sizeEl.value) : 0;
+  const unit = item.price_cents + delta;
+  priceEl.innerText = `EUR ${(unit / 100).toFixed(2)}`;
+}
+
+function sizeDeltaFor(sizeName) {
+  if (!item || !Array.isArray(item.sizes)) return 0;
+  const match = item.sizes.find((s) => s.name === sizeName);
+  return Number(match?.price_cents_delta || 0);
+}
 const customizeTitleEl = document.getElementById("customizeTitle");
 const customizeHintEl = document.getElementById("customizeHint");
 const ctaHintEl = document.getElementById("ctaHint");
@@ -114,6 +149,10 @@ function applyTranslations() {
   backBtnEl.innerText = `← ${t("common.back")}`;
   nameEl.innerText = t("item.loading");
   quantityLabelEl.innerText = t("common.quantity");
+  if (sizeLabelEl) {
+    const localizedSize = t("item.size");
+    sizeLabelEl.innerText = localizedSize === "item.size" ? "Size" : localizedSize;
+  }
   milkLabelEl.innerText = t("item.milk");
   milkRegularOptionEl.innerText = t("item.milkRegular");
   milkOatOptionEl.innerText = t("item.milkOat");
@@ -147,6 +186,42 @@ function applyTranslations() {
   nameEl.innerText = item.name;
   descEl.innerText = item.description || "";
   priceEl.innerText = `EUR ${(item.price_cents / 100).toFixed(2)}`;
+
+  // Show size selector for items that support sizes (drinks). The size dropdown
+  // is populated from item.sizes returned by /api/menu — falls back to a
+  // built-in S/M/L/XL set if the server didn't ship it (older builds).
+  if (item.has_sizes) {
+    const sizes = Array.isArray(item.sizes) && item.sizes.length
+      ? item.sizes
+      : [
+          { name: "Small", price_cents_delta: -50 },
+          { name: "Medium", price_cents_delta: 0 },
+          { name: "Large", price_cents_delta: 50 },
+          { name: "Xtra Large", price_cents_delta: 100 },
+        ];
+    sizeEl.innerHTML = sizes
+      .map((s) => {
+        const delta = Number(s.price_cents_delta || 0);
+        const suffix = delta === 0
+          ? ""
+          : ` (${delta > 0 ? "+" : "-"}EUR ${(Math.abs(delta) / 100).toFixed(2)})`;
+        return `<option value="${escapeHtml(s.name)}" ${s.name === "Medium" ? "selected" : ""}>${escapeHtml(s.name)}${suffix}</option>`;
+      })
+      .join("");
+    sizeFieldCardEl.style.display = "";
+    sizeEl.addEventListener("change", updatePrice);
+  }
+
+  // Milk + extra-shot only apply to coffee-based drinks. Hide them for tea,
+  // pastries, food, etc. — server-side validation never enforced these so
+  // the UI is the only place to keep them out.
+  const isDrink = DRINK_CATEGORIES.has(item.category);
+  if (!isDrink) {
+    milkFieldCardEl.style.display = "none";
+    shotFieldCardEl.style.display = "none";
+  }
+
+  updatePrice();
   const bootMaxMakeableUnits =
     item.max_makeable_units === null || item.max_makeable_units === undefined
       ? null
@@ -208,22 +283,33 @@ function addToCart() {
   }
 
   const modifiers = [];
+  const isDrink = DRINK_CATEGORIES.has(item.category);
 
-  const milk = milkEl.value;
-  const shot = shotEl.value;
-
-  if (milk !== "regular") {
-    modifiers.push(`milk:${milk}`);
+  if (item.has_sizes) {
+    modifiers.push(`size:${sizeEl.value}`);
   }
 
-  if (shot === "yes") {
-    modifiers.push("extra_shot");
+  if (isDrink) {
+    const milk = milkEl.value;
+    const shot = shotEl.value;
+
+    if (milk !== "regular") {
+      modifiers.push(`milk:${milk}`);
+    }
+
+    if (shot === "yes") {
+      modifiers.push("extra_shot");
+    }
   }
+
+  // Cart line price reflects the size delta — keeps the cart total honest
+  // before the server recomputes on order placement.
+  const lineUnitPrice = item.price_cents + (item.has_sizes ? sizeDeltaFor(sizeEl.value) : 0);
 
   kof.cartAdd({
     menu_item_id: item.id,
     name: item.name,
-    price_cents: item.price_cents,
+    price_cents: lineUnitPrice,
     qty,
     chosen_modifiers: modifiers
   });

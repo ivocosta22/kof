@@ -91,6 +91,22 @@
         .replaceAll(">", "&gt;");
     }
 
+// Render a chosen-modifier value for display. Handles new strings
+// ("size:Large", "milk:oat") and legacy {type, name} objects.
+    function formatModifier(value) {
+      if (value == null) return "";
+      if (typeof value === "string") {
+        if (value.startsWith("size:")) return value.slice(5);
+        if (value.startsWith("milk:")) return `${value.slice(5)} milk`;
+        return value.replaceAll("_", " ");
+      }
+      if (typeof value === "object") {
+        if (value.name) return String(value.name);
+        if (value.type) return String(value.type);
+      }
+      return String(value);
+    }
+
 // Apply localized static UI labels for the receipt page.
     function applyTranslations() {
       document.title = t("receipt.title");
@@ -216,7 +232,7 @@
         .map((item) => {
           const modifiersHtml =
             Array.isArray(item.chosen_modifiers) && item.chosen_modifiers.length
-              ? `<div class="muted receipt-modifiers">+ ${item.chosen_modifiers.map(escapeHtml).join(", ")}</div>`
+              ? `<div class="muted receipt-modifiers">+ ${item.chosen_modifiers.map(formatModifier).map(escapeHtml).join(", ")}</div>`
               : "";
 
           return `

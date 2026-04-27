@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import '../models/cart_item.dart';
 import '../models/menu_item.dart';
+import '../models/menu_item_size.dart';
 
 class CartProvider extends ChangeNotifier {
   final List<CartItem> _items = [];
@@ -15,18 +16,22 @@ class CartProvider extends ChangeNotifier {
 
   bool get isEmpty => _items.isEmpty;
 
-  void add(MenuItem menuItem) {
-    final index = _items.indexWhere((e) => e.menuItem.id == menuItem.id);
+  String _keyFor(int menuItemId, String sizeName) =>
+      '$menuItemId|$sizeName';
+
+  void add(MenuItem menuItem, {MenuItemSize? size, int qty = 1}) {
+    final key = _keyFor(menuItem.id, size?.name ?? '');
+    final index = _items.indexWhere((e) => e.lineKey == key);
     if (index >= 0) {
-      _items[index].qty++;
+      _items[index].qty += qty;
     } else {
-      _items.add(CartItem(menuItem: menuItem));
+      _items.add(CartItem(menuItem: menuItem, size: size, qty: qty));
     }
     notifyListeners();
   }
 
-  void decrement(int menuItemId) {
-    final index = _items.indexWhere((e) => e.menuItem.id == menuItemId);
+  void decrementLine(String lineKey) {
+    final index = _items.indexWhere((e) => e.lineKey == lineKey);
     if (index < 0) return;
     if (_items[index].qty > 1) {
       _items[index].qty--;
@@ -36,14 +41,17 @@ class CartProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void remove(int menuItemId) {
-    _items.removeWhere((e) => e.menuItem.id == menuItemId);
+  void removeLine(String lineKey) {
+    _items.removeWhere((e) => e.lineKey == lineKey);
     notifyListeners();
   }
 
+  // Total quantity across all sizes for a given menu item — used by the menu
+  // list to show a small badge "in cart" indicator.
   int qtyFor(int menuItemId) {
-    final index = _items.indexWhere((e) => e.menuItem.id == menuItemId);
-    return index >= 0 ? _items[index].qty : 0;
+    return _items
+        .where((e) => e.menuItem.id == menuItemId)
+        .fold(0, (sum, e) => sum + e.qty);
   }
 
   void clear() {
@@ -56,6 +64,7 @@ class CartProvider extends ChangeNotifier {
         .map((e) => {
               'menu_item_id': e.menuItem.id,
               'qty': e.qty,
+              'size': e.sizeName,
               'chosen_modifiers': <String>[],
             })
         .toList();

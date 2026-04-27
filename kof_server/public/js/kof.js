@@ -53,9 +53,28 @@ window.kof = (() => {
 // Normalize modifier arrays into a stable string key. This lets cart lines with
 // the same item and same modifiers merge correctly.
   function normalizeModifiersKey(modifiers) {
-    const list = Array.isArray(modifiers) ? [...modifiers] : [];
+    const list = Array.isArray(modifiers) ? modifiers.map(formatModifier) : [];
     list.sort();
     return JSON.stringify(list);
+  }
+
+// Convert a single modifier value (string OR legacy {type,name} object) into a
+// short user-readable string. Used by every page that lists order modifiers
+// so legacy DB rows stored as objects render as "Medium" instead of
+// "[object Object]".
+  function formatModifier(value) {
+    if (value == null) return "";
+    if (typeof value === "string") {
+      // "size:Large" -> "Large", "milk:oat" -> "oat milk", "extra_shot" -> "extra shot"
+      if (value.startsWith("size:")) return value.slice(5);
+      if (value.startsWith("milk:")) return `${value.slice(5)} milk`;
+      return value.replaceAll("_", " ");
+    }
+    if (typeof value === "object") {
+      if (value.name) return String(value.name);
+      if (value.type) return String(value.type);
+    }
+    return String(value);
   }
 
 // Normalize quantity values so cart and order quantities always stay at or
@@ -102,6 +121,16 @@ window.kof = (() => {
     // Return cached runtime config, loading it once from the backend when needed.
     async getConfig() {
       return await loadConfig();
+    },
+
+// Format one chosen-modifier value (string OR legacy object) for display.
+    formatModifier(value) {
+      return formatModifier(value);
+    },
+
+// Map an array of chosen modifiers to readable strings.
+    formatModifiers(values) {
+      return Array.isArray(values) ? values.map(formatModifier) : [];
     },
 
 // Load and return the current customer menu from the backend.

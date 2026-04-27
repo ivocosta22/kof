@@ -5,7 +5,9 @@ CREATE TABLE IF NOT EXISTS menu_items (
   name TEXT NOT NULL,
   description TEXT DEFAULT '',
   price_cents INTEGER NOT NULL,
-  is_active INTEGER NOT NULL DEFAULT 1
+  is_active INTEGER NOT NULL DEFAULT 1,
+  category TEXT NOT NULL DEFAULT 'Other',
+  has_sizes INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS orders (

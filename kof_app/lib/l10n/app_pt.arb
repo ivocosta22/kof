@@ -241,5 +241,61 @@
     "placeholders": {
       "meters": { "type": "int" }
     }
-  }
+  },
+
+  "menuFeatured": "Em destaque",
+  "menuCategories": "Categorias",
+  "menuAllItems": "Todos os itens",
+  "menuSearchHint": "Pesquisar bebidas ou comida",
+
+  "categoryAll": "Tudo",
+  "categoryEspresso": "Espresso",
+  "categoryHotDrinks": "Bebidas Quentes",
+  "categoryColdDrinks": "Bebidas Frias",
+  "categoryPastries": "Pastelaria",
+  "categoryFood": "Comida",
+  "categoryOther": "Outros",
+
+  "itemDetailSize": "Tamanho",
+  "itemDetailQuantity": "Quantidade",
+  "itemDetailAddToCart": "Adicionar ao Carrinho",
+  "itemDetailPlaceOrder": "Fazer Pedido",
+  "itemDetailUnavailable": "Indisponível de momento",
+  "itemDetailBack": "Voltar",
+
+  "sizeSmall": "Pequeno",
+  "sizeMedium": "Médio",
+  "sizeLarge": "Grande",
+  "sizeXtraLarge": "Extra Grande",
+
+  "orderStatusItems": "Itens",
+  "orderStatusNote": "Nota",
+  "orderStatusPlacedAt": "Feito às {time}",
+  "@orderStatusPlacedAt": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "orderStatusPickupFor": "Levantamento para {name}",
+  "@orderStatusPickupFor": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "orderStatusItemCount": "{count} item(s)",
+  "@orderStatusItemCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "orderStatusPaid": "Pago",
+  "orderStatusUnpaid": "Por pagar",
+  "orderStatusOffline": "Sem ligação — tente atualizar",
+
+  "receiptTitle": "Recibo",
+  "receiptPaidStamp": "PAGO",
+  "receiptThankYou": "Obrigado pela sua visita",
+  "receiptViewButton": "Ver Recibo",
+
+  "statusReadyTable": "A caminho da sua mesa"
 }

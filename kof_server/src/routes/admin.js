@@ -570,29 +570,39 @@ router.get("/table-links", requireAdmin("manager"), (req, res) => {
   res.json({ tables });
 });
 
+const ALLOWED_CATEGORIES = ["Espresso", "Hot Drinks", "Cold Drinks", "Pastries", "Food", "Other"];
+
 // GET /menu — admin-facing menu list
 router.get("/menu", requireAdmin("barista"), (req, res) => {
   const items = db.prepare(`
-    SELECT id, name, description, price_cents, is_active
+    SELECT id, name, description, price_cents, is_active, category, has_sizes
     FROM menu_items
     ORDER BY id ASC
-  `).all();
+  `).all().map((item) => ({ ...item, has_sizes: !!item.has_sizes }));
 
-  res.json({ items });
+  res.json({ items, categories: ALLOWED_CATEGORIES });
 });
 
 // POST /menu — create a new menu item (manager only)
 router.post("/menu", requireAdmin("manager"), (req, res) => {
-  const { name, description = "", price_cents: priceCents } = req.body ?? {};
+  const {
+    name,
+    description = "",
+    price_cents: priceCents,
+    category = "Other",
+    has_sizes: hasSizes = false,
+  } = req.body ?? {};
 
   if (!name || !Number.isFinite(Number(priceCents))) {
     return res.status(400).json({ error: "name and price_cents required" });
   }
 
+  const safeCategory = ALLOWED_CATEGORIES.includes(category) ? category : "Other";
+
   const result = db.prepare(`
-    INSERT INTO menu_items (name, description, price_cents, is_active)
-    VALUES (?, ?, ?, 1)
-  `).run(name, description, Number(priceCents));
+    INSERT INTO menu_items (name, description, price_cents, is_active, category, has_sizes)
+    VALUES (?, ?, ?, 1, ?, ?)
+  `).run(name, description, Number(priceCents), safeCategory, toSqliteBoolean(hasSizes));
 
   res.status(201).json({ id: result.lastInsertRowid });
 });
@@ -600,8 +610,14 @@ router.post("/menu", requireAdmin("manager"), (req, res) => {
 // PATCH /menu/:id — update a menu item (manager only)
 router.patch("/menu/:id", requireAdmin("manager"), (req, res) => {
   const id = Number(req.params.id);
-  const { name, description, price_cents: priceCents, is_active: isActive } =
-    req.body ?? {};
+  const {
+    name,
+    description,
+    price_cents: priceCents,
+    is_active: isActive,
+    category,
+    has_sizes: hasSizes,
+  } = req.body ?? {};
 
   const existing = db.prepare(`SELECT id FROM menu_items WHERE id = ?`).get(id);
   if (!existing) return res.status(404).json({ error: "not found" });
@@ -615,6 +631,14 @@ router.patch("/menu/:id", requireAdmin("manager"), (req, res) => {
   if (typeof isActive === "number" || typeof isActive === "boolean") {
     fields.push("is_active = ?");
     values.push(toSqliteBoolean(isActive));
+  }
+  if (typeof category === "string" && ALLOWED_CATEGORIES.includes(category)) {
+    fields.push("category = ?");
+    values.push(category);
+  }
+  if (typeof hasSizes === "boolean" || typeof hasSizes === "number") {
+    fields.push("has_sizes = ?");
+    values.push(toSqliteBoolean(hasSizes));
   }
 
   if (fields.length === 0) {

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'l10n/l10n.dart';
+import 'providers/active_orders_provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/cart_provider.dart';
 import 'providers/session_provider.dart';
@@ -11,11 +12,16 @@ import 'providers/settings_provider.dart';
 import 'screens/auth/email_verification_screen.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/home_screen.dart';
+import 'widgets/active_orders_bubble.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // Background messages handled here when backend sends push notifications.
 }
+
+/// Top-level navigator key — exposed so the global ActiveOrdersBubble (which
+/// lives outside the Navigator in MaterialApp.builder) can push routes.
+final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,6 +41,7 @@ class KofApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => SessionProvider()),
         ChangeNotifierProvider(create: (_) => CartProvider()),
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
+        ChangeNotifierProvider(create: (_) => ActiveOrdersProvider()..refresh()),
       ],
       child: const _KofMaterialApp(),
     );
@@ -50,6 +57,7 @@ class _KofMaterialApp extends StatelessWidget {
     return MaterialApp(
         title: 'Kof',
         debugShowCheckedModeBanner: false,
+        navigatorKey: rootNavigatorKey,
         // ── Localisation ──────────────────────────────────────────
         localizationsDelegates: const [
           AppLocalizations.delegate,
@@ -80,6 +88,22 @@ class _KofMaterialApp extends StatelessWidget {
           useMaterial3: true,
         ),
         home: const _StartupGate(),
+        // Overlay the active-orders bubble over every screen. The Stack
+        // wraps the Navigator (the `child`) so the bubble sits above any
+        // route's content and stays put across navigations.
+        builder: (context, child) {
+          return Stack(
+            children: [
+              child ?? const SizedBox.shrink(),
+              const Positioned.fill(
+                child: IgnorePointer(
+                  ignoring: false,
+                  child: ActiveOrdersBubble(),
+                ),
+              ),
+            ],
+          );
+        },
     );
   }
 }

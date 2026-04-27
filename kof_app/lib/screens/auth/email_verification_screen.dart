@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../l10n/l10n.dart';
+import '../../providers/active_orders_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/auth_error_messages.dart';
 import '../home_screen.dart';
@@ -81,6 +82,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   Future<void> _changeAccount() async {
     await context.read<AuthProvider>().logout();
     if (!mounted) return;
+    context.read<ActiveOrdersProvider>().clear();
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => const LoginScreen()),

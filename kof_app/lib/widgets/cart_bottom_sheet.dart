@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/l10n.dart';
+import '../providers/active_orders_provider.dart';
 import '../providers/cart_provider.dart';
 import '../providers/session_provider.dart';
 import '../models/past_order.dart';
@@ -48,13 +49,18 @@ class _CartBottomSheetState extends State<CartBottomSheet> {
       );
 
       cart.clear();
-      unawaited(OrderHistoryService().save(
+      // Save then prime the bubble with the new active order. Awaiting save
+      // before the refresh guarantees the provider sees the new entry.
+      await OrderHistoryService().save(
         PastOrder.fromOrder(
           order,
           shopName: session.shopName,
           serverUrl: session.serverUrl,
         ),
-      ));
+      );
+      if (context.mounted) {
+        unawaited(context.read<ActiveOrdersProvider>().refresh());
+      }
 
       if (!context.mounted) return;
       Navigator.pop(context);
@@ -143,9 +149,12 @@ class _CartBottomSheetState extends State<CartBottomSheet> {
                               const TextStyle(fontWeight: FontWeight.w500),
                         ),
                         subtitle: Text(
-                          l10n.cartEach(
-                            '€${(item.menuItem.priceCents / 100).toStringAsFixed(2)}',
-                          ),
+                          [
+                            if (item.sizeName.isNotEmpty) item.sizeName,
+                            l10n.cartEach(
+                              '€${(item.unitPriceCents / 100).toStringAsFixed(2)}',
+                            ),
+                          ].join(' · '),
                         ),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -160,10 +169,10 @@ class _CartBottomSheetState extends State<CartBottomSheet> {
                               qty: item.qty,
                               onIncrement: () => context
                                   .read<CartProvider>()
-                                  .add(item.menuItem),
+                                  .add(item.menuItem, size: item.size),
                               onDecrement: () => context
                                   .read<CartProvider>()
-                                  .decrement(item.menuItem.id),
+                                  .decrementLine(item.lineKey),
                             ),
                           ],
                         ),

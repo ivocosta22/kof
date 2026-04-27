@@ -305,7 +305,7 @@
                   <b>${escapeHtml(item.name)}</b>
                   ${availabilityPill(getCartLineAvailability(item))}
                 </div>
-                <div class="muted">${(item.chosen_modifiers || []).map(escapeHtml).join(", ") || "-"}</div>
+                <div class="muted">${kof.formatModifiers(item.chosen_modifiers).map(escapeHtml).join(", ") || "-"}</div>
               </div>
               <div><b>${money(Number(item.price_cents || 0) * Number(item.qty || 1))}</b></div>
             </div>

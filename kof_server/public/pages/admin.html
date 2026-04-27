@@ -95,6 +95,11 @@
         <input id="newName" />
         <input id="newDesc" />
         <input id="newPrice" inputmode="decimal" />
+        <select id="newCategory"></select>
+        <label style="display:flex;align-items:center;gap:6px;white-space:nowrap">
+          <input type="checkbox" id="newHasSizes" />
+          <span id="newHasSizesLabel" class="muted">Has sizes</span>
+        </label>
         <button onclick="addItem()" id="addItemBtn" class="primary"></button>
       </div>
       <div class="muted" id="addMsg"></div>
@@ -310,6 +315,8 @@
       document.getElementById("newName").placeholder = tf("common.name", "Name");
       document.getElementById("newDesc").placeholder = tf("adminPage.description", "Description");
       document.getElementById("newPrice").placeholder = tf("adminPage.price", "Price (€)");
+      const newHasSizesLabelEl = document.getElementById("newHasSizesLabel");
+      if (newHasSizesLabelEl) newHasSizesLabelEl.innerText = tf("adminPage.hasSizes", "Has sizes");
       addItemBtnEl.innerText = tf("adminPage.addItem", "Add item");
 
       addIngredientTitleEl.innerText = tf("adminPage.addIngredient", "Add Ingredient");
@@ -1081,6 +1088,25 @@
       try {
         const result = await api("/api/admin/menu");
         const items = Array.isArray(result.items) ? result.items : [];
+        const categories = Array.isArray(result.categories) && result.categories.length
+          ? result.categories
+          : ["Espresso", "Hot Drinks", "Cold Drinks", "Pastries", "Food", "Other"];
+
+        // Populate the "new item" category dropdown
+        const newCategoryEl = document.getElementById("newCategory");
+        if (newCategoryEl) {
+          newCategoryEl.innerHTML = categories
+            .map((cat) => `<option value="${escapeHtml(cat)}">${escapeHtml(cat)}</option>`)
+            .join("");
+        }
+
+        const categorySelectHtml = (item) => `
+          <select data-id="${item.id}" data-field="category">
+            ${categories
+              .map((cat) => `<option value="${escapeHtml(cat)}" ${cat === item.category ? "selected" : ""}>${escapeHtml(cat)}</option>`)
+              .join("")}
+          </select>
+        `;
 
         const tableRowsHtml = items
           .map((item) => `
@@ -1089,6 +1115,13 @@
               <td${menuCellStyle()}><input value="${escapeHtml(item.name)}" data-id="${item.id}" data-field="name"/></td>
               <td${menuCellStyle()}><input value="${escapeHtml(item.description || "")}" data-id="${item.id}" data-field="description"/></td>
               <td${menuCellStyle()}><input value="${(item.price_cents / 100).toFixed(2)}" data-id="${item.id}" data-field="price_eur" inputmode="decimal"/></td>
+              <td${menuCellStyle()}>${categorySelectHtml(item)}</td>
+              <td${menuCellStyle()}>
+                <label>
+                  <input type="checkbox" ${item.has_sizes ? "checked" : ""} data-id="${item.id}" data-field="has_sizes"/>
+                  ${escapeHtml(tf("adminPage.hasSizes", "Sizes"))}
+                </label>
+              </td>
               <td${menuCellStyle()}>
                 <label>
                   <input type="checkbox" ${item.is_active ? "checked" : ""} onchange="toggleActive(${item.id}, this.checked)"/>
@@ -1097,33 +1130,6 @@
               </td>
               <td${menuCellStyle()}><button class="primary" onclick="saveRow(${item.id})">${escapeHtml(tf("common.save", "Save"))}</button></td>
             </tr>
-          `)
-          .join("");
-
-        const cardsHtml = items
-          .map((item) => `
-            <div class="menuCard"${menuSurfaceStyle()}>
-              <div class="titleRow">
-                <div><b>#${item.id}</b></div>
-                <label style="display:flex;align-items:center;gap:8px;margin:0">
-                  <input type="checkbox" ${item.is_active ? "checked" : ""} onchange="toggleActive(${item.id}, this.checked)"/>
-                  <span class="muted">${escapeHtml(tf("common.active", "Active"))}</span>
-                </label>
-              </div>
-
-              <label class="muted">${escapeHtml(tf("common.name", "Name"))}</label>
-              <input type="text" value="${escapeHtml(item.name)}" data-id="${item.id}" data-field="name"/>
-
-              <label class="muted">${escapeHtml(tf("adminPage.description", "Description"))}</label>
-              <input type="text" value="${escapeHtml(item.description || "")}" data-id="${item.id}" data-field="description"/>
-
-              <label class="muted">${escapeHtml(tf("adminPage.price", "Price (€)"))}</label>
-              <input type="text" value="${(item.price_cents / 100).toFixed(2)}" data-id="${item.id}" data-field="price_eur" inputmode="decimal"/>
-
-              <div class="rowBtns">
-                <button class="primary" onclick="saveRow(${item.id})">${escapeHtml(tf("common.save", "Save"))}</button>
-              </div>
-            </div>
           `)
           .join("");
 
@@ -1136,6 +1142,8 @@
                   <th${menuCellStyle()}>${escapeHtml(tf("common.name", "Name"))}</th>
                   <th${menuCellStyle()}>${escapeHtml(tf("adminPage.description", "Description"))}</th>
                   <th${menuCellStyle()}>${escapeHtml(tf("adminPage.price", "Price (€)"))}</th>
+                  <th${menuCellStyle()}>${escapeHtml(tf("adminPage.category", "Category"))}</th>
+                  <th${menuCellStyle()}>${escapeHtml(tf("adminPage.hasSizes", "Sizes"))}</th>
                   <th${menuCellStyle()}>${escapeHtml(tf("adminPage.status", "Status"))}</th>
                   <th${menuCellStyle()}></th>
                 </tr>
@@ -1156,7 +1164,7 @@
     async function saveRow(id) {
       try {
         const inputs = [
-          ...document.querySelectorAll(`input[data-id="${id}"]`),
+          ...document.querySelectorAll(`input[data-id="${id}"], select[data-id="${id}"]`),
         ];
 
         const payload = {};
@@ -1180,6 +1188,14 @@
             }
 
             payload.price_cents = cents;
+          }
+
+          if (field === "category") {
+            payload.category = input.value;
+          }
+
+          if (field === "has_sizes") {
+            payload.has_sizes = !!input.checked;
           }
         }
 
@@ -1214,6 +1230,8 @@
       const name = document.getElementById("newName").value.trim();
       const description = document.getElementById("newDesc").value.trim();
       const priceInput = document.getElementById("newPrice").value;
+      const category = document.getElementById("newCategory")?.value || "Other";
+      const has_sizes = !!document.getElementById("newHasSizes")?.checked;
 
       addMsgEl.innerText = "";
 
@@ -1226,12 +1244,14 @@
 
         await api("/api/admin/menu", {
           method: "POST",
-          body: JSON.stringify({ name, description, price_cents }),
+          body: JSON.stringify({ name, description, price_cents, category, has_sizes }),
         });
 
         document.getElementById("newName").value = "";
         document.getElementById("newDesc").value = "";
         document.getElementById("newPrice").value = "";
+        const newHasSizesEl = document.getElementById("newHasSizes");
+        if (newHasSizesEl) newHasSizesEl.checked = false;
 
         await loadMenu();
 

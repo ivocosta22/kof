@@ -242,5 +242,61 @@
     "placeholders": {
       "meters": { "type": "int" }
     }
-  }
+  },
+
+  "menuFeatured": "Featured",
+  "menuCategories": "Categories",
+  "menuAllItems": "All items",
+  "menuSearchHint": "Search beverages or foods",
+
+  "categoryAll": "All",
+  "categoryEspresso": "Espresso",
+  "categoryHotDrinks": "Hot Drinks",
+  "categoryColdDrinks": "Cold Drinks",
+  "categoryPastries": "Pastries",
+  "categoryFood": "Food",
+  "categoryOther": "Other",
+
+  "itemDetailSize": "Size",
+  "itemDetailQuantity": "Quantity",
+  "itemDetailAddToCart": "Add to Cart",
+  "itemDetailPlaceOrder": "Place Order",
+  "itemDetailUnavailable": "Currently unavailable",
+  "itemDetailBack": "Back",
+
+  "sizeSmall": "Small",
+  "sizeMedium": "Medium",
+  "sizeLarge": "Large",
+  "sizeXtraLarge": "Xtra Large",
+
+  "orderStatusItems": "Items",
+  "orderStatusNote": "Note",
+  "orderStatusPlacedAt": "Placed at {time}",
+  "@orderStatusPlacedAt": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "orderStatusPickupFor": "Pickup for {name}",
+  "@orderStatusPickupFor": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "orderStatusItemCount": "{count} item(s)",
+  "@orderStatusItemCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "orderStatusPaid": "Paid",
+  "orderStatusUnpaid": "Unpaid",
+  "orderStatusOffline": "Offline — try refreshing",
+
+  "receiptTitle": "Receipt",
+  "receiptPaidStamp": "PAID",
+  "receiptThankYou": "Thank you for your visit",
+  "receiptViewButton": "View Receipt",
+
+  "statusReadyTable": "On its way to your table"
 }

@@ -590,4 +590,112 @@ class AppLocalizationsFi extends AppLocalizations {
   String shopWalkInDistanceLabel(int meters) {
     return '${meters}m päässä';
   }
+
+  @override
+  String get menuFeatured => 'Suositellut';
+
+  @override
+  String get menuCategories => 'Kategoriat';
+
+  @override
+  String get menuAllItems => 'Kaikki tuotteet';
+
+  @override
+  String get menuSearchHint => 'Etsi juomia tai ruokaa';
+
+  @override
+  String get categoryAll => 'Kaikki';
+
+  @override
+  String get categoryEspresso => 'Espresso';
+
+  @override
+  String get categoryHotDrinks => 'Kuumat juomat';
+
+  @override
+  String get categoryColdDrinks => 'Kylmät juomat';
+
+  @override
+  String get categoryPastries => 'Leivonnaiset';
+
+  @override
+  String get categoryFood => 'Ruoka';
+
+  @override
+  String get categoryOther => 'Muut';
+
+  @override
+  String get itemDetailSize => 'Koko';
+
+  @override
+  String get itemDetailQuantity => 'Määrä';
+
+  @override
+  String get itemDetailAddToCart => 'Lisää koriin';
+
+  @override
+  String get itemDetailPlaceOrder => 'Tilaa';
+
+  @override
+  String get itemDetailUnavailable => 'Ei juuri nyt saatavilla';
+
+  @override
+  String get itemDetailBack => 'Takaisin';
+
+  @override
+  String get sizeSmall => 'Pieni';
+
+  @override
+  String get sizeMedium => 'Keskikokoinen';
+
+  @override
+  String get sizeLarge => 'Suuri';
+
+  @override
+  String get sizeXtraLarge => 'Erittäin suuri';
+
+  @override
+  String get orderStatusItems => 'Tuotteet';
+
+  @override
+  String get orderStatusNote => 'Huomio';
+
+  @override
+  String orderStatusPlacedAt(String time) {
+    return 'Tilattu klo $time';
+  }
+
+  @override
+  String orderStatusPickupFor(String name) {
+    return 'Nouto: $name';
+  }
+
+  @override
+  String orderStatusItemCount(int count) {
+    return '$count tuote(tta)';
+  }
+
+  @override
+  String get orderStatusPaid => 'Maksettu';
+
+  @override
+  String get orderStatusUnpaid => 'Maksamatta';
+
+  @override
+  String get orderStatusOffline => 'Ei yhteyttä — päivitä';
+
+  @override
+  String get receiptTitle => 'Kuitti';
+
+  @override
+  String get receiptPaidStamp => 'MAKSETTU';
+
+  @override
+  String get receiptThankYou => 'Kiitos käynnistäsi';
+
+  @override
+  String get receiptViewButton => 'Näytä kuitti';
+
+  @override
+  String get statusReadyTable => 'Tulossa pöytääsi';
 }

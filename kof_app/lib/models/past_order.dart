@@ -9,6 +9,10 @@ class PastOrder {
   final String tableLabel;
   final List<OrderItem> items;
   final String createdAt;
+  // Cached so the cards display the correct total even if the items list is
+  // empty — e.g. when older entries were saved before the server began
+  // returning items on order creation.
+  final int totalCents;
 
   PastOrder({
     required this.shopName,
@@ -19,9 +23,10 @@ class PastOrder {
     required this.tableLabel,
     required this.items,
     required this.createdAt,
-  });
+    int? totalCents,
+  }) : totalCents = totalCents ??
+            items.fold(0, (s, i) => s + i.lineTotalCents);
 
-  int get totalCents => items.fold(0, (s, i) => s + i.lineTotalCents);
   bool get isActive =>
       status == 'new' || status == 'making' || status == 'ready';
 
@@ -57,18 +62,23 @@ class PastOrder {
                 })
             .toList(),
         'createdAt': createdAt,
+        'totalCents': totalCents,
       };
 
-  factory PastOrder.fromJson(Map<String, dynamic> json) => PastOrder(
-        shopName: json['shopName'] as String? ?? '',
-        serverUrl: json['serverUrl'] as String? ?? '',
-        orderId: json['orderId'] as int,
-        orderNumber: json['orderNumber'] as int,
-        status: json['status'] as String,
-        tableLabel: json['tableLabel'] as String? ?? '',
-        items: ((json['items'] as List?) ?? [])
-            .map((e) => OrderItem.fromJson(e as Map<String, dynamic>))
-            .toList(),
-        createdAt: json['createdAt'] as String? ?? '',
-      );
+  factory PastOrder.fromJson(Map<String, dynamic> json) {
+    final items = ((json['items'] as List?) ?? [])
+        .map((e) => OrderItem.fromJson(e as Map<String, dynamic>))
+        .toList();
+    return PastOrder(
+      shopName: json['shopName'] as String? ?? '',
+      serverUrl: json['serverUrl'] as String? ?? '',
+      orderId: json['orderId'] as int,
+      orderNumber: json['orderNumber'] as int,
+      status: json['status'] as String,
+      tableLabel: json['tableLabel'] as String? ?? '',
+      items: items,
+      createdAt: json['createdAt'] as String? ?? '',
+      totalCents: json['totalCents'] as int?,
+    );
+  }
 }

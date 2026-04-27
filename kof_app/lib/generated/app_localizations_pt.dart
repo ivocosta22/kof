@@ -592,4 +592,112 @@ class AppLocalizationsPt extends AppLocalizations {
   String shopWalkInDistanceLabel(int meters) {
     return '${meters}m de distância';
   }
+
+  @override
+  String get menuFeatured => 'Em destaque';
+
+  @override
+  String get menuCategories => 'Categorias';
+
+  @override
+  String get menuAllItems => 'Todos os itens';
+
+  @override
+  String get menuSearchHint => 'Pesquisar bebidas ou comida';
+
+  @override
+  String get categoryAll => 'Tudo';
+
+  @override
+  String get categoryEspresso => 'Espresso';
+
+  @override
+  String get categoryHotDrinks => 'Bebidas Quentes';
+
+  @override
+  String get categoryColdDrinks => 'Bebidas Frias';
+
+  @override
+  String get categoryPastries => 'Pastelaria';
+
+  @override
+  String get categoryFood => 'Comida';
+
+  @override
+  String get categoryOther => 'Outros';
+
+  @override
+  String get itemDetailSize => 'Tamanho';
+
+  @override
+  String get itemDetailQuantity => 'Quantidade';
+
+  @override
+  String get itemDetailAddToCart => 'Adicionar ao Carrinho';
+
+  @override
+  String get itemDetailPlaceOrder => 'Fazer Pedido';
+
+  @override
+  String get itemDetailUnavailable => 'Indisponível de momento';
+
+  @override
+  String get itemDetailBack => 'Voltar';
+
+  @override
+  String get sizeSmall => 'Pequeno';
+
+  @override
+  String get sizeMedium => 'Médio';
+
+  @override
+  String get sizeLarge => 'Grande';
+
+  @override
+  String get sizeXtraLarge => 'Extra Grande';
+
+  @override
+  String get orderStatusItems => 'Itens';
+
+  @override
+  String get orderStatusNote => 'Nota';
+
+  @override
+  String orderStatusPlacedAt(String time) {
+    return 'Feito às $time';
+  }
+
+  @override
+  String orderStatusPickupFor(String name) {
+    return 'Levantamento para $name';
+  }
+
+  @override
+  String orderStatusItemCount(int count) {
+    return '$count item(s)';
+  }
+
+  @override
+  String get orderStatusPaid => 'Pago';
+
+  @override
+  String get orderStatusUnpaid => 'Por pagar';
+
+  @override
+  String get orderStatusOffline => 'Sem ligação — tente atualizar';
+
+  @override
+  String get receiptTitle => 'Recibo';
+
+  @override
+  String get receiptPaidStamp => 'PAGO';
+
+  @override
+  String get receiptThankYou => 'Obrigado pela sua visita';
+
+  @override
+  String get receiptViewButton => 'Ver Recibo';
+
+  @override
+  String get statusReadyTable => 'A caminho da sua mesa';
 }

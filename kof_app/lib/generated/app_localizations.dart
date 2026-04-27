@@ -1191,6 +1191,210 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{meters}m away'**
   String shopWalkInDistanceLabel(int meters);
+
+  /// No description provided for @menuFeatured.
+  ///
+  /// In en, this message translates to:
+  /// **'Featured'**
+  String get menuFeatured;
+
+  /// No description provided for @menuCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get menuCategories;
+
+  /// No description provided for @menuAllItems.
+  ///
+  /// In en, this message translates to:
+  /// **'All items'**
+  String get menuAllItems;
+
+  /// No description provided for @menuSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search beverages or foods'**
+  String get menuSearchHint;
+
+  /// No description provided for @categoryAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get categoryAll;
+
+  /// No description provided for @categoryEspresso.
+  ///
+  /// In en, this message translates to:
+  /// **'Espresso'**
+  String get categoryEspresso;
+
+  /// No description provided for @categoryHotDrinks.
+  ///
+  /// In en, this message translates to:
+  /// **'Hot Drinks'**
+  String get categoryHotDrinks;
+
+  /// No description provided for @categoryColdDrinks.
+  ///
+  /// In en, this message translates to:
+  /// **'Cold Drinks'**
+  String get categoryColdDrinks;
+
+  /// No description provided for @categoryPastries.
+  ///
+  /// In en, this message translates to:
+  /// **'Pastries'**
+  String get categoryPastries;
+
+  /// No description provided for @categoryFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Food'**
+  String get categoryFood;
+
+  /// No description provided for @categoryOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get categoryOther;
+
+  /// No description provided for @itemDetailSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Size'**
+  String get itemDetailSize;
+
+  /// No description provided for @itemDetailQuantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get itemDetailQuantity;
+
+  /// No description provided for @itemDetailAddToCart.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to Cart'**
+  String get itemDetailAddToCart;
+
+  /// No description provided for @itemDetailPlaceOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Place Order'**
+  String get itemDetailPlaceOrder;
+
+  /// No description provided for @itemDetailUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Currently unavailable'**
+  String get itemDetailUnavailable;
+
+  /// No description provided for @itemDetailBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get itemDetailBack;
+
+  /// No description provided for @sizeSmall.
+  ///
+  /// In en, this message translates to:
+  /// **'Small'**
+  String get sizeSmall;
+
+  /// No description provided for @sizeMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get sizeMedium;
+
+  /// No description provided for @sizeLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Large'**
+  String get sizeLarge;
+
+  /// No description provided for @sizeXtraLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Xtra Large'**
+  String get sizeXtraLarge;
+
+  /// No description provided for @orderStatusItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Items'**
+  String get orderStatusItems;
+
+  /// No description provided for @orderStatusNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Note'**
+  String get orderStatusNote;
+
+  /// No description provided for @orderStatusPlacedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Placed at {time}'**
+  String orderStatusPlacedAt(String time);
+
+  /// No description provided for @orderStatusPickupFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Pickup for {name}'**
+  String orderStatusPickupFor(String name);
+
+  /// No description provided for @orderStatusItemCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} item(s)'**
+  String orderStatusItemCount(int count);
+
+  /// No description provided for @orderStatusPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get orderStatusPaid;
+
+  /// No description provided for @orderStatusUnpaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Unpaid'**
+  String get orderStatusUnpaid;
+
+  /// No description provided for @orderStatusOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline — try refreshing'**
+  String get orderStatusOffline;
+
+  /// No description provided for @receiptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt'**
+  String get receiptTitle;
+
+  /// No description provided for @receiptPaidStamp.
+  ///
+  /// In en, this message translates to:
+  /// **'PAID'**
+  String get receiptPaidStamp;
+
+  /// No description provided for @receiptThankYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you for your visit'**
+  String get receiptThankYou;
+
+  /// No description provided for @receiptViewButton.
+  ///
+  /// In en, this message translates to:
+  /// **'View Receipt'**
+  String get receiptViewButton;
+
+  /// No description provided for @statusReadyTable.
+  ///
+  /// In en, this message translates to:
+  /// **'On its way to your table'**
+  String get statusReadyTable;
 }
 
 class _AppLocalizationsDelegate

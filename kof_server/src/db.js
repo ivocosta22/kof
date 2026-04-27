@@ -32,6 +32,14 @@ if (!hasColumn("orders", "table_label")) {
   db.exec(`ALTER TABLE orders ADD COLUMN table_label TEXT DEFAULT ''`);
 }
 
+if (!hasColumn("menu_items", "category")) {
+  db.exec(`ALTER TABLE menu_items ADD COLUMN category TEXT NOT NULL DEFAULT 'Other'`);
+}
+
+if (!hasColumn("menu_items", "has_sizes")) {
+  db.exec(`ALTER TABLE menu_items ADD COLUMN has_sizes INTEGER NOT NULL DEFAULT 0`);
+}
+
 // Normalize legacy order rows after migrations so fulfillment fields are always consistent
 db.exec(`
   UPDATE orders
@@ -54,13 +62,33 @@ const menuItemCountRow = db.prepare("SELECT COUNT(*) AS count FROM menu_items").
 
 if (menuItemCountRow.count === 0) {
   const insertMenuItem = db.prepare(`
-    INSERT INTO menu_items (name, description, price_cents)
-    VALUES (?, ?, ?)
+    INSERT INTO menu_items (name, description, price_cents, category, has_sizes)
+    VALUES (?, ?, ?, ?, ?)
   `);
 
-  insertMenuItem.run("Espresso", "Single shot", 150);
-  insertMenuItem.run("Cappuccino", "Espresso + milk foam", 300);
-  insertMenuItem.run("Iced Latte", "Cold milk + espresso", 350);
+  // Espresso-based hot drinks (sizes available)
+  insertMenuItem.run("Espresso", "Single shot, bold and intense", 150, "Espresso", 1);
+  insertMenuItem.run("Americano", "Espresso topped up with hot water", 220, "Espresso", 1);
+  insertMenuItem.run("Cappuccino", "Espresso, steamed milk and foam", 300, "Hot Drinks", 1);
+  insertMenuItem.run("Latte", "Espresso with silky steamed milk", 320, "Hot Drinks", 1);
+  insertMenuItem.run("Mocha", "Espresso, chocolate and steamed milk", 360, "Hot Drinks", 1);
+  insertMenuItem.run("Hot Chocolate", "Rich melted chocolate with milk", 320, "Hot Drinks", 1);
+  insertMenuItem.run("Tea", "Choice of black, green or herbal", 220, "Hot Drinks", 1);
+
+  // Cold drinks (sizes available)
+  insertMenuItem.run("Iced Latte", "Cold milk + espresso over ice", 350, "Cold Drinks", 1);
+  insertMenuItem.run("Iced Coffee", "Chilled brewed coffee over ice", 300, "Cold Drinks", 1);
+  insertMenuItem.run("Cold Brew", "Slow-steeped, smooth and bold", 380, "Cold Drinks", 1);
+
+  // Pastries (no sizes)
+  insertMenuItem.run("Butter Croissant", "Flaky French-style croissant", 220, "Pastries", 0);
+  insertMenuItem.run("Chocolate Muffin", "Double chocolate, baked daily", 250, "Pastries", 0);
+  insertMenuItem.run("Blueberry Muffin", "Bursting with real blueberries", 250, "Pastries", 0);
+  insertMenuItem.run("Cinnamon Roll", "Warm, glazed and gooey", 280, "Pastries", 0);
+
+  // Food (no sizes)
+  insertMenuItem.run("Ham & Cheese Toastie", "Toasted sourdough sandwich", 480, "Food", 0);
+  insertMenuItem.run("Avocado Toast", "Sourdough, avocado, sea salt", 520, "Food", 0);
 }
 
 export default db;

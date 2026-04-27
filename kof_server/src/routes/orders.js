@@ -5,6 +5,7 @@ import { requireAdmin } from "../adminAuth.js";
 import { getMenuItemAvailability } from "../utils/menuAvailability.js";
 import { validateOrderContext } from "../utils/orderContext.js";
 import { verifyTableToken } from "../utils/tableTokens.js";
+import { resolveLineSize, extractSizeFromModifiers } from "../utils/menuSizes.js";
 
 export default function createOrdersRouter({ broadcast }) {
   const router = express.Router();
@@ -488,7 +489,7 @@ export default function createOrdersRouter({ broadcast }) {
     }
 
     const menuById = db.prepare(`
-      SELECT id, price_cents, name FROM menu_items WHERE id = ? AND is_active = 1
+      SELECT id, price_cents, name, has_sizes FROM menu_items WHERE id = ? AND is_active = 1
     `);
     const requestedQtyByMenuItemId = new Map();
 
@@ -539,10 +540,27 @@ export default function createOrdersRouter({ broadcast }) {
         const menuId = Number(item.menu_item_id);
         const menu = menuById.get(menuId);
         if (!menu) throw new Error(`invalid menu_item_id: ${menuId}`);
-        const chosenModifiers = Array.isArray(item.chosen_modifiers)
-          ? item.chosen_modifiers
+
+        // Drop any size:X entries from incoming modifiers — server is the
+        // source of truth for size and we re-attach the canonical one below.
+        const incomingModifiers = Array.isArray(item.chosen_modifiers)
+          ? item.chosen_modifiers.filter(
+              (m) => !(typeof m === "string" && m.startsWith("size:"))
+            )
           : [];
-        itemIns.run(orderId, menuId, qty, JSON.stringify(chosenModifiers), menu.price_cents * qty);
+
+        // Size source priority: explicit `size` field, then size:X in modifiers
+        const requestedSize = item.size ||
+          extractSizeFromModifiers(item.chosen_modifiers);
+        const sizeChoice = resolveLineSize(menu, requestedSize);
+        const unitPrice = menu.price_cents + sizeChoice.delta;
+
+        const chosenModifiers = [...incomingModifiers];
+        if (sizeChoice.name) {
+          chosenModifiers.push(`size:${sizeChoice.name}`);
+        }
+
+        itemIns.run(orderId, menuId, qty, JSON.stringify(chosenModifiers), unitPrice * qty);
       }
 
       return orderId;
@@ -561,10 +579,12 @@ export default function createOrdersRouter({ broadcast }) {
       FROM orders WHERE id = ?
     `).get(orderId);
 
-    // order_created is staff-only — customers don't need to see new orders arrive
-    broadcast("order_created", order, { staffOnly: true });
+    const orderWithItems = { ...order, items: enrichOrderItems(orderId) };
 
-    res.status(201).json({ order });
+    // order_created is staff-only — customers don't need to see new orders arrive
+    broadcast("order_created", orderWithItems, { staffOnly: true });
+
+    res.status(201).json({ order: orderWithItems });
   });
 
   return router;

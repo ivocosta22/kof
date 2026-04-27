@@ -587,4 +587,112 @@ class AppLocalizationsEn extends AppLocalizations {
   String shopWalkInDistanceLabel(int meters) {
     return '${meters}m away';
   }
+
+  @override
+  String get menuFeatured => 'Featured';
+
+  @override
+  String get menuCategories => 'Categories';
+
+  @override
+  String get menuAllItems => 'All items';
+
+  @override
+  String get menuSearchHint => 'Search beverages or foods';
+
+  @override
+  String get categoryAll => 'All';
+
+  @override
+  String get categoryEspresso => 'Espresso';
+
+  @override
+  String get categoryHotDrinks => 'Hot Drinks';
+
+  @override
+  String get categoryColdDrinks => 'Cold Drinks';
+
+  @override
+  String get categoryPastries => 'Pastries';
+
+  @override
+  String get categoryFood => 'Food';
+
+  @override
+  String get categoryOther => 'Other';
+
+  @override
+  String get itemDetailSize => 'Size';
+
+  @override
+  String get itemDetailQuantity => 'Quantity';
+
+  @override
+  String get itemDetailAddToCart => 'Add to Cart';
+
+  @override
+  String get itemDetailPlaceOrder => 'Place Order';
+
+  @override
+  String get itemDetailUnavailable => 'Currently unavailable';
+
+  @override
+  String get itemDetailBack => 'Back';
+
+  @override
+  String get sizeSmall => 'Small';
+
+  @override
+  String get sizeMedium => 'Medium';
+
+  @override
+  String get sizeLarge => 'Large';
+
+  @override
+  String get sizeXtraLarge => 'Xtra Large';
+
+  @override
+  String get orderStatusItems => 'Items';
+
+  @override
+  String get orderStatusNote => 'Note';
+
+  @override
+  String orderStatusPlacedAt(String time) {
+    return 'Placed at $time';
+  }
+
+  @override
+  String orderStatusPickupFor(String name) {
+    return 'Pickup for $name';
+  }
+
+  @override
+  String orderStatusItemCount(int count) {
+    return '$count item(s)';
+  }
+
+  @override
+  String get orderStatusPaid => 'Paid';
+
+  @override
+  String get orderStatusUnpaid => 'Unpaid';
+
+  @override
+  String get orderStatusOffline => 'Offline — try refreshing';
+
+  @override
+  String get receiptTitle => 'Receipt';
+
+  @override
+  String get receiptPaidStamp => 'PAID';
+
+  @override
+  String get receiptThankYou => 'Thank you for your visit';
+
+  @override
+  String get receiptViewButton => 'View Receipt';
+
+  @override
+  String get statusReadyTable => 'On its way to your table';
 }
