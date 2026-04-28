@@ -113,6 +113,32 @@ class ActiveOrdersProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Tracked so [onAuthChanged] can no-op when the auth state hasn't really
+  // changed (avoids a redundant clear+refresh on every AuthProvider notify).
+  String? _currentUserKey;
+
+  /// Called when AuthProvider's user changes. Updates the OrderHistoryService
+  /// scope, drops in-memory state for the previous user, and triggers a fresh
+  /// load. Wired up via ChangeNotifierProxyProvider in main.dart.
+  void onAuthChanged(String? userId) {
+    final next = (userId == null || userId.isEmpty) ? 'guest' : userId;
+    if (_currentUserKey == next) return;
+    _currentUserKey = next;
+
+    OrderHistoryService.setCurrentUser(userId);
+
+    // Drop the previous user's state synchronously, then kick off a load for
+    // the new user.
+    for (final ws in _sockets.values) {
+      ws.disconnect();
+    }
+    _sockets.clear();
+    _orders = [];
+    notifyListeners();
+
+    refresh();
+  }
+
   // Reset all in-memory state and tear down sockets. Call on logout so the
   // next user (or guest session) doesn't briefly see the previous account's
   // active orders.

@@ -298,5 +298,37 @@
   "receiptThankYou": "Thank you for your visit",
   "receiptViewButton": "View Receipt",
 
-  "statusReadyTable": "On its way to your table"
+  "statusReadyTable": "On its way to your table",
+
+  "shopPreviewNotAvailable": "Menu preview is not available for this shop yet.",
+  "shopPreviewUnreachable": "Couldn't reach the shop right now. Try again.",
+
+  "shopReviewsBasedOn": "Based on {count} reviews",
+  "@shopReviewsBasedOn": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "shopReviewsEmpty": "No reviews yet",
+
+  "shopDiscountsEmpty": "No active discounts right now.",
+  "shopDiscountsUnreachable": "Couldn't load discounts. Try again.",
+  "shopDiscountsCode": "Code: {code}",
+  "@shopDiscountsCode": {
+    "placeholders": { "code": { "type": "String" } }
+  },
+  "shopDiscountsValidUntil": "Valid until {date}",
+  "@shopDiscountsValidUntil": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "shopDiscountsValidFrom": "Starts {date}",
+  "@shopDiscountsValidFrom": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "shopDiscountsPercentOff": "{percent}% off",
+  "@shopDiscountsPercentOff": {
+    "placeholders": { "percent": { "type": "int" } }
+  },
+  "shopDiscountsAmountOff": "€{amount} off",
+  "@shopDiscountsAmountOff": {
+    "placeholders": { "amount": { "type": "String" } }
+  }
 }

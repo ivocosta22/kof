@@ -13,10 +13,11 @@ const _imageMap = <String, String>{
   'iced latte': 'assets/images/image_icedLatte.png',
   'iced coffee': 'assets/images/image_icedLatte.png',
   'cold brew': 'assets/images/image_icedLatte.png',
-  'americano': 'assets/images/image_espresso.png',
-  'latte': 'assets/images/image_cappuccino.png',
-  'mocha': 'assets/images/image_cappuccino.png',
-  'hot chocolate': 'assets/images/image_cappuccino.png',
+  'americano': 'assets/images/image_americano.png',
+  'latte': 'assets/images/image_latte.png',
+  'mocha': 'assets/images/image_mocha.png',
+  'hot chocolate': 'assets/images/image_hotChocolate.png',
+  'tea': 'assets/images/image_tea.png',
 };
 
 String? imageAssetForItem(String itemName) {

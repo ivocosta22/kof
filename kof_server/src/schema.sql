@@ -116,6 +116,25 @@ CREATE TABLE IF NOT EXISTS shop_settings (
   value TEXT NOT NULL DEFAULT ''
 );
 
+CREATE TABLE IF NOT EXISTS discounts (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  -- Either percentage_off (1..100) OR amount_off_cents > 0 must be set; the
+  -- other should be 0. Free-form `code` is optional (e.g. "SUMMER25").
+  percentage_off INTEGER NOT NULL DEFAULT 0,
+  amount_off_cents INTEGER NOT NULL DEFAULT 0,
+  code TEXT NOT NULL DEFAULT '',
+  -- ISO date strings (YYYY-MM-DD); empty means "no end date" / "starts now".
+  valid_from TEXT NOT NULL DEFAULT '',
+  valid_until TEXT NOT NULL DEFAULT '',
+  is_active INTEGER NOT NULL DEFAULT 1,
+  created_at TEXT NOT NULL DEFAULT (datetime('now','localtime'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_discounts_active
+  ON discounts(is_active, valid_until);
+
 CREATE TABLE IF NOT EXISTS revoked_tokens (
   jti TEXT PRIMARY KEY,
   expires_at INTEGER NOT NULL

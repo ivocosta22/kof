@@ -698,4 +698,52 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get statusReadyTable => 'Tulossa pöytääsi';
+
+  @override
+  String get shopPreviewNotAvailable =>
+      'Tämän kahvilan menun esikatselu ei ole vielä saatavilla.';
+
+  @override
+  String get shopPreviewUnreachable =>
+      'Kahvilaan ei juuri nyt saada yhteyttä. Yritä uudelleen.';
+
+  @override
+  String shopReviewsBasedOn(int count) {
+    return '$count arvostelun perusteella';
+  }
+
+  @override
+  String get shopReviewsEmpty => 'Ei vielä arvosteluja';
+
+  @override
+  String get shopDiscountsEmpty => 'Ei aktiivisia tarjouksia juuri nyt.';
+
+  @override
+  String get shopDiscountsUnreachable =>
+      'Tarjouksia ei voitu ladata. Yritä uudelleen.';
+
+  @override
+  String shopDiscountsCode(String code) {
+    return 'Koodi: $code';
+  }
+
+  @override
+  String shopDiscountsValidUntil(String date) {
+    return 'Voimassa $date asti';
+  }
+
+  @override
+  String shopDiscountsValidFrom(String date) {
+    return 'Alkaa $date';
+  }
+
+  @override
+  String shopDiscountsPercentOff(int percent) {
+    return '$percent% alennus';
+  }
+
+  @override
+  String shopDiscountsAmountOff(String amount) {
+    return '€$amount alennus';
+  }
 }

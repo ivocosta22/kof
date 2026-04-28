@@ -297,5 +297,37 @@
   "receiptThankYou": "Obrigado pela sua visita",
   "receiptViewButton": "Ver Recibo",
 
-  "statusReadyTable": "A caminho da sua mesa"
+  "statusReadyTable": "A caminho da sua mesa",
+
+  "shopPreviewNotAvailable": "A pré-visualização do menu ainda não está disponível para esta loja.",
+  "shopPreviewUnreachable": "Não foi possível ligar à loja. Tente novamente.",
+
+  "shopReviewsBasedOn": "Baseado em {count} avaliações",
+  "@shopReviewsBasedOn": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "shopReviewsEmpty": "Sem avaliações ainda",
+
+  "shopDiscountsEmpty": "Sem descontos ativos de momento.",
+  "shopDiscountsUnreachable": "Não foi possível carregar os descontos. Tente novamente.",
+  "shopDiscountsCode": "Código: {code}",
+  "@shopDiscountsCode": {
+    "placeholders": { "code": { "type": "String" } }
+  },
+  "shopDiscountsValidUntil": "Válido até {date}",
+  "@shopDiscountsValidUntil": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "shopDiscountsValidFrom": "Começa {date}",
+  "@shopDiscountsValidFrom": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "shopDiscountsPercentOff": "{percent}% de desconto",
+  "@shopDiscountsPercentOff": {
+    "placeholders": { "percent": { "type": "int" } }
+  },
+  "shopDiscountsAmountOff": "€{amount} de desconto",
+  "@shopDiscountsAmountOff": {
+    "placeholders": { "amount": { "type": "String" } }
+  }
 }

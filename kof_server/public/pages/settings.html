@@ -160,6 +160,92 @@
         </div>
         <div class="muted auth-message" id="platformMsg"></div>
       </section>
+
+      <!-- Discounts — manager only. CRUD over /api/discounts/admin so the
+           customer-facing app can list active discounts on the shop screen. -->
+      <section class="ops-panel" id="kofDiscountsPanel" style="display:none; grid-column: 1 / -1;">
+        <div class="ops-panel-title">
+          <div>
+            <h3 id="discountsTitle">Discounts</h3>
+            <div class="muted" id="discountsHint">Promotions shown on the shop's page in the customer app. Either a percentage or a flat euro amount must be set.</div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="field-card" style="grid-column: 1 / -1;">
+            <label class="muted" for="dcTitle">Title</label>
+            <input id="dcTitle" type="text" maxlength="80" placeholder="e.g. Friday morning deal" autocomplete="off" />
+          </div>
+          <div class="field-card" style="grid-column: 1 / -1;">
+            <label class="muted" for="dcDesc">Description</label>
+            <input id="dcDesc" type="text" maxlength="240" placeholder="Optional details for customers" autocomplete="off" />
+          </div>
+          <div class="field-card">
+            <label class="muted" for="dcPercent">Percentage off (0–100)</label>
+            <input id="dcPercent" type="number" min="0" max="100" step="1" placeholder="20" inputmode="numeric" />
+          </div>
+          <div class="field-card">
+            <label class="muted" for="dcAmount">Flat amount off (€)</label>
+            <input id="dcAmount" type="number" min="0" step="0.01" placeholder="2.50" inputmode="decimal" />
+          </div>
+          <div class="field-card">
+            <label class="muted" for="dcCode">Promo code (optional)</label>
+            <input id="dcCode" type="text" maxlength="32" placeholder="SUMMER25" autocomplete="off" style="text-transform:uppercase" />
+          </div>
+          <div class="field-card">
+            <label class="muted" for="dcValidFrom">Valid from (optional)</label>
+            <input id="dcValidFrom" type="date" />
+          </div>
+          <div class="field-card">
+            <label class="muted" for="dcValidUntil">Valid until (optional)</label>
+            <input id="dcValidUntil" type="date" />
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:14px;">
+          <button onclick="saveDiscount()" id="saveDiscountBtn" class="primary">Add discount</button>
+          <button onclick="resetDiscountForm()" id="resetDiscountBtn" class="secondary" style="display:none;">Cancel</button>
+        </div>
+        <div class="muted auth-message" id="discountMsg"></div>
+
+        <h4 style="margin-top:20px; margin-bottom:8px;">Active &amp; recent</h4>
+        <div id="discountsList" class="muted" style="font-size:13px;">Loading…</div>
+      </section>
+
+      <!-- Customer notifications — manager only. Pushes a broadcast to every
+           user that follows this shop, via the notifyFollowersOnBroadcast
+           Cloud Function listening on shops/{shopId}/broadcasts. -->
+      <section class="ops-panel" id="kofNotificationsPanel" style="display:none; grid-column: 1 / -1;">
+        <div class="ops-panel-title">
+          <div>
+            <h3 id="notificationsTitle">Customer Notifications</h3>
+            <div class="muted" id="notificationsHint">Send a push notification to everyone following this shop on the Kof app.</div>
+          </div>
+        </div>
+
+        <div id="notificationsStatus" style="margin-bottom:12px;"></div>
+
+        <div style="display:grid; grid-template-columns:1fr; gap:12px;">
+          <div class="field-card">
+            <label class="muted" for="bcTitle" id="bcTitleLabel">Title</label>
+            <input id="bcTitle" type="text" maxlength="80" autocomplete="off" placeholder="e.g. Free coffee on Friday!" />
+            <div class="muted" id="bcTitleCount" style="font-size:11px; margin-top:4px;">0 / 80</div>
+          </div>
+          <div class="field-card">
+            <label class="muted" for="bcBody" id="bcBodyLabel">Message</label>
+            <textarea id="bcBody" maxlength="240" rows="3" autocomplete="off" placeholder="What do you want followers to know?" style="resize:vertical; width:100%; font-family:inherit; padding:8px 10px; border-radius:8px; border:1px solid var(--border, #ccc);"></textarea>
+            <div class="muted" id="bcBodyCount" style="font-size:11px; margin-top:4px;">0 / 240</div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:14px;">
+          <button onclick="sendBroadcast()" id="sendBroadcastBtn" class="primary">Send to followers</button>
+        </div>
+        <div class="muted auth-message" id="broadcastMsg"></div>
+
+        <h4 style="margin-top:20px; margin-bottom:8px;" id="recentBroadcastsTitle">Recent broadcasts</h4>
+        <div id="recentBroadcasts" class="muted" style="font-size:13px;">Loading…</div>
+      </section>
     </section>
   </main>
 
@@ -453,6 +539,11 @@
       if (currentMe.role === "manager") {
         kofPlatformPanelEl.style.display = "";
         loadPlatform();
+        document.getElementById("kofNotificationsPanel").style.display = "";
+        initBroadcastUi();
+        loadRecentBroadcasts();
+        document.getElementById("kofDiscountsPanel").style.display = "";
+        loadDiscounts();
       }
 
       const volumePercent = Math.round(Number(settings.volume ?? 0.5) * 100);
@@ -660,6 +751,294 @@
         loadPlatform();
       } catch (error) {
         toastErr("Kof Platform", translateError(error));
+      }
+    }
+
+    // ── Customer notifications ───────────────────────────────────────────
+    // Wire up the title/body inputs with live character counters and
+    // disabled-state for the send button.
+    function initBroadcastUi() {
+      const titleEl = document.getElementById("bcTitle");
+      const bodyEl = document.getElementById("bcBody");
+      const titleCountEl = document.getElementById("bcTitleCount");
+      const bodyCountEl = document.getElementById("bcBodyCount");
+
+      function updateCounters() {
+        titleCountEl.innerText = `${titleEl.value.length} / 80`;
+        bodyCountEl.innerText = `${bodyEl.value.length} / 240`;
+      }
+      titleEl.addEventListener("input", updateCounters);
+      bodyEl.addEventListener("input", updateCounters);
+      updateCounters();
+    }
+
+    async function sendBroadcast() {
+      const titleEl = document.getElementById("bcTitle");
+      const bodyEl = document.getElementById("bcBody");
+      const msgEl = document.getElementById("broadcastMsg");
+      const btn = document.getElementById("sendBroadcastBtn");
+
+      const title = titleEl.value.trim();
+      const body = bodyEl.value.trim();
+      msgEl.innerText = "";
+
+      if (!title || !body) {
+        msgEl.innerText = "Title and message are both required.";
+        return;
+      }
+
+      if (!confirm(`Send "${title}" to all followers? This cannot be undone.`)) {
+        return;
+      }
+
+      btn.disabled = true;
+      const originalLabel = btn.innerText;
+      btn.innerText = "Sending…";
+      try {
+        await api("/api/admin/firebase/broadcast", {
+          method: "POST",
+          body: JSON.stringify({ title, body }),
+        });
+        toastOk("Customer Notifications", "Broadcast sent.");
+        titleEl.value = "";
+        bodyEl.value = "";
+        document.getElementById("bcTitleCount").innerText = "0 / 80";
+        document.getElementById("bcBodyCount").innerText = "0 / 240";
+        loadRecentBroadcasts();
+      } catch (error) {
+        msgEl.innerText = translateError(error);
+        toastErr("Customer Notifications", translateError(error));
+      } finally {
+        btn.disabled = false;
+        btn.innerText = originalLabel;
+      }
+    }
+
+    async function loadRecentBroadcasts() {
+      const listEl = document.getElementById("recentBroadcasts");
+      listEl.innerText = "Loading…";
+      try {
+        const data = await api("/api/admin/firebase/broadcasts");
+        const items = Array.isArray(data.broadcasts) ? data.broadcasts : [];
+        if (items.length === 0) {
+          listEl.innerText = "No broadcasts yet.";
+          return;
+        }
+        listEl.innerHTML = items
+          .map((b) => {
+            const when = b.created_at ? new Date(b.created_at) : null;
+            const whenLabel = when
+              ? `${when.toLocaleDateString()} · ${when.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+              : "—";
+            return `
+              <div style="padding:10px 12px; border:1px solid var(--border, #e1e1e1); border-radius:8px; margin-bottom:8px;">
+                <div style="display:flex; justify-content:space-between; gap:12px; align-items:baseline;">
+                  <strong>${escapeHtml(b.title)}</strong>
+                  <span class="muted" style="font-size:11px;">${escapeHtml(whenLabel)}</span>
+                </div>
+                <div style="margin-top:4px; color:var(--text-muted, #555);">${escapeHtml(b.body)}</div>
+              </div>
+            `;
+          })
+          .join("");
+      } catch (error) {
+        // 404 means the shop isn't published yet — show a friendly hint.
+        const message = (error && error.message) || "";
+        if (message.includes("not registered")) {
+          listEl.innerText =
+            "This shop isn't on the Kof Platform yet. Publish it from the panel above before sending notifications.";
+        } else {
+          listEl.innerText = translateError(error);
+        }
+      }
+    }
+
+    function escapeHtml(s) {
+      return String(s ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    // ── Discounts admin ──────────────────────────────────────────────────
+    // Tracks the discount currently being edited so saveDiscount() knows
+    // whether to POST (create) or PATCH (update).
+    let _editingDiscountId = null;
+
+    function discountFormFields() {
+      const titleEl = document.getElementById("dcTitle");
+      const descEl = document.getElementById("dcDesc");
+      const percentEl = document.getElementById("dcPercent");
+      const amountEl = document.getElementById("dcAmount");
+      const codeEl = document.getElementById("dcCode");
+      const fromEl = document.getElementById("dcValidFrom");
+      const untilEl = document.getElementById("dcValidUntil");
+      return { titleEl, descEl, percentEl, amountEl, codeEl, fromEl, untilEl };
+    }
+
+    function resetDiscountForm() {
+      const f = discountFormFields();
+      f.titleEl.value = "";
+      f.descEl.value = "";
+      f.percentEl.value = "";
+      f.amountEl.value = "";
+      f.codeEl.value = "";
+      f.fromEl.value = "";
+      f.untilEl.value = "";
+      _editingDiscountId = null;
+      document.getElementById("saveDiscountBtn").innerText = "Add discount";
+      document.getElementById("resetDiscountBtn").style.display = "none";
+      document.getElementById("discountMsg").innerText = "";
+    }
+
+    async function saveDiscount() {
+      const f = discountFormFields();
+      const msgEl = document.getElementById("discountMsg");
+      msgEl.innerText = "";
+
+      const title = f.titleEl.value.trim();
+      const description = f.descEl.value.trim();
+      const percentage_off = Math.max(0, Math.min(100, Math.floor(Number(f.percentEl.value) || 0)));
+      const amount_off_cents = Math.max(0, Math.round((Number(f.amountEl.value) || 0) * 100));
+      const code = f.codeEl.value.trim().toUpperCase();
+      const valid_from = f.fromEl.value || "";
+      const valid_until = f.untilEl.value || "";
+
+      if (!title) {
+        msgEl.innerText = "Title is required.";
+        return;
+      }
+      if (percentage_off === 0 && amount_off_cents === 0) {
+        msgEl.innerText = "Set either a percentage or a flat amount off.";
+        return;
+      }
+      if (valid_from && valid_until && valid_until < valid_from) {
+        msgEl.innerText = "Valid until cannot be before valid from.";
+        return;
+      }
+
+      const body = {
+        title,
+        description,
+        percentage_off,
+        amount_off_cents,
+        code,
+        valid_from,
+        valid_until,
+      };
+
+      try {
+        if (_editingDiscountId) {
+          await api(`/api/discounts/admin/${_editingDiscountId}`, {
+            method: "PATCH",
+            body: JSON.stringify(body),
+          });
+          toastOk("Discounts", "Updated.");
+        } else {
+          await api("/api/discounts/admin", {
+            method: "POST",
+            body: JSON.stringify(body),
+          });
+          toastOk("Discounts", "Discount added.");
+        }
+        resetDiscountForm();
+        loadDiscounts();
+      } catch (error) {
+        msgEl.innerText = translateError(error);
+        toastErr("Discounts", translateError(error));
+      }
+    }
+
+    function startEditDiscount(d) {
+      const f = discountFormFields();
+      f.titleEl.value = d.title || "";
+      f.descEl.value = d.description || "";
+      f.percentEl.value = d.percentage_off || "";
+      f.amountEl.value = d.amount_off_cents
+        ? (d.amount_off_cents / 100).toFixed(2)
+        : "";
+      f.codeEl.value = d.code || "";
+      f.fromEl.value = d.valid_from || "";
+      f.untilEl.value = d.valid_until || "";
+      _editingDiscountId = d.id;
+      document.getElementById("saveDiscountBtn").innerText = "Save changes";
+      document.getElementById("resetDiscountBtn").style.display = "";
+      document.getElementById("discountMsg").innerText = "";
+      // Scroll to the form so the manager sees the inputs they're editing.
+      document.getElementById("kofDiscountsPanel")
+        .scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    async function toggleDiscountActive(id, nextActive) {
+      try {
+        await api(`/api/discounts/admin/${id}`, {
+          method: "PATCH",
+          body: JSON.stringify({ is_active: nextActive }),
+        });
+        loadDiscounts();
+      } catch (error) {
+        toastErr("Discounts", translateError(error));
+      }
+    }
+
+    async function deleteDiscount(id) {
+      if (!confirm("Delete this discount? This cannot be undone.")) return;
+      try {
+        await api(`/api/discounts/admin/${id}`, { method: "DELETE" });
+        toastOk("Discounts", "Deleted.");
+        loadDiscounts();
+      } catch (error) {
+        toastErr("Discounts", translateError(error));
+      }
+    }
+
+    function discountSummary(d) {
+      const parts = [];
+      if (d.percentage_off > 0) parts.push(`${d.percentage_off}% off`);
+      if (d.amount_off_cents > 0) parts.push(`€${(d.amount_off_cents / 100).toFixed(2)} off`);
+      if (d.code) parts.push(`code ${d.code}`);
+      return parts.join(" · ");
+    }
+
+    function discountValidity(d) {
+      if (d.valid_from && d.valid_until) {
+        return `${d.valid_from} → ${d.valid_until}`;
+      }
+      if (d.valid_from) return `from ${d.valid_from}`;
+      if (d.valid_until) return `until ${d.valid_until}`;
+      return "no end date";
+    }
+
+    async function loadDiscounts() {
+      const listEl = document.getElementById("discountsList");
+      listEl.innerText = "Loading…";
+      try {
+        const data = await api("/api/discounts/admin");
+        const items = Array.isArray(data.discounts) ? data.discounts : [];
+        if (items.length === 0) {
+          listEl.innerText = "No discounts yet.";
+          return;
+        }
+        listEl.innerHTML = items
+          .map((d) => `
+            <div style="padding:10px 12px; border:1px solid var(--border, #e1e1e1); border-radius:8px; margin-bottom:8px; ${d.is_active ? "" : "opacity:0.55;"}">
+              <div style="display:flex; justify-content:space-between; gap:12px; align-items:baseline;">
+                <strong>${escapeHtml(d.title)}</strong>
+                <span class="muted" style="font-size:11px;">${escapeHtml(discountValidity(d))}</span>
+              </div>
+              <div style="margin-top:4px;">${escapeHtml(discountSummary(d))}</div>
+              ${d.description ? `<div class="muted" style="margin-top:4px;">${escapeHtml(d.description)}</div>` : ""}
+              <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="secondary" onclick='startEditDiscount(${JSON.stringify(d).replace(/'/g, "&#39;")})'>Edit</button>
+                <button class="secondary" onclick="toggleDiscountActive(${d.id}, ${!d.is_active})">${d.is_active ? "Deactivate" : "Activate"}</button>
+                <button class="secondary danger-soft" onclick="deleteDiscount(${d.id})">Delete</button>
+              </div>
+            </div>
+          `)
+          .join("");
+      } catch (error) {
+        listEl.innerText = translateError(error);
       }
     }
 

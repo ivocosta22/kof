@@ -190,6 +190,87 @@ router.put("/shop", requireAdmin("manager"), async (req, res) => {
   }
 });
 
+// GET /firebase/broadcasts — list this shop's recent broadcasts (manager only)
+// Reads from shops/{shopId}/broadcasts ordered by createdAt desc.
+router.get("/broadcasts", requireAdmin("manager"), async (req, res) => {
+  if (!firestoreGuard(res)) return;
+  const shopId = getShopSetting("firestore_shop_id");
+  if (!shopId) {
+    return res.status(404).json({
+      error: "shop not registered on Firestore — publish from the platform panel first",
+    });
+  }
+
+  try {
+    const snap = await getFirestore()
+      .collection("shops")
+      .doc(shopId)
+      .collection("broadcasts")
+      .orderBy("createdAt", "desc")
+      .limit(20)
+      .get();
+
+    const broadcasts = snap.docs.map((doc) => {
+      const data = doc.data() || {};
+      const createdAt = data.createdAt?.toDate?.() ?? null;
+      return {
+        id: doc.id,
+        title: data.title || "",
+        body: data.body || "",
+        created_at: createdAt ? createdAt.toISOString() : null,
+      };
+    });
+
+    res.json({ broadcasts });
+  } catch (err) {
+    console.error("[firebase] broadcasts list failed:", err);
+    res.status(500).json({ error: "Firestore read failed: " + err.message });
+  }
+});
+
+// POST /firebase/broadcast — send a push notification to followers (manager only)
+// Writes a doc at shops/{shopId}/broadcasts; the notifyFollowersOnBroadcast
+// Cloud Function picks it up and fans out FCM messages.
+router.post("/broadcast", requireAdmin("manager"), async (req, res) => {
+  if (!firestoreGuard(res)) return;
+  const shopId = getShopSetting("firestore_shop_id");
+  if (!shopId) {
+    return res.status(404).json({
+      error: "shop not registered on Firestore — publish from the platform panel first",
+    });
+  }
+
+  const title = String(req.body?.title || "").trim();
+  const body = String(req.body?.body || "").trim();
+
+  if (!title) return res.status(400).json({ error: "title is required" });
+  if (!body) return res.status(400).json({ error: "body is required" });
+  if (title.length > 80) {
+    return res.status(400).json({ error: "title too long (max 80 chars)" });
+  }
+  if (body.length > 240) {
+    return res.status(400).json({ error: "body too long (max 240 chars)" });
+  }
+
+  try {
+    const { FieldValue } = await import("firebase-admin/firestore");
+    const ref = await getFirestore()
+      .collection("shops")
+      .doc(shopId)
+      .collection("broadcasts")
+      .add({
+        title,
+        body,
+        createdAt: FieldValue.serverTimestamp(),
+      });
+
+    res.json({ ok: true, id: ref.id });
+  } catch (err) {
+    console.error("[firebase] broadcast send failed:", err);
+    res.status(500).json({ error: "Firestore write failed: " + err.message });
+  }
+});
+
 // DELETE /firebase/shop — remove this shop from Firestore (manager only)
 router.delete("/shop", requireAdmin("manager"), async (req, res) => {
   if (!firestoreGuard(res)) return;

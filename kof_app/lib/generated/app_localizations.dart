@@ -1395,6 +1395,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'On its way to your table'**
   String get statusReadyTable;
+
+  /// No description provided for @shopPreviewNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Menu preview is not available for this shop yet.'**
+  String get shopPreviewNotAvailable;
+
+  /// No description provided for @shopPreviewUnreachable.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t reach the shop right now. Try again.'**
+  String get shopPreviewUnreachable;
+
+  /// No description provided for @shopReviewsBasedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Based on {count} reviews'**
+  String shopReviewsBasedOn(int count);
+
+  /// No description provided for @shopReviewsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No reviews yet'**
+  String get shopReviewsEmpty;
+
+  /// No description provided for @shopDiscountsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No active discounts right now.'**
+  String get shopDiscountsEmpty;
+
+  /// No description provided for @shopDiscountsUnreachable.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load discounts. Try again.'**
+  String get shopDiscountsUnreachable;
+
+  /// No description provided for @shopDiscountsCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Code: {code}'**
+  String shopDiscountsCode(String code);
+
+  /// No description provided for @shopDiscountsValidUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Valid until {date}'**
+  String shopDiscountsValidUntil(String date);
+
+  /// No description provided for @shopDiscountsValidFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts {date}'**
+  String shopDiscountsValidFrom(String date);
+
+  /// No description provided for @shopDiscountsPercentOff.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% off'**
+  String shopDiscountsPercentOff(int percent);
+
+  /// No description provided for @shopDiscountsAmountOff.
+  ///
+  /// In en, this message translates to:
+  /// **'€{amount} off'**
+  String shopDiscountsAmountOff(String amount);
 }
 
 class _AppLocalizationsDelegate

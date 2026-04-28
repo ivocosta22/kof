@@ -11,6 +11,9 @@ import '../providers/session_provider.dart';
 import '../services/api_service.dart';
 import '../services/shop_service.dart';
 import 'menu_screen.dart';
+import 'shop_discounts_screen.dart';
+import 'shop_menu_preview_screen.dart';
+import 'shop_reviews_screen.dart';
 
 class ShopDetailScreen extends StatefulWidget {
   final Shop shop;
@@ -330,14 +333,41 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
                         style: theme.textTheme.bodyMedium),
                     const SizedBox(height: 28),
                   ],
-                  _placeholderSection(
-                      theme, l10n.shopMenuPreviewHeading, Icons.menu_book_outlined),
+                  _navSection(
+                    theme,
+                    title: l10n.shopMenuPreviewHeading,
+                    icon: Icons.menu_book_outlined,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ShopMenuPreviewScreen(shop: shop),
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 20),
-                  _placeholderSection(
-                      theme, l10n.shopReviewsHeading, Icons.reviews_outlined),
+                  _navSection(
+                    theme,
+                    title: l10n.shopReviewsHeading,
+                    icon: Icons.reviews_outlined,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ShopReviewsScreen(shop: shop),
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 20),
-                  _placeholderSection(
-                      theme, l10n.shopDiscountsHeading, Icons.local_offer_outlined),
+                  _navSection(
+                    theme,
+                    title: l10n.shopDiscountsHeading,
+                    icon: Icons.local_offer_outlined,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ShopDiscountsScreen(shop: shop),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -470,35 +500,47 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
     );
   }
 
-  Widget _placeholderSection(ThemeData theme, String title, IconData icon) {
-    final l10n = context.l10n;
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerLow,
+  Widget _navSection(
+    ThemeData theme, {
+    required String title,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: theme.colorScheme.surfaceContainerLow,
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(14),
-      ),
-      child: Row(
-        children: [
-          Icon(icon,
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title,
-                    style: theme.textTheme.titleSmall
-                        ?.copyWith(fontWeight: FontWeight.w600)),
-                const SizedBox(height: 2),
-                Text(l10n.shopSectionComingSoon,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface
-                            .withValues(alpha: 0.55))),
-              ],
-            ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon,
+                    size: 20, color: theme.colorScheme.primary),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  title,
+                  style: theme.textTheme.titleSmall
+                      ?.copyWith(fontWeight: FontWeight.w600),
+                ),
+              ),
+              Icon(
+                Icons.chevron_right,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

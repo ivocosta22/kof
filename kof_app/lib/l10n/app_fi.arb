@@ -297,5 +297,37 @@
   "receiptThankYou": "Kiitos käynnistäsi",
   "receiptViewButton": "Näytä kuitti",
 
-  "statusReadyTable": "Tulossa pöytääsi"
+  "statusReadyTable": "Tulossa pöytääsi",
+
+  "shopPreviewNotAvailable": "Tämän kahvilan menun esikatselu ei ole vielä saatavilla.",
+  "shopPreviewUnreachable": "Kahvilaan ei juuri nyt saada yhteyttä. Yritä uudelleen.",
+
+  "shopReviewsBasedOn": "{count} arvostelun perusteella",
+  "@shopReviewsBasedOn": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "shopReviewsEmpty": "Ei vielä arvosteluja",
+
+  "shopDiscountsEmpty": "Ei aktiivisia tarjouksia juuri nyt.",
+  "shopDiscountsUnreachable": "Tarjouksia ei voitu ladata. Yritä uudelleen.",
+  "shopDiscountsCode": "Koodi: {code}",
+  "@shopDiscountsCode": {
+    "placeholders": { "code": { "type": "String" } }
+  },
+  "shopDiscountsValidUntil": "Voimassa {date} asti",
+  "@shopDiscountsValidUntil": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "shopDiscountsValidFrom": "Alkaa {date}",
+  "@shopDiscountsValidFrom": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "shopDiscountsPercentOff": "{percent}% alennus",
+  "@shopDiscountsPercentOff": {
+    "placeholders": { "percent": { "type": "int" } }
+  },
+  "shopDiscountsAmountOff": "€{amount} alennus",
+  "@shopDiscountsAmountOff": {
+    "placeholders": { "amount": { "type": "String" } }
+  }
 }

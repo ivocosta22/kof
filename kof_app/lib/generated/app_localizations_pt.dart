@@ -700,4 +700,52 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get statusReadyTable => 'A caminho da sua mesa';
+
+  @override
+  String get shopPreviewNotAvailable =>
+      'A pré-visualização do menu ainda não está disponível para esta loja.';
+
+  @override
+  String get shopPreviewUnreachable =>
+      'Não foi possível ligar à loja. Tente novamente.';
+
+  @override
+  String shopReviewsBasedOn(int count) {
+    return 'Baseado em $count avaliações';
+  }
+
+  @override
+  String get shopReviewsEmpty => 'Sem avaliações ainda';
+
+  @override
+  String get shopDiscountsEmpty => 'Sem descontos ativos de momento.';
+
+  @override
+  String get shopDiscountsUnreachable =>
+      'Não foi possível carregar os descontos. Tente novamente.';
+
+  @override
+  String shopDiscountsCode(String code) {
+    return 'Código: $code';
+  }
+
+  @override
+  String shopDiscountsValidUntil(String date) {
+    return 'Válido até $date';
+  }
+
+  @override
+  String shopDiscountsValidFrom(String date) {
+    return 'Começa $date';
+  }
+
+  @override
+  String shopDiscountsPercentOff(int percent) {
+    return '$percent% de desconto';
+  }
+
+  @override
+  String shopDiscountsAmountOff(String amount) {
+    return '€$amount de desconto';
+  }
 }

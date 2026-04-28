@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/menu_item.dart';
 import '../models/order.dart';
+import '../models/shop_discount.dart';
 
 class ApiService {
   final String baseUrl;
@@ -76,5 +77,20 @@ class ApiService {
     if (response.statusCode != 200) throw Exception('Order not found');
     final data = jsonDecode(response.body) as Map<String, dynamic>;
     return Order.fromJson(data['order'] as Map<String, dynamic>);
+  }
+
+  // Public list of currently-valid discounts at this shop. Returns an empty
+  // list if the shop has none active or hasn't enabled discounts at all.
+  Future<List<ShopDiscount>> getDiscounts() async {
+    final response = await http
+        .get(Uri.parse('$baseUrl/api/discounts'))
+        .timeout(const Duration(seconds: 8));
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load discounts');
+    }
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
+    return (data['discounts'] as List<dynamic>? ?? [])
+        .map((e) => ShopDiscount.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 }

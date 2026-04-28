@@ -695,4 +695,51 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get statusReadyTable => 'On its way to your table';
+
+  @override
+  String get shopPreviewNotAvailable =>
+      'Menu preview is not available for this shop yet.';
+
+  @override
+  String get shopPreviewUnreachable =>
+      'Couldn\'t reach the shop right now. Try again.';
+
+  @override
+  String shopReviewsBasedOn(int count) {
+    return 'Based on $count reviews';
+  }
+
+  @override
+  String get shopReviewsEmpty => 'No reviews yet';
+
+  @override
+  String get shopDiscountsEmpty => 'No active discounts right now.';
+
+  @override
+  String get shopDiscountsUnreachable => 'Couldn\'t load discounts. Try again.';
+
+  @override
+  String shopDiscountsCode(String code) {
+    return 'Code: $code';
+  }
+
+  @override
+  String shopDiscountsValidUntil(String date) {
+    return 'Valid until $date';
+  }
+
+  @override
+  String shopDiscountsValidFrom(String date) {
+    return 'Starts $date';
+  }
+
+  @override
+  String shopDiscountsPercentOff(int percent) {
+    return '$percent% off';
+  }
+
+  @override
+  String shopDiscountsAmountOff(String amount) {
+    return '€$amount off';
+  }
 }

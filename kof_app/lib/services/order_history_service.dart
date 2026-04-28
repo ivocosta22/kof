@@ -4,8 +4,21 @@ import '../models/past_order.dart';
 import 'api_service.dart';
 
 class OrderHistoryService {
-  static const _key = 'kof_order_history';
+  static const _basePrefix = 'kof_order_history';
   static const _maxOrders = 50;
+
+  // The active user identifier — orders persist under a key derived from this
+  // value so each account (and the shared "guest" bucket) gets its own
+  // history. AuthProvider state changes update this via [setCurrentUser].
+  static String _userKey = 'guest';
+
+  /// Update the storage scope. Pass the Firebase UID for signed-in users, or
+  /// `null` to fall back to the shared `guest` bucket.
+  static void setCurrentUser(String? userId) {
+    _userKey = (userId == null || userId.isEmpty) ? 'guest' : userId;
+  }
+
+  String get _key => '${_basePrefix}__$_userKey';
 
   Future<List<PastOrder>> getAll() async {
     final prefs = await SharedPreferences.getInstance();

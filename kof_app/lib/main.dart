@@ -41,7 +41,15 @@ class KofApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => SessionProvider()),
         ChangeNotifierProvider(create: (_) => CartProvider()),
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
-        ChangeNotifierProvider(create: (_) => ActiveOrdersProvider()..refresh()),
+        // Reacts to AuthProvider so the order-history scope (and the bubble's
+        // in-memory state) follows whichever user is signed in. Without this,
+        // logging in as a different user — or as a guest — would briefly
+        // surface the previous account's active orders.
+        ChangeNotifierProxyProvider<AuthProvider, ActiveOrdersProvider>(
+          create: (_) => ActiveOrdersProvider(),
+          update: (_, auth, prev) =>
+              (prev ?? ActiveOrdersProvider())..onAuthChanged(auth.user?.id),
+        ),
       ],
       child: const _KofMaterialApp(),
     );

@@ -10,6 +10,7 @@ import adminRouter from "./routes/admin.js";
 import menuRouter from "./routes/menu.js";
 import createOrdersRouter from "./routes/orders.js";
 import firebaseRouter from "./routes/firebase.js";
+import discountsRouter from "./routes/discounts.js";
 import { createRealtimeServer } from "./realtime.js";
 
 const app = express();
@@ -128,6 +129,7 @@ app.use("/api/admin", adminRouter);
 app.use("/api/admin/firebase", firebaseRouter);
 app.use("/api/menu", menuRouter);
 app.use("/api/orders", createOrdersRouter({ broadcast }));
+app.use("/api/discounts", discountsRouter);
 
 app.use("/css", express.static(cssDir));
 app.use("/js", express.static(jsDir));
