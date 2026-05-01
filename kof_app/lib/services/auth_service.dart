@@ -13,6 +13,7 @@ enum AuthErrorCode {
   weakPassword,
   networkError,
   tooManyRequests,
+  requiresRecentLogin,
   googleCancelled,
   googleFailed,
   unknown,
@@ -126,6 +127,46 @@ class AuthService {
         'Apple Sign-In is not yet configured.');
   }
 
+  Future<void> updateProfile({String? name, String? photoUrl}) async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+    try {
+      if (name != null) await user.updateDisplayName(name.trim());
+      if (photoUrl != null) {
+        final url = photoUrl.trim();
+        await user.updatePhotoURL(url.isEmpty ? null : url);
+      }
+      await user.reload();
+    } on fb.FirebaseAuthException catch (e) {
+      throw AuthException(_mapCode(e.code), e.message);
+    }
+  }
+
+  /// Sends a verification link to [newEmail]. The change only takes effect
+  /// after the user clicks the link. Re-authenticates first if
+  /// [currentPassword] is provided (required when the session is stale).
+  Future<void> updateEmail(String newEmail, {String? currentPassword}) async {
+    final user = _auth.currentUser;
+    if (user == null) throw const AuthException(AuthErrorCode.unknown);
+    try {
+      if (currentPassword != null) {
+        final cred = fb.EmailAuthProvider.credential(
+          email: user.email!,
+          password: currentPassword,
+        );
+        await user.reauthenticateWithCredential(cred);
+      }
+      await user.verifyBeforeUpdateEmail(newEmail.trim());
+    } on fb.FirebaseAuthException catch (e) {
+      throw AuthException(_mapCode(e.code), e.message);
+    }
+  }
+
+  bool get isPasswordUser =>
+      _auth.currentUser?.providerData
+          .any((p) => p.providerId == 'password') ??
+      false;
+
   Future<void> logout() async {
     try {
       await GoogleSignIn().signOut();
@@ -166,6 +207,8 @@ class AuthService {
         return AuthErrorCode.networkError;
       case 'too-many-requests':
         return AuthErrorCode.tooManyRequests;
+      case 'requires-recent-login':
+        return AuthErrorCode.requiresRecentLogin;
       default:
         return AuthErrorCode.unknown;
     }

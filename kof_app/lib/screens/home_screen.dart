@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../l10n/l10n.dart';
 import '../providers/auth_provider.dart';
 import '../providers/cart_provider.dart';
+import '../providers/notifications_provider.dart';
 import '../providers/session_provider.dart';
 import '../widgets/app_shell.dart';
 import 'map_screen.dart';
@@ -17,6 +18,7 @@ class HomeScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final l10n = context.l10n;
     final user = context.watch<AuthProvider>().user;
+    final unread = context.watch<NotificationsProvider>().unreadCount;
 
     return AppShell(
       child: Scaffold(
@@ -36,7 +38,11 @@ class HomeScreen extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_outlined),
+            icon: Badge(
+              isLabelVisible: unread > 0,
+              label: Text(unread > 9 ? '9+' : '$unread'),
+              child: const Icon(Icons.notifications_outlined),
+            ),
             tooltip: l10n.homeNotificationsTooltip,
             onPressed: () => Navigator.push(
               context,

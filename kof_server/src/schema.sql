@@ -22,6 +22,8 @@ CREATE TABLE IF NOT EXISTS orders (
   created_at TEXT NOT NULL DEFAULT (datetime('now','localtime')),
   created_date TEXT NOT NULL DEFAULT (date('now','localtime')),
   inventory_deducted_at TEXT DEFAULT NULL,
+  discount_code TEXT NOT NULL DEFAULT '',
+  discount_amount_cents INTEGER NOT NULL DEFAULT 0,
   CHECK (
     (fulfillment_type = 'counter_pickup' AND trim(customer_label) <> '' AND trim(table_label) = '')
     OR

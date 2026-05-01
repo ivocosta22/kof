@@ -11,13 +11,19 @@ const _imageMap = <String, String>{
   'espresso': 'assets/images/image_espresso.png',
   'cappuccino': 'assets/images/image_cappuccino.png',
   'iced latte': 'assets/images/image_icedLatte.png',
-  'iced coffee': 'assets/images/image_icedLatte.png',
-  'cold brew': 'assets/images/image_icedLatte.png',
+  'iced coffee': 'assets/images/image_icedCoffee.png',
+  'cold brew': 'assets/images/image_coldBrew.png',
   'americano': 'assets/images/image_americano.png',
   'latte': 'assets/images/image_latte.png',
   'mocha': 'assets/images/image_mocha.png',
   'hot chocolate': 'assets/images/image_hotChocolate.png',
   'tea': 'assets/images/image_tea.png',
+  'croissant': 'assets/images/image_butterCroissant.png',
+  'chocolate muffin': 'assets/images/image_chocolateMuffin.png',
+  'blueberry muffin': 'assets/images/image_blueberryMuffin.png',
+  'cinnamon roll': 'assets/images/image_cinnamonRoll.png',
+  'ham & cheese toastie': 'assets/images/image_hamCheeseToast.png',
+  'avocado toast': 'assets/images/image_avocadoToast.png',
 };
 
 String? imageAssetForItem(String itemName) {
@@ -41,13 +47,17 @@ IconData iconForMenuItem({required String name, required String category}) {
     return Icons.cake;
   }
   if (lower.contains('croissant')) return Icons.bakery_dining;
-  if (lower.contains('cinnamon') || lower.contains('roll') ||
-      lower.contains('donut') || lower.contains('doughnut')) {
+  if (lower.contains('cinnamon') ||
+      lower.contains('roll') ||
+      lower.contains('donut') ||
+      lower.contains('doughnut')) {
     return Icons.donut_large;
   }
   if (lower.contains('cookie')) return Icons.cookie;
-  if (lower.contains('avocado') || lower.contains('toast') ||
-      lower.contains('toastie') || lower.contains('sandwich') ||
+  if (lower.contains('avocado') ||
+      lower.contains('toast') ||
+      lower.contains('toastie') ||
+      lower.contains('sandwich') ||
       lower.contains('bagel')) {
     return Icons.lunch_dining;
   }

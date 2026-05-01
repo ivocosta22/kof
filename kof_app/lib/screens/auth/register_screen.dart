@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:provider/provider.dart';
 import '../../l10n/l10n.dart';
 import '../../providers/auth_provider.dart';
@@ -22,6 +23,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _loading = false;
   String? _error;
   String? _selectedCountry;
+  String? _phoneE164;
 
   @override
   void dispose() {
@@ -37,7 +39,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final name = _nameCtrl.text.trim();
     final email = _emailCtrl.text.trim();
     final password = _passwordCtrl.text;
-    final phone = _phoneCtrl.text.trim();
+    final phone = (_phoneCtrl.text.trim().isEmpty ? '' : (_phoneE164 ?? '')).trim();
 
     if (name.isEmpty || email.isEmpty || password.isEmpty) {
       setState(() => _error = l10n.registerFieldsRequired);
@@ -145,15 +147,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              _buildField(
-                context: context,
-                controller: _phoneCtrl,
-                label: l10n.registerPhoneLabel,
-                hint: l10n.registerPhoneHint,
-                keyboardType: TextInputType.phone,
-                textInputAction: TextInputAction.done,
-                onSubmitted: (_) => _register(),
-              ),
+              _buildPhoneField(context),
               const SizedBox(height: 12),
               CountryPickerField(
                 value: _selectedCountry,
@@ -226,6 +220,47 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPhoneField(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = context.l10n;
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2)),
+        ],
+      ),
+      child: IntlPhoneField(
+        controller: _phoneCtrl,
+        initialCountryCode: 'PT',
+        disableLengthCheck: true,
+        showCountryFlag: true,
+        dropdownIconPosition: IconPosition.trailing,
+        flagsButtonPadding: const EdgeInsets.symmetric(horizontal: 8),
+        textInputAction: TextInputAction.done,
+        onSubmitted: (_) => _register(),
+        onChanged: (phone) =>
+            setState(() => _phoneE164 = phone.completeNumber),
+        decoration: InputDecoration(
+          labelText: l10n.registerPhoneLabel,
+          hintText: l10n.registerPhoneHint,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide.none,
+          ),
+          filled: true,
+          fillColor: theme.colorScheme.surfaceContainerLow,
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         ),
       ),
     );

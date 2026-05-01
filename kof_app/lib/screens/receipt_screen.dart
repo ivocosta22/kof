@@ -120,6 +120,22 @@ class ReceiptScreen extends StatelessWidget {
                     const SizedBox(height: 8),
                     const _DashedDivider(),
                     const SizedBox(height: 14),
+                    if (order.discountAmountCents > 0) ...[
+                      _ReceiptSummaryLine(
+                        label: l10n.cartSubtotal,
+                        value:
+                            '€${(order.subtotalCents / 100).toStringAsFixed(2)}',
+                      ),
+                      const SizedBox(height: 6),
+                      _ReceiptSummaryLine(
+                        label: order.discountCode.isNotEmpty
+                            ? '${l10n.cartDiscount} (${order.discountCode})'
+                            : l10n.cartDiscount,
+                        value:
+                            '-€${(order.discountAmountCents / 100).toStringAsFixed(2)}',
+                      ),
+                      const SizedBox(height: 10),
+                    ],
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -172,6 +188,28 @@ class ReceiptScreen extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _ReceiptSummaryLine extends StatelessWidget {
+  final String label;
+  final String value;
+  const _ReceiptSummaryLine({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    const style = TextStyle(
+      fontSize: 14,
+      color: Colors.black87,
+      fontFeatures: [FontFeature.tabularFigures()],
+    );
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: style),
+        Text(value, style: style),
+      ],
     );
   }
 }

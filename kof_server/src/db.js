@@ -40,6 +40,14 @@ if (!hasColumn("menu_items", "has_sizes")) {
   db.exec(`ALTER TABLE menu_items ADD COLUMN has_sizes INTEGER NOT NULL DEFAULT 0`);
 }
 
+if (!hasColumn("orders", "discount_code")) {
+  db.exec(`ALTER TABLE orders ADD COLUMN discount_code TEXT NOT NULL DEFAULT ''`);
+}
+
+if (!hasColumn("orders", "discount_amount_cents")) {
+  db.exec(`ALTER TABLE orders ADD COLUMN discount_amount_cents INTEGER NOT NULL DEFAULT 0`);
+}
+
 // Normalize legacy order rows after migrations so fulfillment fields are always consistent
 db.exec(`
   UPDATE orders

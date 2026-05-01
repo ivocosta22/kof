@@ -18,6 +18,7 @@ class AuthProvider extends ChangeNotifier {
   bool get isLoggedIn => _user != null;
   bool get isGuest => _user?.isGuest ?? false;
   bool get emailVerified => _user?.emailVerified ?? false;
+  bool get isPasswordUser => _service.isPasswordUser;
 
   /// Hydrates [_user] from Firebase's persisted session and starts listening
   /// for future auth state changes (sign-in/out on other tabs, token refresh).
@@ -39,16 +40,56 @@ class AuthProvider extends ChangeNotifier {
         }
         return;
       }
-      _user = _userFromFirebase(fbUser);
+      final priorPhone = _user?.phone;
+      final priorCountry = _user?.country;
+      _user = _userFromFirebase(fbUser).copyWith(
+        phone: priorPhone,
+        country: priorCountry,
+      );
       _fcm.registerForUser(fbUser.uid);
       notifyListeners();
-      // Load country from Firestore and update if present
-      final country = await _userService.getCountry(fbUser.uid);
-      if (country != null && _user != null && !_user!.isGuest) {
-        _user = _user!.copyWith(country: country);
-        notifyListeners();
+      // Load country and phone from Firestore
+      final results = await Future.wait([
+        _userService.getCountry(fbUser.uid),
+        _userService.getPhone(fbUser.uid),
+      ]);
+      if (_user != null && !_user!.isGuest) {
+        final country = results[0];
+        final phone = results[1];
+        if (country != null || phone != null) {
+          _user = _user!.copyWith(
+            country: country ?? _user!.country,
+            phone: phone ?? _user!.phone,
+          );
+          notifyListeners();
+        }
       }
     });
+  }
+
+  Future<void> updateProfile({String? name, String? photoUrl}) async {
+    final uid = _user?.id;
+    if (uid == null || (_user?.isGuest ?? true)) return;
+    await _service.updateProfile(name: name, photoUrl: photoUrl);
+    final fbUser = _service.currentFirebaseUser;
+    if (fbUser != null && _user != null) {
+      _user = _user!.copyWith(
+        name: fbUser.displayName ?? _user!.name,
+        photoUrl: fbUser.photoURL ?? '',
+      );
+      notifyListeners();
+    }
+  }
+
+  Future<void> updateEmail(String newEmail, {String? currentPassword}) =>
+      _service.updateEmail(newEmail, currentPassword: currentPassword);
+
+  Future<void> updatePhone(String phone) async {
+    final uid = _user?.id;
+    if (uid == null || (_user?.isGuest ?? true)) return;
+    await _userService.savePhone(uid, phone);
+    _user = _user!.copyWith(phone: phone.trim());
+    notifyListeners();
   }
 
   Future<void> saveCountry(String country) async {
@@ -80,6 +121,9 @@ class AuthProvider extends ChangeNotifier {
     String? phone,
   }) async {
     _user = await _service.register(name, email, password, phone: phone);
+    if (phone != null && phone.trim().isNotEmpty) {
+      await _userService.savePhone(_user!.id, phone.trim());
+    }
     notifyListeners();
   }
 
@@ -103,7 +147,10 @@ class AuthProvider extends ChangeNotifier {
   Future<bool> refreshEmailVerified() async {
     final refreshed = await _service.reloadCurrentUser();
     if (refreshed != null) {
-      _user = refreshed;
+      _user = refreshed.copyWith(
+        phone: _user?.phone ?? refreshed.phone,
+        country: _user?.country ?? refreshed.country,
+      );
       notifyListeners();
     }
     return _user?.emailVerified ?? false;

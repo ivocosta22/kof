@@ -17,4 +17,16 @@ class UserService {
       SetOptions(merge: true),
     );
   }
+
+  Future<String?> getPhone(String uid) async {
+    final doc = await _userDoc(uid).get();
+    return doc.data()?['phone'] as String?;
+  }
+
+  Future<void> savePhone(String uid, String phone) async {
+    await _userDoc(uid).set(
+      {'phone': phone.trim()},
+      SetOptions(merge: true),
+    );
+  }
 }

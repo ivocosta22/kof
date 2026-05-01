@@ -189,7 +189,8 @@ export default function createOrdersRouter({ broadcast }) {
   function loadReceipt(orderId) {
     const order = db.prepare(`
       SELECT id, order_number, status, payment_status, fulfillment_type,
-             customer_label, table_label, note, created_at
+             customer_label, table_label, note, created_at,
+             discount_code, discount_amount_cents
       FROM orders WHERE id = ?
     `).get(orderId);
 
@@ -218,19 +219,29 @@ export default function createOrdersRouter({ broadcast }) {
       line_total_cents: row.line_total_cents,
     }));
 
-    const totalCents = items.reduce(
+    const subtotalCents = items.reduce(
       (sum, item) => sum + Number(item.line_total_cents || 0),
       0
     );
+    const discount = Number(order.discount_amount_cents || 0);
+    const totalCents = Math.max(0, subtotalCents - discount);
 
-    return { order: { ...order, items, total_cents: totalCents } };
+    return {
+      order: {
+        ...order,
+        items,
+        subtotal_cents: subtotalCents,
+        total_cents: totalCents,
+      },
+    };
   }
 
   // Load core order fields for staff/admin responses
   function loadOrderSummary(orderId) {
     return db.prepare(`
       SELECT id, order_number, status, payment_status, fulfillment_type,
-             customer_label, table_label, note, created_at
+             customer_label, table_label, note, created_at,
+             discount_code, discount_amount_cents
       FROM orders WHERE id = ?
     `).get(orderId);
   }
@@ -332,7 +343,8 @@ export default function createOrdersRouter({ broadcast }) {
   router.get("/board", requireAdmin("barista"), (req, res) => {
     const orders = db.prepare(`
       SELECT id, order_number, status, payment_status, fulfillment_type,
-             customer_label, table_label, note, created_at
+             customer_label, table_label, note, created_at,
+             discount_code, discount_amount_cents
       FROM orders
       WHERE status NOT IN ('completed', 'cancelled')
          OR created_date = date('now', 'localtime')
@@ -340,10 +352,16 @@ export default function createOrdersRouter({ broadcast }) {
       LIMIT 200
     `).all();
 
-    const enriched = orders.map((order) => ({
-      ...order,
-      items: enrichOrderItems(order.id),
-    }));
+    const enriched = orders.map((order) => {
+      const items = enrichOrderItems(order.id);
+      const subtotal_cents = items.reduce(
+        (sum, item) => sum + Number(item.line_total_cents || 0),
+        0
+      );
+      const discount = Number(order.discount_amount_cents || 0);
+      const total_cents = Math.max(0, subtotal_cents - discount);
+      return { ...order, items, subtotal_cents, total_cents };
+    });
 
     res.json({ orders: enriched });
   });
@@ -352,7 +370,8 @@ export default function createOrdersRouter({ broadcast }) {
   router.get("/history", requireAdmin("barista"), (req, res) => {
     const orders = db.prepare(`
       SELECT id, order_number, status, payment_status, fulfillment_type,
-             customer_label, table_label, note, created_at, created_date
+             customer_label, table_label, note, created_at, created_date,
+             discount_code, discount_amount_cents
       FROM orders
       WHERE status IN ('completed', 'cancelled')
         AND created_date < date('now', 'localtime')
@@ -387,11 +406,13 @@ export default function createOrdersRouter({ broadcast }) {
 
     const enriched = orders.map((order) => {
       const items = itemsByOrderId.get(order.id) || [];
-      const total_cents = items.reduce(
+      const subtotal_cents = items.reduce(
         (sum, item) => sum + Number(item.line_total_cents || 0),
         0
       );
-      return { ...order, items, total_cents };
+      const discount = Number(order.discount_amount_cents || 0);
+      const total_cents = Math.max(0, subtotal_cents - discount);
+      return { ...order, items, subtotal_cents, total_cents };
     });
 
     res.json({ orders: enriched });
@@ -418,7 +439,8 @@ export default function createOrdersRouter({ broadcast }) {
 
     const order = db.prepare(`
       SELECT id, order_number, status, payment_status, fulfillment_type,
-             customer_label, table_label, note, created_at
+             customer_label, table_label, note, created_at,
+             discount_code, discount_amount_cents
       FROM orders WHERE id = ?
     `).get(id);
 
@@ -436,6 +458,7 @@ export default function createOrdersRouter({ broadcast }) {
       table_token = "",
       note = "",
       items = [],
+      discount_code = "",
     } = req.body ?? {};
 
     let orderContext;
@@ -513,6 +536,7 @@ export default function createOrdersRouter({ broadcast }) {
     }
 
     const orderNumber = nextOrderNumber();
+    const trimmedCode = String(discount_code || "").trim();
 
     const tx = db.transaction(() => {
       const result = db.prepare(`
@@ -534,6 +558,8 @@ export default function createOrdersRouter({ broadcast }) {
         (order_id, menu_item_id, qty, chosen_modifiers_json, line_total_cents)
         VALUES (?, ?, ?, ?, ?)
       `);
+
+      let subtotalCents = 0;
 
       for (const item of items) {
         const qty = Math.max(1, Number(item.qty ?? 1));
@@ -560,7 +586,45 @@ export default function createOrdersRouter({ broadcast }) {
           chosenModifiers.push(`size:${sizeChoice.name}`);
         }
 
-        itemIns.run(orderId, menuId, qty, JSON.stringify(chosenModifiers), unitPrice * qty);
+        const lineTotal = unitPrice * qty;
+        subtotalCents += lineTotal;
+        itemIns.run(orderId, menuId, qty, JSON.stringify(chosenModifiers), lineTotal);
+      }
+
+      // Apply discount server-side. Client's amount is ignored — we look the
+      // code up against the discounts table and compute it ourselves so the
+      // UI can't fabricate an amount.
+      if (trimmedCode) {
+        const today = new Date().toISOString().slice(0, 10);
+        const discount = db.prepare(`
+          SELECT percentage_off, amount_off_cents
+          FROM discounts
+          WHERE code = ? AND is_active = 1
+            AND (valid_from = '' OR valid_from <= ?)
+            AND (valid_until = '' OR valid_until >= ?)
+          LIMIT 1
+        `).get(trimmedCode, today, today);
+
+        if (discount) {
+          let discountCents = 0;
+          if (discount.percentage_off > 0) {
+            discountCents = Math.floor(
+              (subtotalCents * discount.percentage_off) / 100
+            );
+          } else if (discount.amount_off_cents > 0) {
+            discountCents = discount.amount_off_cents;
+          }
+          // Never let a discount take the total below zero.
+          if (discountCents > subtotalCents) discountCents = subtotalCents;
+
+          if (discountCents > 0) {
+            db.prepare(`
+              UPDATE orders
+              SET discount_code = ?, discount_amount_cents = ?
+              WHERE id = ?
+            `).run(trimmedCode, discountCents, orderId);
+          }
+        }
       }
 
       return orderId;
@@ -575,7 +639,8 @@ export default function createOrdersRouter({ broadcast }) {
 
     const order = db.prepare(`
       SELECT id, order_number, status, payment_status, fulfillment_type,
-             customer_label, table_label, note, created_at
+             customer_label, table_label, note, created_at,
+             discount_code, discount_amount_cents
       FROM orders WHERE id = ?
     `).get(orderId);
 

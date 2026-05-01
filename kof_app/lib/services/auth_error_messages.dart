@@ -23,6 +23,8 @@ String localizedAuthError(AppLocalizations l10n, Object error) {
         return l10n.authErrorNetwork;
       case AuthErrorCode.tooManyRequests:
         return l10n.authErrorTooManyRequests;
+      case AuthErrorCode.requiresRecentLogin:
+        return l10n.accountSettingsEmailReauthBody;
       case AuthErrorCode.googleCancelled:
         return l10n.authErrorGoogleCancelled;
       case AuthErrorCode.googleFailed:

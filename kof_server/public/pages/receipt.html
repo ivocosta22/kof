@@ -37,6 +37,20 @@
 
       <div class="hr"></div>
 
+      <div id="discountBlock" class="receipt-discount-block" style="display:none;">
+        <div class="row customer-row-between">
+          <span class="muted" id="subtotalLabel"></span>
+          <span class="muted">EUR <span id="subtotal">0.00</span></span>
+        </div>
+        <div class="row customer-row-between" style="margin-top:4px;">
+          <span class="muted">
+            <span id="discountLabel"></span>
+            <span id="couponBadge" class="muted" style="margin-left:6px;"></span>
+          </span>
+          <span class="muted">-EUR <span id="discount">0.00</span></span>
+        </div>
+      </div>
+
       <div class="row customer-row-between receipt-total-row">
         <b id="totalLabel"></b>
         <b>EUR <span id="total">0.00</span></b>
@@ -80,6 +94,12 @@
     const itemsEl = document.getElementById("items");
     const totalLabelEl = document.getElementById("totalLabel");
     const totalEl = document.getElementById("total");
+    const discountBlockEl = document.getElementById("discountBlock");
+    const subtotalLabelEl = document.getElementById("subtotalLabel");
+    const subtotalEl = document.getElementById("subtotal");
+    const discountLabelEl = document.getElementById("discountLabel");
+    const discountEl = document.getElementById("discount");
+    const couponBadgeEl = document.getElementById("couponBadge");
     const paidPillEl = document.getElementById("paidPill");
     const thankYouTextEl = document.getElementById("thankYouText");
 
@@ -116,6 +136,8 @@
       receiptTitleEl.innerText = t("receipt.title");
       orderTitleEl.innerText = t("order.title");
       totalLabelEl.innerText = t("common.total");
+      subtotalLabelEl.innerText = t("common.subtotal");
+      discountLabelEl.innerText = t("common.discount");
       paidPillEl.innerText = t("payment.paid");
       thankYouTextEl.innerText = t("receipt.thankYou");
     }
@@ -261,6 +283,16 @@
         orderNumberEl.textContent = String(order.order_number);
         createdAtEl.textContent = order.created_at || "";
         totalEl.textContent = formatMoney(order.total_cents);
+
+        const discountCents = Number(order.discount_amount_cents || 0);
+        if (discountCents > 0) {
+          discountBlockEl.style.display = "block";
+          subtotalEl.textContent = formatMoney(order.subtotal_cents);
+          discountEl.textContent = formatMoney(discountCents);
+          couponBadgeEl.textContent = order.discount_code
+            ? `(${t("common.coupon")} ${order.discount_code})`
+            : "";
+        }
 
         renderDestination(order);
         renderItems(order.items || []);

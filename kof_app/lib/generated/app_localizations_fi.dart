@@ -318,6 +318,29 @@ class AppLocalizationsFi extends AppLocalizations {
   String get cartPlaceOrder => 'Tee tilaus';
 
   @override
+  String get cartCouponHint => 'Kuponkikoodi';
+
+  @override
+  String get cartCouponApply => 'Käytä';
+
+  @override
+  String get cartCouponRemove => 'Poista';
+
+  @override
+  String get cartCouponInvalid => 'Virheellinen tai vanhentunut kuponki';
+
+  @override
+  String get cartSubtotal => 'Välisumma';
+
+  @override
+  String get cartDiscount => 'Alennus';
+
+  @override
+  String cartCouponApplied(String code) {
+    return 'Kuponki \"$code\" käytössä';
+  }
+
+  @override
   String get myOrdersTitle => 'Omat tilaukset';
 
   @override
@@ -746,4 +769,98 @@ class AppLocalizationsFi extends AppLocalizations {
   String shopDiscountsAmountOff(String amount) {
     return '€$amount alennus';
   }
+
+  @override
+  String get notificationsClearAll => 'Tyhjennä kaikki';
+
+  @override
+  String get notificationsClearConfirmTitle => 'Tyhjennä kaikki ilmoitukset?';
+
+  @override
+  String get notificationsClearConfirmBody =>
+      'Tämä poistaa kaikki ilmoitukset. Niitä ei voi palauttaa.';
+
+  @override
+  String get notificationsCleared => 'Ilmoitukset tyhjennetty';
+
+  @override
+  String get notificationsTimeJustNow => 'Juuri nyt';
+
+  @override
+  String notificationsTimeMinutes(int minutes) {
+    return '$minutes min sitten';
+  }
+
+  @override
+  String notificationsTimeHours(int hours) {
+    return '$hours t sitten';
+  }
+
+  @override
+  String notificationsTimeDays(int days) {
+    return '$days pv sitten';
+  }
+
+  @override
+  String get accountSettingsTitle => 'Tili';
+
+  @override
+  String get accountSettingsSectionProfile => 'Profiili';
+
+  @override
+  String get accountSettingsSectionAccount => 'Tili';
+
+  @override
+  String get accountSettingsName => 'Näyttönimi';
+
+  @override
+  String get accountSettingsPhone => 'Puhelinnumero';
+
+  @override
+  String get accountSettingsPhotoUrl => 'Profiilikuvan URL';
+
+  @override
+  String get accountSettingsPhotoUrlHint => 'https://example.com/kuva.jpg';
+
+  @override
+  String get accountSettingsSave => 'Tallenna muutokset';
+
+  @override
+  String get accountSettingsSaved => 'Muutokset tallennettu';
+
+  @override
+  String get accountSettingsSaveFailed =>
+      'Tallennus epäonnistui. Yritä uudelleen.';
+
+  @override
+  String get accountSettingsEmail => 'Sähköpostiosoite';
+
+  @override
+  String get accountSettingsEmailGoogle =>
+      'Sähköposti on Googlen hallinnoima eikä sitä voi muuttaa tässä.';
+
+  @override
+  String get accountSettingsChangePassword => 'Vaihda salasana';
+
+  @override
+  String get accountSettingsChangePasswordSubtitle =>
+      'Salasanan palautuslinkki lähetetään sähköpostiisi';
+
+  @override
+  String get accountSettingsChangePasswordSent =>
+      'Salasanan palautuslinkki lähetetty';
+
+  @override
+  String get accountSettingsCurrentPassword => 'Nykyinen salasana';
+
+  @override
+  String get accountSettingsEmailReauthTitle => 'Vahvista salasana';
+
+  @override
+  String get accountSettingsEmailReauthBody =>
+      'Anna nykyinen salasanasi päivittääksesi sähköpostiosoitteen.';
+
+  @override
+  String get accountSettingsEmailChanged =>
+      'Vahvistusviesti lähetetty. Tarkista postilaatikkosi.';
 }

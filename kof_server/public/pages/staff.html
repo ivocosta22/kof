@@ -478,6 +478,38 @@
       return itemsHtml || `<div class='muted'>${escapeHtml(tf("staff.noItems", "No items"))}</div>`;
     }
 
+// Format integer cents into a EUR display string.
+    function formatMoney(cents) {
+      return `EUR ${(Number(cents || 0) / 100).toFixed(2)}`;
+    }
+
+// Render subtotal/discount/total block for a board card. When no discount is
+// applied, only the total is shown.
+    function totalsBlock(order) {
+      const total = Number(order.total_cents || 0);
+      const subtotal = Number(order.subtotal_cents || total);
+      const discount = Number(order.discount_amount_cents || 0);
+      const code = order.discount_code || "";
+
+      if (discount > 0) {
+        const couponLine = code
+          ? `<span class="muted" style="margin-left:6px;">(${escapeHtml(tf("common.coupon", "Coupon"))} ${escapeHtml(code)})</span>`
+          : "";
+        return `
+          <div class="statusline" style="display:flex;flex-direction:column;gap:2px;align-items:flex-end;">
+            <div class="muted" style="font-size:12px;">${escapeHtml(tf("common.subtotal", "Subtotal"))}: ${escapeHtml(formatMoney(subtotal))}</div>
+            <div class="muted" style="font-size:12px;">${escapeHtml(tf("common.discount", "Discount"))}: -${escapeHtml(formatMoney(discount))}${couponLine}</div>
+            <div style="font-weight:700;">${escapeHtml(tf("common.total", "Total"))}: ${escapeHtml(formatMoney(total))}</div>
+          </div>
+        `;
+      }
+      return `
+        <div class="statusline" style="display:flex;justify-content:flex-end;">
+          <div style="font-weight:700;">${escapeHtml(tf("common.total", "Total"))}: ${escapeHtml(formatMoney(total))}</div>
+        </div>
+      `;
+    }
+
 // Render the order payment state pill used on board cards.
     function payPill(order) {
       const paymentState = order.payment_status === "paid" ? "paid" : "unpaid";
@@ -563,6 +595,8 @@
               ${order.note ? `<div class="statusline"><div class="muted"><i>${escapeHtml(order.note)}</i></div></div>` : ""}
 
               <div class="items">${fmtItems(order)}</div>
+
+              ${totalsBlock(order)}
 
               <div class="statusline">
                 <div class="time">${escapeHtml(order.created_at || "")}</div>

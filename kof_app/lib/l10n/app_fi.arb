@@ -137,6 +137,18 @@
     }
   },
   "cartPlaceOrder": "Tee tilaus",
+  "cartCouponHint": "Kuponkikoodi",
+  "cartCouponApply": "Käytä",
+  "cartCouponRemove": "Poista",
+  "cartCouponInvalid": "Virheellinen tai vanhentunut kuponki",
+  "cartSubtotal": "Välisumma",
+  "cartDiscount": "Alennus",
+  "cartCouponApplied": "Kuponki \"{code}\" käytössä",
+  "@cartCouponApplied": {
+    "placeholders": {
+      "code": { "type": "String" }
+    }
+  },
 
   "myOrdersTitle": "Omat tilaukset",
   "myOrdersEmpty": "Ei vielä tilauksia",
@@ -329,5 +341,43 @@
   "shopDiscountsAmountOff": "€{amount} alennus",
   "@shopDiscountsAmountOff": {
     "placeholders": { "amount": { "type": "String" } }
-  }
+  },
+
+  "notificationsClearAll": "Tyhjennä kaikki",
+  "notificationsClearConfirmTitle": "Tyhjennä kaikki ilmoitukset?",
+  "notificationsClearConfirmBody": "Tämä poistaa kaikki ilmoitukset. Niitä ei voi palauttaa.",
+  "notificationsCleared": "Ilmoitukset tyhjennetty",
+  "notificationsTimeJustNow": "Juuri nyt",
+  "notificationsTimeMinutes": "{minutes} min sitten",
+  "@notificationsTimeMinutes": {
+    "placeholders": { "minutes": { "type": "int" } }
+  },
+  "notificationsTimeHours": "{hours} t sitten",
+  "@notificationsTimeHours": {
+    "placeholders": { "hours": { "type": "int" } }
+  },
+  "notificationsTimeDays": "{days} pv sitten",
+  "@notificationsTimeDays": {
+    "placeholders": { "days": { "type": "int" } }
+  },
+
+  "accountSettingsTitle": "Tili",
+  "accountSettingsSectionProfile": "Profiili",
+  "accountSettingsSectionAccount": "Tili",
+  "accountSettingsName": "Näyttönimi",
+  "accountSettingsPhone": "Puhelinnumero",
+  "accountSettingsPhotoUrl": "Profiilikuvan URL",
+  "accountSettingsPhotoUrlHint": "https://example.com/kuva.jpg",
+  "accountSettingsSave": "Tallenna muutokset",
+  "accountSettingsSaved": "Muutokset tallennettu",
+  "accountSettingsSaveFailed": "Tallennus epäonnistui. Yritä uudelleen.",
+  "accountSettingsEmail": "Sähköpostiosoite",
+  "accountSettingsEmailGoogle": "Sähköposti on Googlen hallinnoima eikä sitä voi muuttaa tässä.",
+  "accountSettingsChangePassword": "Vaihda salasana",
+  "accountSettingsChangePasswordSubtitle": "Salasanan palautuslinkki lähetetään sähköpostiisi",
+  "accountSettingsChangePasswordSent": "Salasanan palautuslinkki lähetetty",
+  "accountSettingsCurrentPassword": "Nykyinen salasana",
+  "accountSettingsEmailReauthTitle": "Vahvista salasana",
+  "accountSettingsEmailReauthBody": "Anna nykyinen salasanasi päivittääksesi sähköpostiosoitteen.",
+  "accountSettingsEmailChanged": "Vahvistusviesti lähetetty. Tarkista postilaatikkosi."
 }

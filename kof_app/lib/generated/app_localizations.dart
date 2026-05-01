@@ -301,7 +301,7 @@ abstract class AppLocalizations {
   /// No description provided for @registerPhoneHint.
   ///
   /// In en, this message translates to:
-  /// **'+1 555 000 0000'**
+  /// **'555 000 0000'**
   String get registerPhoneHint;
 
   /// No description provided for @registerFieldsRequired.
@@ -687,6 +687,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Place Order'**
   String get cartPlaceOrder;
+
+  /// No description provided for @cartCouponHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Coupon code'**
+  String get cartCouponHint;
+
+  /// No description provided for @cartCouponApply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get cartCouponApply;
+
+  /// No description provided for @cartCouponRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get cartCouponRemove;
+
+  /// No description provided for @cartCouponInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid or expired coupon'**
+  String get cartCouponInvalid;
+
+  /// No description provided for @cartSubtotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtotal'**
+  String get cartSubtotal;
+
+  /// No description provided for @cartDiscount.
+  ///
+  /// In en, this message translates to:
+  /// **'Discount'**
+  String get cartDiscount;
+
+  /// No description provided for @cartCouponApplied.
+  ///
+  /// In en, this message translates to:
+  /// **'Coupon \"{code}\" applied'**
+  String cartCouponApplied(String code);
 
   /// No description provided for @myOrdersTitle.
   ///
@@ -1461,6 +1503,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'€{amount} off'**
   String shopDiscountsAmountOff(String amount);
+
+  /// No description provided for @notificationsClearAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all'**
+  String get notificationsClearAll;
+
+  /// No description provided for @notificationsClearConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all notifications?'**
+  String get notificationsClearConfirmTitle;
+
+  /// No description provided for @notificationsClearConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This will remove every notification from your inbox. They cannot be recovered.'**
+  String get notificationsClearConfirmBody;
+
+  /// No description provided for @notificationsCleared.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications cleared'**
+  String get notificationsCleared;
+
+  /// No description provided for @notificationsTimeJustNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get notificationsTimeJustNow;
+
+  /// No description provided for @notificationsTimeMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes}m ago'**
+  String notificationsTimeMinutes(int minutes);
+
+  /// No description provided for @notificationsTimeHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours}h ago'**
+  String notificationsTimeHours(int hours);
+
+  /// No description provided for @notificationsTimeDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{days}d ago'**
+  String notificationsTimeDays(int days);
+
+  /// No description provided for @accountSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get accountSettingsTitle;
+
+  /// No description provided for @accountSettingsSectionProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get accountSettingsSectionProfile;
+
+  /// No description provided for @accountSettingsSectionAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get accountSettingsSectionAccount;
+
+  /// No description provided for @accountSettingsName.
+  ///
+  /// In en, this message translates to:
+  /// **'Display name'**
+  String get accountSettingsName;
+
+  /// No description provided for @accountSettingsPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number'**
+  String get accountSettingsPhone;
+
+  /// No description provided for @accountSettingsPhotoUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile photo URL'**
+  String get accountSettingsPhotoUrl;
+
+  /// No description provided for @accountSettingsPhotoUrlHint.
+  ///
+  /// In en, this message translates to:
+  /// **'https://example.com/photo.jpg'**
+  String get accountSettingsPhotoUrlHint;
+
+  /// No description provided for @accountSettingsSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get accountSettingsSave;
+
+  /// No description provided for @accountSettingsSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes saved'**
+  String get accountSettingsSaved;
+
+  /// No description provided for @accountSettingsSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save. Please try again.'**
+  String get accountSettingsSaveFailed;
+
+  /// No description provided for @accountSettingsEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email address'**
+  String get accountSettingsEmail;
+
+  /// No description provided for @accountSettingsEmailGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Email is managed by Google and can\'t be changed here.'**
+  String get accountSettingsEmailGoogle;
+
+  /// No description provided for @accountSettingsChangePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Change password'**
+  String get accountSettingsChangePassword;
+
+  /// No description provided for @accountSettingsChangePasswordSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A reset link will be sent to your email'**
+  String get accountSettingsChangePasswordSubtitle;
+
+  /// No description provided for @accountSettingsChangePasswordSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Password reset link sent'**
+  String get accountSettingsChangePasswordSent;
+
+  /// No description provided for @accountSettingsCurrentPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Current password'**
+  String get accountSettingsCurrentPassword;
+
+  /// No description provided for @accountSettingsEmailReauthTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm password'**
+  String get accountSettingsEmailReauthTitle;
+
+  /// No description provided for @accountSettingsEmailReauthBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your current password to update your email address.'**
+  String get accountSettingsEmailReauthBody;
+
+  /// No description provided for @accountSettingsEmailChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification email sent. Check your inbox.'**
+  String get accountSettingsEmailChanged;
 }
 
 class _AppLocalizationsDelegate

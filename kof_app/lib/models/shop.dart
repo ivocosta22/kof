@@ -10,6 +10,7 @@ class Shop {
   final String? photoUrl;
   final List<String> tags;
   final double? rating;
+  final int? ratingCount;
   final String? phone;
   final String? country;
   final String? serverUrl;
@@ -24,6 +25,7 @@ class Shop {
     this.photoUrl,
     this.tags = const [],
     this.rating,
+    this.ratingCount,
     this.phone,
     this.country,
     this.serverUrl,
@@ -53,6 +55,7 @@ class Shop {
           .whereType<String>()
           .toList(growable: false),
       rating: (data['rating'] as num?)?.toDouble(),
+      ratingCount: (data['ratingCount'] as num?)?.toInt(),
       phone: data['phone'] as String?,
       country: data['country'] as String?,
       serverUrl: data['serverUrl'] as String?,

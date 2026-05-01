@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/l10n.dart';
+import '../models/shop_discount.dart';
 import '../providers/active_orders_provider.dart';
 import '../providers/cart_provider.dart';
 import '../providers/session_provider.dart';
@@ -21,11 +22,72 @@ class _CartBottomSheetState extends State<CartBottomSheet> {
   bool _isPlacing = false;
   String? _error;
   final _noteController = TextEditingController();
+  final _couponController = TextEditingController();
+
+  bool _validatingCoupon = false;
+  String? _couponError;
+  ShopDiscount? _appliedDiscount;
 
   @override
   void dispose() {
     _noteController.dispose();
+    _couponController.dispose();
     super.dispose();
+  }
+
+  int _discountCentsFor(ShopDiscount d, int subtotalCents) {
+    int cents = 0;
+    if (d.percentageOff > 0) {
+      cents = (subtotalCents * d.percentageOff) ~/ 100;
+    } else if (d.amountOffCents > 0) {
+      cents = d.amountOffCents;
+    }
+    if (cents > subtotalCents) cents = subtotalCents;
+    return cents;
+  }
+
+  Future<void> _applyCoupon() async {
+    final session = context.read<SessionProvider>().session;
+    if (session == null) return;
+    final code = _couponController.text.trim();
+    if (code.isEmpty) return;
+
+    setState(() {
+      _validatingCoupon = true;
+      _couponError = null;
+    });
+
+    try {
+      final discounts = await ApiService(session.serverUrl).getDiscounts();
+      final match = discounts.where(
+        (d) => d.code.toLowerCase() == code.toLowerCase(),
+      );
+      if (!mounted) return;
+      if (match.isEmpty) {
+        setState(() {
+          _appliedDiscount = null;
+          _couponError = context.l10n.cartCouponInvalid;
+        });
+      } else {
+        setState(() {
+          _appliedDiscount = match.first;
+          _couponError = null;
+        });
+      }
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _couponError = context.l10n.cartCouponInvalid);
+    } finally {
+      if (mounted) setState(() => _validatingCoupon = false);
+    }
+  }
+
+  void _removeCoupon() {
+    setState(() {
+      _appliedDiscount = null;
+      _couponError = null;
+      _couponController.clear();
+    });
   }
 
   Future<void> _placeOrder(BuildContext context) async {
@@ -46,6 +108,7 @@ class _CartBottomSheetState extends State<CartBottomSheet> {
         customerLabel: session.customerLabel,
         items: cart.toOrderItems(),
         note: _noteController.text.trim(),
+        discountCode: _appliedDiscount?.code ?? '',
       );
 
       cart.clear();
@@ -196,6 +259,10 @@ class _CartBottomSheetState extends State<CartBottomSheet> {
                         ),
                       ),
                     ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+                      child: _buildCouponField(theme, l10n),
+                    ),
                   ],
                 ),
               ),
@@ -214,20 +281,28 @@ class _CartBottomSheetState extends State<CartBottomSheet> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          l10n.total,
-                          style: theme.textTheme.titleMedium
-                              ?.copyWith(fontWeight: FontWeight.w700),
-                        ),
-                        Text(
-                          '€${(cart.totalCents / 100).toStringAsFixed(2)}',
-                          style: theme.textTheme.titleMedium
-                              ?.copyWith(fontWeight: FontWeight.w700),
-                        ),
-                      ],
+                    if (_appliedDiscount != null) ...[
+                      _totalsRow(
+                        theme,
+                        l10n.cartSubtotal,
+                        '€${(cart.totalCents / 100).toStringAsFixed(2)}',
+                        emphasised: false,
+                      ),
+                      const SizedBox(height: 4),
+                      _totalsRow(
+                        theme,
+                        l10n.cartDiscount,
+                        '-€${(_discountCentsFor(_appliedDiscount!, cart.totalCents) / 100).toStringAsFixed(2)}',
+                        emphasised: false,
+                        valueColor: theme.colorScheme.primary,
+                      ),
+                      const SizedBox(height: 6),
+                    ],
+                    _totalsRow(
+                      theme,
+                      l10n.total,
+                      '€${(((_appliedDiscount == null) ? cart.totalCents : (cart.totalCents - _discountCentsFor(_appliedDiscount!, cart.totalCents))) / 100).toStringAsFixed(2)}',
+                      emphasised: true,
                     ),
                     if (_error != null) ...[
                       const SizedBox(height: 8),
@@ -265,6 +340,102 @@ class _CartBottomSheetState extends State<CartBottomSheet> {
           ),
         );
       },
+    );
+  }
+
+  Widget _totalsRow(
+    ThemeData theme,
+    String label,
+    String value, {
+    required bool emphasised,
+    Color? valueColor,
+  }) {
+    final style = emphasised
+        ? theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)
+        : theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+          );
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: style),
+        Text(value, style: style?.copyWith(color: valueColor)),
+      ],
+    );
+  }
+
+  Widget _buildCouponField(ThemeData theme, AppLocalizations l10n) {
+    final hasApplied = _appliedDiscount != null;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _couponController,
+                enabled: !hasApplied && !_validatingCoupon,
+                textCapitalization: TextCapitalization.characters,
+                onSubmitted: (_) => _applyCoupon(),
+                decoration: InputDecoration(
+                  hintText: l10n.cartCouponHint,
+                  prefixIcon: const Icon(Icons.local_offer_outlined),
+                  filled: true,
+                  fillColor: theme.colorScheme.surfaceContainerLow,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  isDense: true,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            hasApplied
+                ? OutlinedButton(
+                    onPressed: _removeCoupon,
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 14),
+                    ),
+                    child: Text(l10n.cartCouponRemove),
+                  )
+                : FilledButton(
+                    onPressed: _validatingCoupon ? null : _applyCoupon,
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 14),
+                    ),
+                    child: _validatingCoupon
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                                strokeWidth: 2, color: Colors.white),
+                          )
+                        : Text(l10n.cartCouponApply),
+                  ),
+          ],
+        ),
+        if (_couponError != null) ...[
+          const SizedBox(height: 6),
+          Text(
+            _couponError!,
+            style: TextStyle(color: theme.colorScheme.error, fontSize: 12),
+          ),
+        ],
+        if (hasApplied) ...[
+          const SizedBox(height: 6),
+          Text(
+            l10n.cartCouponApplied(_appliedDiscount!.code),
+            style: TextStyle(
+              color: theme.colorScheme.primary,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ],
     );
   }
 }

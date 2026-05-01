@@ -43,12 +43,16 @@ class ApiService {
     String tableToken = '',
     String customerLabel = '',
     String note = '',
+    String discountCode = '',
   }) async {
     final body = <String, dynamic>{
       'fulfillment_type': fulfillmentType,
       'note': note,
       'items': items,
     };
+    if (discountCode.isNotEmpty) {
+      body['discount_code'] = discountCode;
+    }
     if (fulfillmentType == 'counter_pickup') {
       body['customer_label'] = customerLabel;
     } else {

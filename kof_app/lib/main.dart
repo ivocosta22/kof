@@ -7,8 +7,10 @@ import 'l10n/l10n.dart';
 import 'providers/active_orders_provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/cart_provider.dart';
+import 'providers/notifications_provider.dart';
 import 'providers/session_provider.dart';
 import 'providers/settings_provider.dart';
+import 'navigation.dart';
 import 'screens/auth/email_verification_screen.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/home_screen.dart';
@@ -19,9 +21,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // Background messages handled here when backend sends push notifications.
 }
 
-/// Top-level navigator key — exposed so the global ActiveOrdersBubble (which
-/// lives outside the Navigator in MaterialApp.builder) can push routes.
-final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,6 +48,17 @@ class KofApp extends StatelessWidget {
           create: (_) => ActiveOrdersProvider(),
           update: (_, auth, prev) =>
               (prev ?? ActiveOrdersProvider())..onAuthChanged(auth.user?.id),
+        ),
+        // Per-user inbox of received FCM notifications. The provider hooks
+        // its own FCM stream listeners on first build and re-scopes its
+        // storage key whenever the auth user changes.
+        ChangeNotifierProxyProvider<AuthProvider, NotificationsProvider>(
+          create: (_) => NotificationsProvider()..hookFcm(),
+          update: (_, auth, prev) {
+            final p = prev ?? (NotificationsProvider()..hookFcm());
+            p.onAuthChanged(auth.user?.id);
+            return p;
+          },
         ),
       ],
       child: const _KofMaterialApp(),

@@ -137,6 +137,18 @@
     }
   },
   "cartPlaceOrder": "Fazer Pedido",
+  "cartCouponHint": "Código de cupão",
+  "cartCouponApply": "Aplicar",
+  "cartCouponRemove": "Remover",
+  "cartCouponInvalid": "Cupão inválido ou expirado",
+  "cartSubtotal": "Subtotal",
+  "cartDiscount": "Desconto",
+  "cartCouponApplied": "Cupão \"{code}\" aplicado",
+  "@cartCouponApplied": {
+    "placeholders": {
+      "code": { "type": "String" }
+    }
+  },
 
   "myOrdersTitle": "Os Meus Pedidos",
   "myOrdersEmpty": "Sem pedidos ainda",
@@ -329,5 +341,43 @@
   "shopDiscountsAmountOff": "€{amount} de desconto",
   "@shopDiscountsAmountOff": {
     "placeholders": { "amount": { "type": "String" } }
-  }
+  },
+
+  "notificationsClearAll": "Limpar tudo",
+  "notificationsClearConfirmTitle": "Limpar todas as notificações?",
+  "notificationsClearConfirmBody": "Isto remove todas as notificações da sua caixa. Não podem ser recuperadas.",
+  "notificationsCleared": "Notificações limpas",
+  "notificationsTimeJustNow": "Agora mesmo",
+  "notificationsTimeMinutes": "Há {minutes}m",
+  "@notificationsTimeMinutes": {
+    "placeholders": { "minutes": { "type": "int" } }
+  },
+  "notificationsTimeHours": "Há {hours}h",
+  "@notificationsTimeHours": {
+    "placeholders": { "hours": { "type": "int" } }
+  },
+  "notificationsTimeDays": "Há {days}d",
+  "@notificationsTimeDays": {
+    "placeholders": { "days": { "type": "int" } }
+  },
+
+  "accountSettingsTitle": "Conta",
+  "accountSettingsSectionProfile": "Perfil",
+  "accountSettingsSectionAccount": "Conta",
+  "accountSettingsName": "Nome de exibição",
+  "accountSettingsPhone": "Número de telemóvel",
+  "accountSettingsPhotoUrl": "URL da foto de perfil",
+  "accountSettingsPhotoUrlHint": "https://example.com/foto.jpg",
+  "accountSettingsSave": "Guardar alterações",
+  "accountSettingsSaved": "Alterações guardadas",
+  "accountSettingsSaveFailed": "Não foi possível guardar. Tente novamente.",
+  "accountSettingsEmail": "Endereço de email",
+  "accountSettingsEmailGoogle": "O email é gerido pelo Google e não pode ser alterado aqui.",
+  "accountSettingsChangePassword": "Alterar palavra-passe",
+  "accountSettingsChangePasswordSubtitle": "Será enviado um link de redefinição para o seu email",
+  "accountSettingsChangePasswordSent": "Link de redefinição enviado",
+  "accountSettingsCurrentPassword": "Palavra-passe atual",
+  "accountSettingsEmailReauthTitle": "Confirmar palavra-passe",
+  "accountSettingsEmailReauthBody": "Introduza a sua palavra-passe atual para atualizar o endereço de email.",
+  "accountSettingsEmailChanged": "Email de verificação enviado. Verifique a sua caixa de entrada."
 }

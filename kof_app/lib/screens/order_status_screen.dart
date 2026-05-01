@@ -608,26 +608,66 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
               color: theme.colorScheme.outlineVariant),
           Padding(
             padding: const EdgeInsets.fromLTRB(18, 14, 18, 18),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
-                  l10n.total,
-                  style: theme.textTheme.titleMedium
-                      ?.copyWith(fontWeight: FontWeight.w700),
-                ),
-                Text(
-                  '€${(_order.totalCents / 100).toStringAsFixed(2)}',
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    color: theme.colorScheme.primary,
+                if (_order.discountAmountCents > 0) ...[
+                  _summaryLine(
+                    theme,
+                    l10n.cartSubtotal,
+                    '€${(_order.subtotalCents / 100).toStringAsFixed(2)}',
                   ),
+                  const SizedBox(height: 4),
+                  _summaryLine(
+                    theme,
+                    _order.discountCode.isNotEmpty
+                        ? '${l10n.cartDiscount} (${_order.discountCode})'
+                        : l10n.cartDiscount,
+                    '-€${(_order.discountAmountCents / 100).toStringAsFixed(2)}',
+                    valueColor: theme.colorScheme.primary,
+                  ),
+                  const SizedBox(height: 8),
+                ],
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      l10n.total,
+                      style: theme.textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.w700),
+                    ),
+                    Text(
+                      '€${(_order.totalCents / 100).toStringAsFixed(2)}',
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _summaryLine(
+    ThemeData theme,
+    String label,
+    String value, {
+    Color? valueColor,
+  }) {
+    final style = theme.textTheme.bodyMedium?.copyWith(
+      color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+    );
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: style),
+        Text(value, style: style?.copyWith(color: valueColor)),
+      ],
     );
   }
 

@@ -48,7 +48,7 @@
   "registerNameHint": "Jane Doe",
   "registerPasswordHint": "At least 6 characters",
   "registerPhoneLabel": "Phone number (optional)",
-  "registerPhoneHint": "+1 555 000 0000",
+  "registerPhoneHint": "555 000 0000",
   "registerFieldsRequired": "Please fill in all required fields.",
   "registerPasswordShort": "Password must be at least 6 characters.",
   "registerButton": "Create Account",
@@ -135,6 +135,18 @@
     }
   },
   "cartPlaceOrder": "Place Order",
+  "cartCouponHint": "Coupon code",
+  "cartCouponApply": "Apply",
+  "cartCouponRemove": "Remove",
+  "cartCouponInvalid": "Invalid or expired coupon",
+  "cartSubtotal": "Subtotal",
+  "cartDiscount": "Discount",
+  "cartCouponApplied": "Coupon \"{code}\" applied",
+  "@cartCouponApplied": {
+    "placeholders": {
+      "code": { "type": "String" }
+    }
+  },
 
   "myOrdersTitle": "My Orders",
   "myOrdersEmpty": "No orders yet",
@@ -330,5 +342,43 @@
   "shopDiscountsAmountOff": "€{amount} off",
   "@shopDiscountsAmountOff": {
     "placeholders": { "amount": { "type": "String" } }
-  }
+  },
+
+  "notificationsClearAll": "Clear all",
+  "notificationsClearConfirmTitle": "Clear all notifications?",
+  "notificationsClearConfirmBody": "This will remove every notification from your inbox. They cannot be recovered.",
+  "notificationsCleared": "Notifications cleared",
+  "notificationsTimeJustNow": "Just now",
+  "notificationsTimeMinutes": "{minutes}m ago",
+  "@notificationsTimeMinutes": {
+    "placeholders": { "minutes": { "type": "int" } }
+  },
+  "notificationsTimeHours": "{hours}h ago",
+  "@notificationsTimeHours": {
+    "placeholders": { "hours": { "type": "int" } }
+  },
+  "notificationsTimeDays": "{days}d ago",
+  "@notificationsTimeDays": {
+    "placeholders": { "days": { "type": "int" } }
+  },
+
+  "accountSettingsTitle": "Account",
+  "accountSettingsSectionProfile": "Profile",
+  "accountSettingsSectionAccount": "Account",
+  "accountSettingsName": "Display name",
+  "accountSettingsPhone": "Phone number",
+  "accountSettingsPhotoUrl": "Profile photo URL",
+  "accountSettingsPhotoUrlHint": "https://example.com/photo.jpg",
+  "accountSettingsSave": "Save changes",
+  "accountSettingsSaved": "Changes saved",
+  "accountSettingsSaveFailed": "Couldn't save. Please try again.",
+  "accountSettingsEmail": "Email address",
+  "accountSettingsEmailGoogle": "Email is managed by Google and can't be changed here.",
+  "accountSettingsChangePassword": "Change password",
+  "accountSettingsChangePasswordSubtitle": "A reset link will be sent to your email",
+  "accountSettingsChangePasswordSent": "Password reset link sent",
+  "accountSettingsCurrentPassword": "Current password",
+  "accountSettingsEmailReauthTitle": "Confirm password",
+  "accountSettingsEmailReauthBody": "Enter your current password to update your email address.",
+  "accountSettingsEmailChanged": "Verification email sent. Check your inbox."
 }

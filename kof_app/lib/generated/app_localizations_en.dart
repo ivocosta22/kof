@@ -114,7 +114,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get registerPhoneLabel => 'Phone number (optional)';
 
   @override
-  String get registerPhoneHint => '+1 555 000 0000';
+  String get registerPhoneHint => '555 000 0000';
 
   @override
   String get registerFieldsRequired => 'Please fill in all required fields.';
@@ -315,6 +315,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cartPlaceOrder => 'Place Order';
+
+  @override
+  String get cartCouponHint => 'Coupon code';
+
+  @override
+  String get cartCouponApply => 'Apply';
+
+  @override
+  String get cartCouponRemove => 'Remove';
+
+  @override
+  String get cartCouponInvalid => 'Invalid or expired coupon';
+
+  @override
+  String get cartSubtotal => 'Subtotal';
+
+  @override
+  String get cartDiscount => 'Discount';
+
+  @override
+  String cartCouponApplied(String code) {
+    return 'Coupon \"$code\" applied';
+  }
 
   @override
   String get myOrdersTitle => 'My Orders';
@@ -742,4 +765,96 @@ class AppLocalizationsEn extends AppLocalizations {
   String shopDiscountsAmountOff(String amount) {
     return '€$amount off';
   }
+
+  @override
+  String get notificationsClearAll => 'Clear all';
+
+  @override
+  String get notificationsClearConfirmTitle => 'Clear all notifications?';
+
+  @override
+  String get notificationsClearConfirmBody =>
+      'This will remove every notification from your inbox. They cannot be recovered.';
+
+  @override
+  String get notificationsCleared => 'Notifications cleared';
+
+  @override
+  String get notificationsTimeJustNow => 'Just now';
+
+  @override
+  String notificationsTimeMinutes(int minutes) {
+    return '${minutes}m ago';
+  }
+
+  @override
+  String notificationsTimeHours(int hours) {
+    return '${hours}h ago';
+  }
+
+  @override
+  String notificationsTimeDays(int days) {
+    return '${days}d ago';
+  }
+
+  @override
+  String get accountSettingsTitle => 'Account';
+
+  @override
+  String get accountSettingsSectionProfile => 'Profile';
+
+  @override
+  String get accountSettingsSectionAccount => 'Account';
+
+  @override
+  String get accountSettingsName => 'Display name';
+
+  @override
+  String get accountSettingsPhone => 'Phone number';
+
+  @override
+  String get accountSettingsPhotoUrl => 'Profile photo URL';
+
+  @override
+  String get accountSettingsPhotoUrlHint => 'https://example.com/photo.jpg';
+
+  @override
+  String get accountSettingsSave => 'Save changes';
+
+  @override
+  String get accountSettingsSaved => 'Changes saved';
+
+  @override
+  String get accountSettingsSaveFailed => 'Couldn\'t save. Please try again.';
+
+  @override
+  String get accountSettingsEmail => 'Email address';
+
+  @override
+  String get accountSettingsEmailGoogle =>
+      'Email is managed by Google and can\'t be changed here.';
+
+  @override
+  String get accountSettingsChangePassword => 'Change password';
+
+  @override
+  String get accountSettingsChangePasswordSubtitle =>
+      'A reset link will be sent to your email';
+
+  @override
+  String get accountSettingsChangePasswordSent => 'Password reset link sent';
+
+  @override
+  String get accountSettingsCurrentPassword => 'Current password';
+
+  @override
+  String get accountSettingsEmailReauthTitle => 'Confirm password';
+
+  @override
+  String get accountSettingsEmailReauthBody =>
+      'Enter your current password to update your email address.';
+
+  @override
+  String get accountSettingsEmailChanged =>
+      'Verification email sent. Check your inbox.';
 }

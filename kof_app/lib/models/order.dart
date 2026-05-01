@@ -9,6 +9,8 @@ class Order {
   final String note;
   final List<OrderItem> items;
   final String createdAt;
+  final String discountCode;
+  final int discountAmountCents;
 
   Order({
     required this.id,
@@ -21,6 +23,8 @@ class Order {
     required this.note,
     required this.items,
     required this.createdAt,
+    this.discountCode = '',
+    this.discountAmountCents = 0,
   });
 
   factory Order.fromJson(Map<String, dynamic> json) {
@@ -37,14 +41,22 @@ class Order {
           .map((e) => OrderItem.fromJson(e as Map<String, dynamic>))
           .toList(),
       createdAt: json['created_at'] as String? ?? '',
+      discountCode: json['discount_code'] as String? ?? '',
+      discountAmountCents:
+          (json['discount_amount_cents'] as num?)?.toInt() ?? 0,
     );
   }
 
   bool get isActive =>
       status == 'new' || status == 'making' || status == 'ready';
 
-  int get totalCents =>
+  int get subtotalCents =>
       items.fold(0, (sum, item) => sum + item.lineTotalCents);
+
+  int get totalCents {
+    final t = subtotalCents - discountAmountCents;
+    return t < 0 ? 0 : t;
+  }
 }
 
 class OrderItem {

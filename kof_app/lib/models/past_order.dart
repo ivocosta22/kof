@@ -13,6 +13,8 @@ class PastOrder {
   // empty — e.g. when older entries were saved before the server began
   // returning items on order creation.
   final int totalCents;
+  final String discountCode;
+  final int discountAmountCents;
 
   PastOrder({
     required this.shopName,
@@ -24,8 +26,15 @@ class PastOrder {
     required this.items,
     required this.createdAt,
     int? totalCents,
+    this.discountCode = '',
+    this.discountAmountCents = 0,
   }) : totalCents = totalCents ??
-            items.fold(0, (s, i) => s + i.lineTotalCents);
+            (() {
+              final subtotal =
+                  items.fold(0, (s, i) => s + i.lineTotalCents);
+              final t = subtotal - discountAmountCents;
+              return t < 0 ? 0 : t;
+            })();
 
   bool get isActive =>
       status == 'new' || status == 'making' || status == 'ready';
@@ -44,6 +53,8 @@ class PastOrder {
         tableLabel: order.tableLabel,
         items: order.items,
         createdAt: order.createdAt,
+        discountCode: order.discountCode,
+        discountAmountCents: order.discountAmountCents,
       );
 
   Map<String, dynamic> toJson() => {
@@ -63,6 +74,8 @@ class PastOrder {
             .toList(),
         'createdAt': createdAt,
         'totalCents': totalCents,
+        'discountCode': discountCode,
+        'discountAmountCents': discountAmountCents,
       };
 
   factory PastOrder.fromJson(Map<String, dynamic> json) {
@@ -79,6 +92,8 @@ class PastOrder {
       items: items,
       createdAt: json['createdAt'] as String? ?? '',
       totalCents: json['totalCents'] as int?,
+      discountCode: json['discountCode'] as String? ?? '',
+      discountAmountCents: (json['discountAmountCents'] as int?) ?? 0,
     );
   }
 }

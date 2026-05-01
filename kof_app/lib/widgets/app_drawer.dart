@@ -4,7 +4,9 @@ import '../l10n/l10n.dart';
 import '../providers/active_orders_provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/cart_provider.dart';
+import '../providers/notifications_provider.dart';
 import '../providers/session_provider.dart';
+import '../screens/account_settings_screen.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/followed_shops_screen.dart';
 import '../screens/my_orders_screen.dart';
@@ -35,41 +37,58 @@ class AppDrawer extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // ── Profile header ──────────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
-              child: Row(
-                children: [
-                  _Avatar(
-                    radius: 26,
-                    initial: initial,
-                    photoUrl: photoUrl,
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          user?.name ?? l10n.drawerGuestName,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.w700, fontSize: 16),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Text(
-                          (user != null && !user.isGuest)
-                              ? user.email
-                              : l10n.drawerBrowsingAsGuest,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: theme.colorScheme.onSurface
-                                .withValues(alpha: 0.6),
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
+            InkWell(
+              onTap: user != null && !user.isGuest
+                  ? () {
+                      close();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const AccountSettingsScreen()),
+                      );
+                    }
+                  : null,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
+                child: Row(
+                  children: [
+                    _Avatar(
+                      radius: 26,
+                      initial: initial,
+                      photoUrl: photoUrl,
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            user?.name ?? l10n.drawerGuestName,
+                            style: const TextStyle(
+                                fontWeight: FontWeight.w700, fontSize: 16),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            (user != null && !user.isGuest)
+                                ? user.email
+                                : l10n.drawerBrowsingAsGuest,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.6),
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (user != null && !user.isGuest)
+                      Icon(
+                        Icons.chevron_right,
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                      ),
+                  ],
+                ),
               ),
             ),
             const Divider(height: 1),
@@ -178,6 +197,7 @@ class AppDrawer extends StatelessWidget {
     context.read<CartProvider>().clear();
     context.read<SessionProvider>().clearSession();
     context.read<ActiveOrdersProvider>().clear();
+    context.read<NotificationsProvider>().clearAll();
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (_) => const LoginScreen()),

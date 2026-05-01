@@ -320,6 +320,29 @@ class AppLocalizationsPt extends AppLocalizations {
   String get cartPlaceOrder => 'Fazer Pedido';
 
   @override
+  String get cartCouponHint => 'Código de cupão';
+
+  @override
+  String get cartCouponApply => 'Aplicar';
+
+  @override
+  String get cartCouponRemove => 'Remover';
+
+  @override
+  String get cartCouponInvalid => 'Cupão inválido ou expirado';
+
+  @override
+  String get cartSubtotal => 'Subtotal';
+
+  @override
+  String get cartDiscount => 'Desconto';
+
+  @override
+  String cartCouponApplied(String code) {
+    return 'Cupão \"$code\" aplicado';
+  }
+
+  @override
   String get myOrdersTitle => 'Os Meus Pedidos';
 
   @override
@@ -748,4 +771,97 @@ class AppLocalizationsPt extends AppLocalizations {
   String shopDiscountsAmountOff(String amount) {
     return '€$amount de desconto';
   }
+
+  @override
+  String get notificationsClearAll => 'Limpar tudo';
+
+  @override
+  String get notificationsClearConfirmTitle => 'Limpar todas as notificações?';
+
+  @override
+  String get notificationsClearConfirmBody =>
+      'Isto remove todas as notificações da sua caixa. Não podem ser recuperadas.';
+
+  @override
+  String get notificationsCleared => 'Notificações limpas';
+
+  @override
+  String get notificationsTimeJustNow => 'Agora mesmo';
+
+  @override
+  String notificationsTimeMinutes(int minutes) {
+    return 'Há ${minutes}m';
+  }
+
+  @override
+  String notificationsTimeHours(int hours) {
+    return 'Há ${hours}h';
+  }
+
+  @override
+  String notificationsTimeDays(int days) {
+    return 'Há ${days}d';
+  }
+
+  @override
+  String get accountSettingsTitle => 'Conta';
+
+  @override
+  String get accountSettingsSectionProfile => 'Perfil';
+
+  @override
+  String get accountSettingsSectionAccount => 'Conta';
+
+  @override
+  String get accountSettingsName => 'Nome de exibição';
+
+  @override
+  String get accountSettingsPhone => 'Número de telemóvel';
+
+  @override
+  String get accountSettingsPhotoUrl => 'URL da foto de perfil';
+
+  @override
+  String get accountSettingsPhotoUrlHint => 'https://example.com/foto.jpg';
+
+  @override
+  String get accountSettingsSave => 'Guardar alterações';
+
+  @override
+  String get accountSettingsSaved => 'Alterações guardadas';
+
+  @override
+  String get accountSettingsSaveFailed =>
+      'Não foi possível guardar. Tente novamente.';
+
+  @override
+  String get accountSettingsEmail => 'Endereço de email';
+
+  @override
+  String get accountSettingsEmailGoogle =>
+      'O email é gerido pelo Google e não pode ser alterado aqui.';
+
+  @override
+  String get accountSettingsChangePassword => 'Alterar palavra-passe';
+
+  @override
+  String get accountSettingsChangePasswordSubtitle =>
+      'Será enviado um link de redefinição para o seu email';
+
+  @override
+  String get accountSettingsChangePasswordSent => 'Link de redefinição enviado';
+
+  @override
+  String get accountSettingsCurrentPassword => 'Palavra-passe atual';
+
+  @override
+  String get accountSettingsEmailReauthTitle => 'Confirmar palavra-passe';
+
+  @override
+  String get accountSettingsEmailReauthBody =>
+      'Introduza a sua palavra-passe atual para atualizar o endereço de email.';
+
+  @override
+  String get accountSettingsEmailChanged =>
+      'Email de verificação enviado. Verifique a sua caixa de entrada.';
 }

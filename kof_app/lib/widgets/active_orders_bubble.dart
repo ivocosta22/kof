@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/l10n.dart';
-import '../main.dart' show rootNavigatorKey;
+import '../navigation.dart';
 import '../models/order.dart';
 import '../models/past_order.dart';
 import '../providers/active_orders_provider.dart';

@@ -8,6 +8,7 @@ import '../models/table_session.dart';
 import '../providers/auth_provider.dart';
 import '../providers/cart_provider.dart';
 import '../providers/session_provider.dart';
+import '../models/shop_discount.dart';
 import '../services/api_service.dart';
 import '../services/shop_service.dart';
 import 'menu_screen.dart';
@@ -34,6 +35,8 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
   double? _distanceMeters;
   bool _connectingWalkIn = false;
 
+  int _activeDiscountCount = 0;
+
   static const _expandedHeight = 220.0;
   static const _proximityThresholdMeters = 150.0;
 
@@ -44,7 +47,16 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
     _scrollCtrl.addListener(_onScroll);
     if (widget.shop.serverUrl != null && widget.shop.serverUrl!.isNotEmpty) {
       _computeDistance();
+      _loadDiscountCount();
     }
+  }
+
+  Future<void> _loadDiscountCount() async {
+    try {
+      final List<ShopDiscount> discounts =
+          await ApiService(widget.shop.serverUrl!).getDiscounts();
+      if (mounted) setState(() => _activeDiscountCount = discounts.length);
+    } catch (_) {}
   }
 
   Future<void> _computeDistance() async {
@@ -361,6 +373,7 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
                     theme,
                     title: l10n.shopDiscountsHeading,
                     icon: Icons.local_offer_outlined,
+                    badgeCount: _activeDiscountCount,
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -505,7 +518,18 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
     required String title,
     required IconData icon,
     required VoidCallback onTap,
+    int badgeCount = 0,
   }) {
+    final iconBox = Container(
+      width: 36,
+      height: 36,
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primary.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Icon(icon, size: 20, color: theme.colorScheme.primary),
+    );
+
     return Material(
       color: theme.colorScheme.surfaceContainerLow,
       borderRadius: BorderRadius.circular(14),
@@ -516,15 +540,34 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.10),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(icon,
-                    size: 20, color: theme.colorScheme.primary),
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  iconBox,
+                  if (badgeCount > 0)
+                    Positioned(
+                      top: -5,
+                      right: -5,
+                      child: Container(
+                        padding: const EdgeInsets.all(3),
+                        constraints: const BoxConstraints(minWidth: 17, minHeight: 17),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primary,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Text(
+                          badgeCount > 9 ? '9+' : '$badgeCount',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 9,
+                            fontWeight: FontWeight.w700,
+                            height: 1,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                ],
               ),
               const SizedBox(width: 12),
               Expanded(

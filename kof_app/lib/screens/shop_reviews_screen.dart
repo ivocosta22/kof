@@ -1,13 +1,47 @@
 import 'package:flutter/material.dart';
 import '../l10n/l10n.dart';
 import '../models/shop.dart';
+import '../services/shop_service.dart';
 
 /// Reviews screen with mock data — placeholder until a real reviews backend
 /// is wired up. Mock entries are deterministic per shop (seeded by shop id)
-/// so the same shop always renders the same set of reviews.
-class ShopReviewsScreen extends StatelessWidget {
+/// so the same shop always renders the same set of reviews. After computing
+/// the average locally we sync it back to the shop's Firestore doc so the
+/// rating shown on the map and shop card stays in agreement.
+class ShopReviewsScreen extends StatefulWidget {
   final Shop shop;
   const ShopReviewsScreen({super.key, required this.shop});
+
+  @override
+  State<ShopReviewsScreen> createState() => _ShopReviewsScreenState();
+}
+
+class _ShopReviewsScreenState extends State<ShopReviewsScreen> {
+  late final List<_MockReview> _reviews;
+  late final double _average;
+
+  @override
+  void initState() {
+    super.initState();
+    _reviews = _reviewsForShop(widget.shop.id);
+    _average = _reviews.isEmpty
+        ? 0.0
+        : _reviews.fold<int>(0, (s, r) => s + r.rating) / _reviews.length;
+
+    // Push the computed rating back to Firestore so the shop card on the map
+    // and the rating row on the detail header reflect the same number that
+    // this screen shows. Idempotent: ShopService.syncRating no-ops when the
+    // doc already matches.
+    if (_reviews.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ShopService().syncRating(
+          widget.shop.id,
+          average: _average,
+          count: _reviews.length,
+        );
+      });
+    }
+  }
 
   static const _mock = <_MockReview>[
     _MockReview(
@@ -49,8 +83,8 @@ class ShopReviewsScreen extends StatelessWidget {
 
   // Pull a deterministic slice + ordering of mock reviews using the shop id
   // as a hash seed, so two different shops feel different but each is stable.
-  List<_MockReview> _reviewsForShop() {
-    final seed = shop.id.hashCode;
+  static List<_MockReview> _reviewsForShop(String shopId) {
+    final seed = shopId.hashCode;
     final rotated = [
       ..._mock.sublist(seed.abs() % _mock.length),
       ..._mock.sublist(0, seed.abs() % _mock.length),
@@ -64,10 +98,8 @@ class ShopReviewsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = context.l10n;
-    final reviews = _reviewsForShop();
-    final avg = reviews.isEmpty
-        ? 0.0
-        : reviews.fold<int>(0, (s, r) => s + r.rating) / reviews.length;
+    final reviews = _reviews;
+    final avg = _average;
 
     return Scaffold(
       appBar: AppBar(

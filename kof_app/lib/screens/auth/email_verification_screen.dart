@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../l10n/l10n.dart';
 import '../../providers/active_orders_provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/notifications_provider.dart';
 import '../../services/auth_error_messages.dart';
 import '../home_screen.dart';
 import 'login_screen.dart';
@@ -83,6 +84,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     await context.read<AuthProvider>().logout();
     if (!mounted) return;
     context.read<ActiveOrdersProvider>().clear();
+    context.read<NotificationsProvider>().clearAll();
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => const LoginScreen()),

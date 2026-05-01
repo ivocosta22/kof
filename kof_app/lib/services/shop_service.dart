@@ -70,4 +70,34 @@ class ShopService {
     batch.delete(_shops.doc(shopId).collection('followers').doc(uid));
     await batch.commit();
   }
+
+  /// Persist a computed review average + count back onto the shop document.
+  /// Used by the reviews screen so the shop card / detail header on the map
+  /// reflect the live rating instead of staying at whatever was last set on
+  /// the kof_server platform panel.
+  ///
+  /// Only writes when the rounded average or the count actually differ from
+  /// what's already on the doc — avoids spurious writes every time anyone
+  /// opens the reviews screen.
+  Future<void> syncRating(
+    String shopId, {
+    required double average,
+    required int count,
+  }) async {
+    final ref = _shops.doc(shopId);
+    final snap = await ref.get();
+    if (!snap.exists) return;
+
+    final data = snap.data() ?? const {};
+    final existingAvg = (data['rating'] as num?)?.toDouble();
+    final existingCount = (data['ratingCount'] as num?)?.toInt();
+    // Compare to one decimal place — that's the precision we display anyway.
+    final rounded = double.parse(average.toStringAsFixed(1));
+    if (existingAvg == rounded && existingCount == count) return;
+
+    await ref.update({
+      'rating': rounded,
+      'ratingCount': count,
+    });
+  }
 }
