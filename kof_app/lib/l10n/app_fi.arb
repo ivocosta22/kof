@@ -83,6 +83,7 @@
   "drawerPrivacyPolicy": "Tietosuojakäytäntö",
   "drawerTerms": "Käyttöehdot",
   "drawerContactUs": "Ota yhteyttä",
+  "drawerContactUsFailed": "Sähköpostia ei voitu avata",
   "drawerVersion": "Kof v1.0.0",
 
   "scanTitle": "Skannaa pöydän QR-koodi",

@@ -245,24 +245,24 @@ class _ThemeSegmentedButton extends StatelessWidget {
     return SegmentedButton<ThemeMode>(
       showSelectedIcon: false,
       style: SegmentedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 8),
         visualDensity: VisualDensity.compact,
       ),
       segments: [
         ButtonSegment(
           value: ThemeMode.system,
-          icon: const Icon(Icons.brightness_auto, size: 16),
-          label: Text(l10n.settingsThemeSystem, style: const TextStyle(fontSize: 12)),
+          icon: const Icon(Icons.brightness_auto, size: 18),
+          tooltip: l10n.settingsThemeSystem,
         ),
         ButtonSegment(
           value: ThemeMode.light,
-          icon: const Icon(Icons.light_mode, size: 16),
-          label: Text(l10n.settingsThemeLight, style: const TextStyle(fontSize: 12)),
+          icon: const Icon(Icons.light_mode, size: 18),
+          tooltip: l10n.settingsThemeLight,
         ),
         ButtonSegment(
           value: ThemeMode.dark,
-          icon: const Icon(Icons.dark_mode, size: 16),
-          label: Text(l10n.settingsThemeDark, style: const TextStyle(fontSize: 12)),
+          icon: const Icon(Icons.dark_mode, size: 18),
+          tooltip: l10n.settingsThemeDark,
         ),
       ],
       selected: {current},

@@ -83,6 +83,7 @@
   "drawerPrivacyPolicy": "Política de Privacidade",
   "drawerTerms": "Termos e Condições",
   "drawerContactUs": "Contacte-nos",
+  "drawerContactUsFailed": "Não foi possível abrir o e-mail",
   "drawerVersion": "Kof v1.0.0",
 
   "scanTitle": "Ler QR Code da Mesa",

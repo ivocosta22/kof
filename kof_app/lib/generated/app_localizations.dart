@@ -454,6 +454,12 @@ abstract class AppLocalizations {
   /// **'Contact Us'**
   String get drawerContactUs;
 
+  /// No description provided for @drawerContactUsFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open email app'**
+  String get drawerContactUsFailed;
+
   /// No description provided for @drawerVersion.
   ///
   /// In en, this message translates to:

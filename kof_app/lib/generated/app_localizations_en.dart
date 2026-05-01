@@ -194,6 +194,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get drawerContactUs => 'Contact Us';
 
   @override
+  String get drawerContactUsFailed => 'Could not open email app';
+
+  @override
   String get drawerVersion => 'Kof v1.0.0';
 
   @override

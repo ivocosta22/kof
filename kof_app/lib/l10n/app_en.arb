@@ -81,6 +81,7 @@
   "drawerPrivacyPolicy": "Privacy Policy",
   "drawerTerms": "Terms and Conditions",
   "drawerContactUs": "Contact Us",
+  "drawerContactUsFailed": "Could not open email app",
   "drawerVersion": "Kof v1.0.0",
 
   "scanTitle": "Scan Table QR Code",

@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/scheduler.dart';
 import '../models/past_order.dart';
 import '../services/order_history_service.dart';
 import '../services/websocket_service.dart';
@@ -26,12 +27,25 @@ class ActiveOrdersProvider extends ChangeNotifier {
 
   void pushSuppression() {
     _suppressionDepth++;
-    notifyListeners();
+    _notifySafely();
   }
 
   void popSuppression() {
     if (_suppressionDepth > 0) {
       _suppressionDepth--;
+      _notifySafely();
+    }
+  }
+
+  // pushSuppression / popSuppression are called from screen lifecycle hooks
+  // (initState/deactivate). When a screen pops while the framework is mid-build
+  // of the screen underneath, calling notifyListeners synchronously throws
+  // "setState called during build". Defer to the end of the current frame.
+  void _notifySafely() {
+    final phase = SchedulerBinding.instance.schedulerPhase;
+    if (phase == SchedulerPhase.persistentCallbacks) {
+      SchedulerBinding.instance.addPostFrameCallback((_) => notifyListeners());
+    } else {
       notifyListeners();
     }
   }
@@ -39,7 +53,7 @@ class ActiveOrdersProvider extends ChangeNotifier {
   Future<void> refresh() async {
     if (_loading) return;
     _loading = true;
-    notifyListeners();
+    _notifySafely();
     try {
       final service = OrderHistoryService();
       final orders = await service.getAll();
@@ -50,7 +64,7 @@ class ActiveOrdersProvider extends ChangeNotifier {
       // last known good state.
     } finally {
       _loading = false;
-      notifyListeners();
+      _notifySafely();
     }
   }
 

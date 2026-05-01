@@ -155,6 +155,16 @@
 
 // Restore an existing session when a valid token is already stored locally and
 // redirect directly to the appropriate destination page.
+    // Submit the login form when the user presses Enter from either field.
+    function handleEnterKey(event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        login();
+      }
+    }
+    usernameEl.addEventListener("keydown", handleEnterKey);
+    pinEl.addEventListener("keydown", handleEnterKey);
+
     (async () => {
       applyTranslations();
 

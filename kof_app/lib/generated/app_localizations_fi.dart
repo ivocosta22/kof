@@ -196,6 +196,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get drawerContactUs => 'Ota yhteyttä';
 
   @override
+  String get drawerContactUsFailed => 'Sähköpostia ei voitu avata';
+
+  @override
   String get drawerVersion => 'Kof v1.0.0';
 
   @override

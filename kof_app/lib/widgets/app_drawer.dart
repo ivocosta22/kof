@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../l10n/l10n.dart';
 import '../providers/active_orders_provider.dart';
 import '../providers/auth_provider.dart';
@@ -10,7 +11,9 @@ import '../screens/account_settings_screen.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/followed_shops_screen.dart';
 import '../screens/my_orders_screen.dart';
+import '../screens/privacy_policy_screen.dart';
 import '../screens/settings_screen.dart';
+import '../screens/terms_screen.dart';
 
 class AppDrawer extends StatelessWidget {
   final VoidCallback? onClose;
@@ -150,7 +153,11 @@ class AppDrawer extends StatelessWidget {
               small: true,
               onTap: () {
                 close();
-                // TODO: open privacy policy URL
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => const PrivacyPolicyScreen()),
+                );
               },
             ),
             _DrawerItem(
@@ -159,17 +166,17 @@ class AppDrawer extends StatelessWidget {
               small: true,
               onTap: () {
                 close();
-                // TODO: open terms URL
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const TermsScreen()),
+                );
               },
             ),
             _DrawerItem(
               icon: Icons.mail_outline,
               label: l10n.drawerContactUs,
               small: true,
-              onTap: () {
-                close();
-                // TODO: open contact URL or email
-              },
+              onTap: () => _contactUs(context, close),
             ),
 
             const Spacer(),
@@ -188,6 +195,27 @@ class AppDrawer extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _contactUs(BuildContext context, VoidCallback close) async {
+    close();
+    final messenger = ScaffoldMessenger.of(context);
+    final l10n = context.l10n;
+    final uri = Uri(
+      scheme: 'mailto',
+      path: 'customersupport@kof.example.com',
+    );
+    bool ok = false;
+    try {
+      ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      ok = false;
+    }
+    if (!ok) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.drawerContactUsFailed)),
+      );
+    }
   }
 
   Future<void> _logout(BuildContext context, VoidCallback close) async {
