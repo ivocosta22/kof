@@ -8,7 +8,7 @@
 PRODUCT_NAME = kof_app
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.kofApp
+PRODUCT_BUNDLE_IDENTIFIER = com.ivocosta.kof
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2026 com.example. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2026 Ivo Costa. All rights reserved.

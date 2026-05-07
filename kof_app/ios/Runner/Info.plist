@@ -2,30 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>com.googleusercontent.apps.761198795495-ps1vvqtt6bb22ll5nnlagasmkuiletrq</string>
-			</array>
-		</dict>
-	</array>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Kof uses your location to show nearby coffee shops on the map.</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Kof uses your location to show nearby coffee shops on the map.</string>
-	<key>NSCameraUsageDescription</key>
-	<string>Camera access is needed to scan the QR code on your table.</string>
-	<key>NSLocalNetworkUsageDescription</key>
-	<string>Kof connects to the coffee shop's local ordering system to show the menu and place orders.</string>
-	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSAllowsLocalNetworking</key>
-		<true/>
-	</dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -46,10 +22,34 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.761198795495-ps1vvqtt6bb22ll5nnlagasmkuiletrq</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Camera access is needed to scan the QR code on your table.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Kof connects to the coffee shop's local ordering system to show the menu and place orders.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Kof uses your location to show nearby coffee shops on the map.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Kof uses your location to show nearby coffee shops on the map.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
