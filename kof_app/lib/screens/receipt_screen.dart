@@ -1,6 +1,11 @@
+import 'dart:io';
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import '../l10n/l10n.dart';
 import '../models/order.dart';
 
@@ -8,7 +13,7 @@ import '../models/order.dart';
 /// (white card, monospaced numbers, dashed dividers) rather than the usual
 /// material card. Push this from the order status screen when the order is
 /// paid.
-class ReceiptScreen extends StatelessWidget {
+class ReceiptScreen extends StatefulWidget {
   final Order order;
   final String shopName;
   const ReceiptScreen({
@@ -16,6 +21,54 @@ class ReceiptScreen extends StatelessWidget {
     required this.order,
     required this.shopName,
   });
+
+  @override
+  State<ReceiptScreen> createState() => _ReceiptScreenState();
+}
+
+class _ReceiptScreenState extends State<ReceiptScreen> {
+  final GlobalKey _receiptKey = GlobalKey();
+  bool _sharing = false;
+
+  Order get order => widget.order;
+  String get shopName => widget.shopName;
+
+  Future<void> _shareReceipt() async {
+    if (_sharing) return;
+    setState(() => _sharing = true);
+    final messenger = ScaffoldMessenger.of(context);
+    final l10n = context.l10n;
+    try {
+      final boundary = _receiptKey.currentContext?.findRenderObject()
+          as RenderRepaintBoundary?;
+      // internal-only; user-visible message comes from receiptShareFailed in the catch block
+      if (boundary == null) throw Exception('boundary missing');
+
+      final image = await boundary.toImage(pixelRatio: 3);
+      final byteData =
+          await image.toByteData(format: ui.ImageByteFormat.png);
+      // internal-only; user-visible message comes from receiptShareFailed in the catch block
+      if (byteData == null) throw Exception('encode failed');
+
+      final pngBytes = byteData.buffer.asUint8List();
+      final dir = await getTemporaryDirectory();
+      final file = File(
+          '${dir.path}/kof_receipt_${order.orderNumber}.png');
+      await file.writeAsBytes(pngBytes, flush: true);
+
+      await Share.shareXFiles(
+        [XFile(file.path, mimeType: 'image/png')],
+        subject: 'Kof — ${l10n.receiptTitle} #${order.orderNumber}',
+      );
+    } catch (_) {
+      if (!mounted) return;
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.receiptShareFailed)),
+      );
+    } finally {
+      if (mounted) setState(() => _sharing = false);
+    }
+  }
 
   String _formatDateTime(String iso) {
     try {
@@ -66,13 +119,28 @@ class ReceiptScreen extends StatelessWidget {
           style: theme.textTheme.titleMedium
               ?.copyWith(fontWeight: FontWeight.w700),
         ),
+        actions: [
+          IconButton(
+            tooltip: l10n.receiptShare,
+            onPressed: _sharing ? null : _shareReceipt,
+            icon: _sharing
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.ios_share),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 420),
-            child: Container(
+            child: RepaintBoundary(
+              key: _receiptKey,
+              child: Container(
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
@@ -184,6 +252,7 @@ class ReceiptScreen extends StatelessWidget {
                   ],
                 ),
               ),
+            ),
             ),
           ),
         ),

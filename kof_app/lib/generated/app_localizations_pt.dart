@@ -201,6 +201,69 @@ class AppLocalizationsPt extends AppLocalizations {
   String get drawerContactUsFailed => 'Não foi possível abrir o e-mail';
 
   @override
+  String get receiptShare => 'Partilhar';
+
+  @override
+  String get receiptShareFailed => 'Não foi possível partilhar o recibo';
+
+  @override
+  String get accountSettingsTakePhoto => 'Tirar uma foto';
+
+  @override
+  String get accountSettingsChooseFromLibrary => 'Escolher da biblioteca';
+
+  @override
+  String get accountSettingsPhotoUploadFailed =>
+      'Não foi possível atualizar a foto';
+
+  @override
+  String get apiServerNotReachable => 'Servidor inacessível';
+
+  @override
+  String get apiFailedLoadMenu => 'Não foi possível carregar o menu';
+
+  @override
+  String get apiFailedPlaceOrder => 'Não foi possível efetuar o pedido';
+
+  @override
+  String get apiOrderNotFound => 'Pedido não encontrado';
+
+  @override
+  String get apiFailedLoadDiscounts => 'Não foi possível carregar os descontos';
+
+  @override
+  String get apiUnknownError => 'Algo correu mal. Tenta novamente.';
+
+  @override
+  String get guestMigrateTitle => 'Transferir os teus dados de convidado?';
+
+  @override
+  String guestMigrateBody(int orders, int follows, String both) {
+    String _temp0 = intl.Intl.pluralLogic(
+      orders,
+      locale: localeName,
+      other: '$orders pedidos anteriores',
+      one: '1 pedido anterior',
+      zero: '',
+    );
+    String _temp1 = intl.Intl.selectLogic(both, {'true': ' e ', 'other': ''});
+    String _temp2 = intl.Intl.pluralLogic(
+      follows,
+      locale: localeName,
+      other: '$follows lojas seguidas',
+      one: '1 loja seguida',
+      zero: '',
+    );
+    return '$_temp0$_temp1$_temp2 da sessão de convidado — mover para a tua conta?';
+  }
+
+  @override
+  String get guestMigrateKeep => 'Mover para a minha conta';
+
+  @override
+  String get guestMigrateDiscard => 'Descartar';
+
+  @override
   String get drawerVersion => 'Kof v1.0.0';
 
   @override
@@ -333,6 +396,35 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get cartCouponInvalid => 'Cupão inválido ou expirado';
+
+  @override
+  String cartCouponRequiresCategory(String category) {
+    return 'Adiciona um item de $category para usar este cupão';
+  }
+
+  @override
+  String cartCouponNeedsTargetCategory(String category) {
+    return 'Este cupão só se aplica a $category — adiciona primeiro';
+  }
+
+  @override
+  String shopDiscountsRequires(String category) {
+    return 'Requer $category';
+  }
+
+  @override
+  String shopDiscountsAppliesAll(String category) {
+    return 'Em $category';
+  }
+
+  @override
+  String shopDiscountsAppliesQty(int qty, String category) {
+    return 'Em $qty× $category';
+  }
+
+  @override
+  String get shopDiscountsClaimAtCounter =>
+      'Reclama este desconto no balcão ao pagar';
 
   @override
   String get cartSubtotal => 'Subtotal';
@@ -605,6 +697,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get shopWalkInNameHint => 'ex: João';
+
+  @override
+  String get shopWalkInNameInvalid => 'Por favor, indica o teu nome real';
 
   @override
   String get shopWalkInWifi =>

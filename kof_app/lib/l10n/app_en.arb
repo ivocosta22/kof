@@ -82,6 +82,28 @@
   "drawerTerms": "Terms and Conditions",
   "drawerContactUs": "Contact Us",
   "drawerContactUsFailed": "Could not open email app",
+  "receiptShare": "Share",
+  "receiptShareFailed": "Could not share receipt",
+  "accountSettingsTakePhoto": "Take a photo",
+  "accountSettingsChooseFromLibrary": "Choose from library",
+  "accountSettingsPhotoUploadFailed": "Could not update profile photo",
+  "apiServerNotReachable": "Server not reachable",
+  "apiFailedLoadMenu": "Failed to load menu",
+  "apiFailedPlaceOrder": "Failed to place order",
+  "apiOrderNotFound": "Order not found",
+  "apiFailedLoadDiscounts": "Failed to load discounts",
+  "apiUnknownError": "Something went wrong. Please try again.",
+  "guestMigrateTitle": "Transfer your guest data?",
+  "guestMigrateBody": "{orders, plural, =0{} =1{1 past order} other{{orders} past orders}}{both, select, true{ and } other{}}{follows, plural, =0{} =1{1 followed shop} other{{follows} followed shops}} from your guest session — move to your account?",
+  "@guestMigrateBody": {
+    "placeholders": {
+      "orders": { "type": "int" },
+      "follows": { "type": "int" },
+      "both": { "type": "String" }
+    }
+  },
+  "guestMigrateKeep": "Move to my account",
+  "guestMigrateDiscard": "Discard",
   "drawerVersion": "Kof v1.0.0",
 
   "scanTitle": "Scan Table QR Code",
@@ -140,6 +162,38 @@
   "cartCouponApply": "Apply",
   "cartCouponRemove": "Remove",
   "cartCouponInvalid": "Invalid or expired coupon",
+  "cartCouponRequiresCategory": "Add a {category} item to use this coupon",
+  "@cartCouponRequiresCategory": {
+    "placeholders": {
+      "category": { "type": "String" }
+    }
+  },
+  "cartCouponNeedsTargetCategory": "This coupon only applies to {category} — add one first",
+  "@cartCouponNeedsTargetCategory": {
+    "placeholders": {
+      "category": { "type": "String" }
+    }
+  },
+  "shopDiscountsRequires": "Requires {category}",
+  "@shopDiscountsRequires": {
+    "placeholders": {
+      "category": { "type": "String" }
+    }
+  },
+  "shopDiscountsAppliesAll": "On {category}",
+  "@shopDiscountsAppliesAll": {
+    "placeholders": {
+      "category": { "type": "String" }
+    }
+  },
+  "shopDiscountsAppliesQty": "On {qty}× {category}",
+  "@shopDiscountsAppliesQty": {
+    "placeholders": {
+      "qty": { "type": "int" },
+      "category": { "type": "String" }
+    }
+  },
+  "shopDiscountsClaimAtCounter": "Claim this discount at the counter when paying",
   "cartSubtotal": "Subtotal",
   "cartDiscount": "Discount",
   "cartCouponApplied": "Coupon \"{code}\" applied",
@@ -248,6 +302,7 @@
   "shopWalkInDialogTitle": "Order at this shop",
   "shopWalkInNameLabel": "Your name",
   "shopWalkInNameHint": "e.g. Jane",
+  "shopWalkInNameInvalid": "Please enter your real name",
   "shopWalkInWifi": "Make sure you're connected to the shop's Wi-Fi",
   "shopWalkInError": "Could not connect to the shop server. Are you on the shop's Wi-Fi?",
   "shopWalkInDistanceLabel": "{meters}m away",

@@ -8,6 +8,10 @@ class ShopDiscount {
   final String validFrom;
   final String validUntil;
   final bool isActive;
+  // Cart-aware conditions. Empty/zero means "no restriction".
+  final String requiredCategory;
+  final String targetCategory;
+  final int targetQty;
 
   const ShopDiscount({
     required this.id,
@@ -19,6 +23,9 @@ class ShopDiscount {
     required this.validFrom,
     required this.validUntil,
     required this.isActive,
+    this.requiredCategory = '',
+    this.targetCategory = '',
+    this.targetQty = 0,
   });
 
   factory ShopDiscount.fromJson(Map<String, dynamic> json) {
@@ -32,6 +39,9 @@ class ShopDiscount {
       validFrom: json['valid_from'] as String? ?? '',
       validUntil: json['valid_until'] as String? ?? '',
       isActive: json['is_active'] == true || json['is_active'] == 1,
+      requiredCategory: json['required_category'] as String? ?? '',
+      targetCategory: json['target_category'] as String? ?? '',
+      targetQty: (json['target_qty'] as num?)?.toInt() ?? 0,
     );
   }
 }

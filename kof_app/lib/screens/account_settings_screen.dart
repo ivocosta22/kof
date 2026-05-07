@@ -96,6 +96,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   }
 
   Future<void> _pickPhoto() async {
+    final l10n = context.l10n;
     final source = await showModalBottomSheet<ImageSource>(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -117,12 +118,12 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             const SizedBox(height: 16),
             ListTile(
               leading: const Icon(Icons.camera_alt_outlined),
-              title: const Text('Take a photo'),
+              title: Text(l10n.accountSettingsTakePhoto),
               onTap: () => Navigator.pop(ctx, ImageSource.camera),
             ),
             ListTile(
               leading: const Icon(Icons.photo_library_outlined),
-              title: const Text('Choose from library'),
+              title: Text(l10n.accountSettingsChooseFromLibrary),
               onTap: () => Navigator.pop(ctx, ImageSource.gallery),
             ),
             const SizedBox(height: 8),
@@ -161,10 +162,10 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
       await context.read<AuthProvider>().updateProfile(photoUrl: url);
       if (!mounted) return;
       setState(() => _photoUrl = url);
-    } catch (e) {
+    } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('$e')),
+        SnackBar(content: Text(l10n.accountSettingsPhotoUploadFailed)),
       );
     } finally {
       if (mounted) setState(() => _uploadingPhoto = false);

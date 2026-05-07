@@ -51,6 +51,7 @@
 
   <script>
     const t = window.kofI18n.t;
+    const translateError = window.kofI18n.translateError;
     function tf(key, fallback, vars = {}) {
       const value = t(key, vars);
       return value === key ? fallback : value;
@@ -214,7 +215,7 @@
 
         location.href = "/cart.html";
       } catch (error) {
-        alert(error?.message || String(error));
+        alert(translateError(error?.message || String(error)));
       }
     }
 

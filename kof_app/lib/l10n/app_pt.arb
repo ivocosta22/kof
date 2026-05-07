@@ -84,6 +84,28 @@
   "drawerTerms": "Termos e Condições",
   "drawerContactUs": "Contacte-nos",
   "drawerContactUsFailed": "Não foi possível abrir o e-mail",
+  "receiptShare": "Partilhar",
+  "receiptShareFailed": "Não foi possível partilhar o recibo",
+  "accountSettingsTakePhoto": "Tirar uma foto",
+  "accountSettingsChooseFromLibrary": "Escolher da biblioteca",
+  "accountSettingsPhotoUploadFailed": "Não foi possível atualizar a foto",
+  "apiServerNotReachable": "Servidor inacessível",
+  "apiFailedLoadMenu": "Não foi possível carregar o menu",
+  "apiFailedPlaceOrder": "Não foi possível efetuar o pedido",
+  "apiOrderNotFound": "Pedido não encontrado",
+  "apiFailedLoadDiscounts": "Não foi possível carregar os descontos",
+  "apiUnknownError": "Algo correu mal. Tenta novamente.",
+  "guestMigrateTitle": "Transferir os teus dados de convidado?",
+  "guestMigrateBody": "{orders, plural, =0{} =1{1 pedido anterior} other{{orders} pedidos anteriores}}{both, select, true{ e } other{}}{follows, plural, =0{} =1{1 loja seguida} other{{follows} lojas seguidas}} da sessão de convidado — mover para a tua conta?",
+  "@guestMigrateBody": {
+    "placeholders": {
+      "orders": { "type": "int" },
+      "follows": { "type": "int" },
+      "both": { "type": "String" }
+    }
+  },
+  "guestMigrateKeep": "Mover para a minha conta",
+  "guestMigrateDiscard": "Descartar",
   "drawerVersion": "Kof v1.0.0",
 
   "scanTitle": "Ler QR Code da Mesa",
@@ -142,6 +164,38 @@
   "cartCouponApply": "Aplicar",
   "cartCouponRemove": "Remover",
   "cartCouponInvalid": "Cupão inválido ou expirado",
+  "cartCouponRequiresCategory": "Adiciona um item de {category} para usar este cupão",
+  "@cartCouponRequiresCategory": {
+    "placeholders": {
+      "category": { "type": "String" }
+    }
+  },
+  "cartCouponNeedsTargetCategory": "Este cupão só se aplica a {category} — adiciona primeiro",
+  "@cartCouponNeedsTargetCategory": {
+    "placeholders": {
+      "category": { "type": "String" }
+    }
+  },
+  "shopDiscountsRequires": "Requer {category}",
+  "@shopDiscountsRequires": {
+    "placeholders": {
+      "category": { "type": "String" }
+    }
+  },
+  "shopDiscountsAppliesAll": "Em {category}",
+  "@shopDiscountsAppliesAll": {
+    "placeholders": {
+      "category": { "type": "String" }
+    }
+  },
+  "shopDiscountsAppliesQty": "Em {qty}× {category}",
+  "@shopDiscountsAppliesQty": {
+    "placeholders": {
+      "qty": { "type": "int" },
+      "category": { "type": "String" }
+    }
+  },
+  "shopDiscountsClaimAtCounter": "Reclama este desconto no balcão ao pagar",
   "cartSubtotal": "Subtotal",
   "cartDiscount": "Desconto",
   "cartCouponApplied": "Cupão \"{code}\" aplicado",
@@ -247,6 +301,7 @@
   "shopWalkInDialogTitle": "Pedir nesta loja",
   "shopWalkInNameLabel": "O seu nome",
   "shopWalkInNameHint": "ex: João",
+  "shopWalkInNameInvalid": "Por favor, indica o teu nome real",
   "shopWalkInWifi": "Certifique-se de que está ligado ao Wi-Fi da loja",
   "shopWalkInError": "Não foi possível ligar ao servidor da loja. Está ligado ao Wi-Fi da loja?",
   "shopWalkInDistanceLabel": "{meters}m de distância",

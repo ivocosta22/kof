@@ -84,6 +84,28 @@
   "drawerTerms": "Käyttöehdot",
   "drawerContactUs": "Ota yhteyttä",
   "drawerContactUsFailed": "Sähköpostia ei voitu avata",
+  "receiptShare": "Jaa",
+  "receiptShareFailed": "Kuitin jakaminen epäonnistui",
+  "accountSettingsTakePhoto": "Ota kuva",
+  "accountSettingsChooseFromLibrary": "Valitse kirjastosta",
+  "accountSettingsPhotoUploadFailed": "Profiilikuvaa ei voitu päivittää",
+  "apiServerNotReachable": "Palvelin ei tavoitettavissa",
+  "apiFailedLoadMenu": "Menun lataus epäonnistui",
+  "apiFailedPlaceOrder": "Tilauksen tekeminen epäonnistui",
+  "apiOrderNotFound": "Tilausta ei löytynyt",
+  "apiFailedLoadDiscounts": "Alennusten lataus epäonnistui",
+  "apiUnknownError": "Jotain meni vikaan. Yritä uudelleen.",
+  "guestMigrateTitle": "Siirretäänkö vierailutilisi tiedot?",
+  "guestMigrateBody": "{orders, plural, =0{} =1{1 aiempi tilaus} other{{orders} aiempaa tilausta}}{both, select, true{ ja } other{}}{follows, plural, =0{} =1{1 seurattu kahvila} other{{follows} seurattua kahvilaa}} vierailutililtä — siirretäänkö tilillesi?",
+  "@guestMigrateBody": {
+    "placeholders": {
+      "orders": { "type": "int" },
+      "follows": { "type": "int" },
+      "both": { "type": "String" }
+    }
+  },
+  "guestMigrateKeep": "Siirrä tililleni",
+  "guestMigrateDiscard": "Hylkää",
   "drawerVersion": "Kof v1.0.0",
 
   "scanTitle": "Skannaa pöydän QR-koodi",
@@ -142,6 +164,38 @@
   "cartCouponApply": "Käytä",
   "cartCouponRemove": "Poista",
   "cartCouponInvalid": "Virheellinen tai vanhentunut kuponki",
+  "cartCouponRequiresCategory": "Lisää tuote ryhmästä {category} käyttääksesi kuponkia",
+  "@cartCouponRequiresCategory": {
+    "placeholders": {
+      "category": { "type": "String" }
+    }
+  },
+  "cartCouponNeedsTargetCategory": "Kuponki koskee vain ryhmää {category} — lisää yksi ensin",
+  "@cartCouponNeedsTargetCategory": {
+    "placeholders": {
+      "category": { "type": "String" }
+    }
+  },
+  "shopDiscountsRequires": "Vaatii {category}",
+  "@shopDiscountsRequires": {
+    "placeholders": {
+      "category": { "type": "String" }
+    }
+  },
+  "shopDiscountsAppliesAll": "Kohde: {category}",
+  "@shopDiscountsAppliesAll": {
+    "placeholders": {
+      "category": { "type": "String" }
+    }
+  },
+  "shopDiscountsAppliesQty": "Kohde: {qty}× {category}",
+  "@shopDiscountsAppliesQty": {
+    "placeholders": {
+      "qty": { "type": "int" },
+      "category": { "type": "String" }
+    }
+  },
+  "shopDiscountsClaimAtCounter": "Pyydä tämä alennus tiskillä maksaessasi",
   "cartSubtotal": "Välisumma",
   "cartDiscount": "Alennus",
   "cartCouponApplied": "Kuponki \"{code}\" käytössä",
@@ -247,6 +301,7 @@
   "shopWalkInDialogTitle": "Tilaa tästä kahvilasta",
   "shopWalkInNameLabel": "Nimesi",
   "shopWalkInNameHint": "esim. Matti",
+  "shopWalkInNameInvalid": "Kirjoita oikea nimesi",
   "shopWalkInWifi": "Varmista, että olet liittyneenä kahvilan Wi-Fi-verkkoon",
   "shopWalkInError": "Kahvilan palvelimeen ei saatu yhteyttä. Oletko kahvilan Wi-Fi-verkossa?",
   "shopWalkInDistanceLabel": "{meters}m päässä",

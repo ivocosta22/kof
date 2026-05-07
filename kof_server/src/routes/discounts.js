@@ -21,6 +21,9 @@ function rowToJson(row) {
     valid_from: row.valid_from,
     valid_until: row.valid_until,
     is_active: !!row.is_active,
+    required_category: row.required_category || "",
+    target_category: row.target_category || "",
+    target_qty: Number(row.target_qty) || 0,
     created_at: row.created_at,
   };
 }
@@ -86,6 +89,19 @@ function validateDiscountFields(body, { partial = false } = {}) {
     out.is_active = body.is_active === false || body.is_active === 0 ? 0 : 1;
   }
 
+  if (!partial || body.required_category !== undefined) {
+    out.required_category = String(body.required_category ?? "").trim().slice(0, 200);
+  }
+
+  if (!partial || body.target_category !== undefined) {
+    out.target_category = String(body.target_category ?? "").trim().slice(0, 200);
+  }
+
+  if (!partial || body.target_qty !== undefined) {
+    const n = Math.max(0, Math.floor(Number(body.target_qty ?? 0)));
+    out.target_qty = Number.isFinite(n) ? n : 0;
+  }
+
   // Cross-field rule: at least one of percentage_off / amount_off_cents must
   // be > 0 on a full-write (POST). For PATCH we only enforce when both are
   // provided, since the existing row may already satisfy the rule.
@@ -105,7 +121,8 @@ router.get("/", (req, res) => {
   const t = today();
   const rows = db.prepare(`
     SELECT id, title, description, percentage_off, amount_off_cents, code,
-           valid_from, valid_until, is_active, created_at
+           valid_from, valid_until, is_active,
+           required_category, target_category, target_qty, created_at
     FROM discounts
     WHERE is_active = 1
       AND (valid_from = '' OR valid_from <= ?)
@@ -119,7 +136,8 @@ router.get("/", (req, res) => {
 router.get("/admin", requireAdmin("manager"), (req, res) => {
   const rows = db.prepare(`
     SELECT id, title, description, percentage_off, amount_off_cents, code,
-           valid_from, valid_until, is_active, created_at
+           valid_from, valid_until, is_active,
+           required_category, target_category, target_qty, created_at
     FROM discounts
     ORDER BY id DESC
   `).all();
@@ -138,8 +156,9 @@ router.post("/admin", requireAdmin("manager"), (req, res) => {
   const result = db.prepare(`
     INSERT INTO discounts
       (title, description, percentage_off, amount_off_cents, code,
-       valid_from, valid_until, is_active)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+       valid_from, valid_until, is_active,
+       required_category, target_category, target_qty)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
     fields.title,
     fields.description ?? "",
@@ -148,7 +167,10 @@ router.post("/admin", requireAdmin("manager"), (req, res) => {
     fields.code ?? "",
     fields.valid_from ?? "",
     fields.valid_until ?? "",
-    fields.is_active ?? 1
+    fields.is_active ?? 1,
+    fields.required_category ?? "",
+    fields.target_category ?? "",
+    fields.target_qty ?? 0
   );
 
   res.status(201).json({ id: result.lastInsertRowid });

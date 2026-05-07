@@ -1,5 +1,56 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/shop.dart';
+
+/// Guest follows are persisted locally on the device. Once the user signs in
+/// or registers we offer to migrate them into Firestore under the new uid.
+class _GuestFollowsStore {
+  static const _key = 'kof_guest_followed_shops_v1';
+  static final _ctrl = StreamController<Set<String>>.broadcast();
+
+  static Future<Set<String>> _read() async {
+    final prefs = await SharedPreferences.getInstance();
+    return (prefs.getStringList(_key) ?? const <String>[]).toSet();
+  }
+
+  static Stream<Set<String>> stream() async* {
+    yield await _read();
+    yield* _ctrl.stream;
+  }
+
+  static Future<bool> contains(String shopId) async =>
+      (await _read()).contains(shopId);
+
+  static Future<void> add(String shopId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final set = (prefs.getStringList(_key) ?? const <String>[]).toSet();
+    if (set.add(shopId)) {
+      await prefs.setStringList(_key, set.toList());
+      _ctrl.add(set);
+    }
+  }
+
+  static Future<void> remove(String shopId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final set = (prefs.getStringList(_key) ?? const <String>[]).toSet();
+    if (set.remove(shopId)) {
+      await prefs.setStringList(_key, set.toList());
+      _ctrl.add(set);
+    }
+  }
+
+  static Future<int> count() async => (await _read()).length;
+
+  static Future<List<String>> drain() async {
+    final prefs = await SharedPreferences.getInstance();
+    final ids = (prefs.getStringList(_key) ?? const <String>[]).toList();
+    await prefs.remove(_key);
+    _ctrl.add(<String>{});
+    return ids;
+  }
+}
 
 class ShopService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -24,14 +75,16 @@ class ShopService {
     return Shop.fromDoc(doc);
   }
 
-  Stream<Set<String>> streamFollowedShopIds(String uid) {
+  Stream<Set<String>> streamFollowedShopIds(String uid,
+      {bool isGuest = false}) {
+    if (isGuest) return _GuestFollowsStore.stream();
     return _followingCol(uid).snapshots().map(
           (snap) => snap.docs.map((d) => d.id).toSet(),
         );
   }
 
-  Stream<List<Shop>> streamFollowedShops(String uid) async* {
-    await for (final ids in streamFollowedShopIds(uid)) {
+  Stream<List<Shop>> streamFollowedShops(String uid, {bool isGuest = false}) async* {
+    await for (final ids in streamFollowedShopIds(uid, isGuest: isGuest)) {
       if (ids.isEmpty) {
         yield const [];
         continue;
@@ -51,12 +104,19 @@ class ShopService {
     }
   }
 
-  Future<bool> isFollowing(String uid, String shopId) async {
+  Future<bool> isFollowing(String uid, String shopId,
+      {bool isGuest = false}) async {
+    if (isGuest) return _GuestFollowsStore.contains(shopId);
     final doc = await _followingCol(uid).doc(shopId).get();
     return doc.exists;
   }
 
-  Future<void> followShop(String uid, String shopId) async {
+  Future<void> followShop(String uid, String shopId,
+      {bool isGuest = false}) async {
+    if (isGuest) {
+      await _GuestFollowsStore.add(shopId);
+      return;
+    }
     final batch = _db.batch();
     final payload = {'followedAt': FieldValue.serverTimestamp()};
     batch.set(_followingCol(uid).doc(shopId), payload);
@@ -64,12 +124,39 @@ class ShopService {
     await batch.commit();
   }
 
-  Future<void> unfollowShop(String uid, String shopId) async {
+  Future<void> unfollowShop(String uid, String shopId,
+      {bool isGuest = false}) async {
+    if (isGuest) {
+      await _GuestFollowsStore.remove(shopId);
+      return;
+    }
     final batch = _db.batch();
     batch.delete(_followingCol(uid).doc(shopId));
     batch.delete(_shops.doc(shopId).collection('followers').doc(uid));
     await batch.commit();
   }
+
+  /// Number of shops the guest user is following locally. Used by the guest →
+  /// account migration prompt.
+  static Future<int> guestFollowedCount() => _GuestFollowsStore.count();
+
+  /// Move every locally-followed shop into Firestore under [uid] and clear
+  /// the local guest store. Best-effort: a failure on one shop won't roll
+  /// back the others.
+  Future<void> migrateGuestFollowsToUser(String uid) async {
+    if (uid.isEmpty) return;
+    final ids = await _GuestFollowsStore.drain();
+    if (ids.isEmpty) return;
+    for (final shopId in ids) {
+      try {
+        await followShop(uid, shopId);
+      } catch (_) {/* skip shops that fail (deleted, network blip, etc.) */}
+    }
+  }
+
+  /// Drop the local guest follows without migrating. Used when the user
+  /// declines the migration prompt so it doesn't keep firing.
+  static Future<void> clearGuestFollows() => _GuestFollowsStore.drain();
 
   /// Persist a computed review average + count back onto the shop document.
   /// Used by the reviews screen so the shop card / detail header on the map

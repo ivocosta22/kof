@@ -2,11 +2,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/l10n.dart';
+import '../models/cart_item.dart';
 import '../models/shop_discount.dart';
 import '../providers/active_orders_provider.dart';
 import '../providers/cart_provider.dart';
 import '../providers/session_provider.dart';
 import '../models/past_order.dart';
+import '../services/api_error_messages.dart';
 import '../services/api_service.dart';
 import '../services/order_history_service.dart';
 import '../screens/order_status_screen.dart';
@@ -35,13 +37,59 @@ class _CartBottomSheetState extends State<CartBottomSheet> {
     super.dispose();
   }
 
-  int _discountCentsFor(ShopDiscount d, int subtotalCents) {
+  /// Split a discount's category field on commas. Empty list = no restriction.
+  List<String> _parseCategoryList(String raw) => raw
+      .split(',')
+      .map((s) => s.trim())
+      .where((s) => s.isNotEmpty)
+      .toList();
+
+  /// Mirror of the server's discount calculation. Returns 0 when the cart
+  /// doesn't satisfy the discount's conditions so the UI never previews a
+  /// discount the server would reject.
+  int _discountCentsFor(
+    ShopDiscount d,
+    int subtotalCents,
+    List<CartItem> items,
+  ) {
+    final reqCats = _parseCategoryList(d.requiredCategory);
+    if (reqCats.isNotEmpty &&
+        !items.any((i) => reqCats.contains(i.menuItem.category))) {
+      return 0;
+    }
+
+    int basis;
+    final targetCats = _parseCategoryList(d.targetCategory);
+    if (targetCats.isEmpty) {
+      basis = subtotalCents;
+    } else {
+      final targetLines = items
+          .where((i) => targetCats.contains(i.menuItem.category))
+          .toList();
+      if (targetLines.isEmpty) return 0;
+
+      if (d.targetQty <= 0) {
+        basis = targetLines.fold(0, (s, i) => s + i.totalCents);
+      } else {
+        // Cheapest N units across all matching lines.
+        final unitPrices = <int>[];
+        for (final line in targetLines) {
+          for (var n = 0; n < line.qty; n++) {
+            unitPrices.add(line.unitPriceCents);
+          }
+        }
+        unitPrices.sort();
+        basis = unitPrices.take(d.targetQty).fold(0, (s, p) => s + p);
+      }
+    }
+
     int cents = 0;
     if (d.percentageOff > 0) {
-      cents = (subtotalCents * d.percentageOff) ~/ 100;
+      cents = (basis * d.percentageOff) ~/ 100;
     } else if (d.amountOffCents > 0) {
       cents = d.amountOffCents;
     }
+    if (cents > basis) cents = basis;
     if (cents > subtotalCents) cents = subtotalCents;
     return cents;
   }
@@ -68,12 +116,39 @@ class _CartBottomSheetState extends State<CartBottomSheet> {
           _appliedDiscount = null;
           _couponError = context.l10n.cartCouponInvalid;
         });
-      } else {
-        setState(() {
-          _appliedDiscount = match.first;
-          _couponError = null;
-        });
+        return;
       }
+
+      final l10n = context.l10n;
+      final discount = match.first;
+      final cart = context.read<CartProvider>();
+      // Cart-aware preflight: surface a friendly hint instead of silently
+      // applying a 0-cent discount.
+      final reqCats = _parseCategoryList(discount.requiredCategory);
+      if (reqCats.isNotEmpty &&
+          !cart.items.any((i) => reqCats.contains(i.menuItem.category))) {
+        setState(() {
+          _appliedDiscount = null;
+          _couponError =
+              l10n.cartCouponRequiresCategory(reqCats.join(' / '));
+        });
+        return;
+      }
+      final targetCats = _parseCategoryList(discount.targetCategory);
+      if (targetCats.isNotEmpty &&
+          !cart.items.any((i) => targetCats.contains(i.menuItem.category))) {
+        setState(() {
+          _appliedDiscount = null;
+          _couponError =
+              l10n.cartCouponNeedsTargetCategory(targetCats.join(' / '));
+        });
+        return;
+      }
+
+      setState(() {
+        _appliedDiscount = discount;
+        _couponError = null;
+      });
     } catch (_) {
       if (!mounted) return;
       setState(() => _couponError = context.l10n.cartCouponInvalid);
@@ -132,9 +207,10 @@ class _CartBottomSheetState extends State<CartBottomSheet> {
         MaterialPageRoute(builder: (_) => OrderStatusScreen(order: order)),
       );
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _isPlacing = false;
-        _error = e.toString().replaceFirst('Exception: ', '');
+        _error = localizedApiError(context.l10n, e);
       });
     }
   }
@@ -292,7 +368,7 @@ class _CartBottomSheetState extends State<CartBottomSheet> {
                       _totalsRow(
                         theme,
                         l10n.cartDiscount,
-                        '-€${(_discountCentsFor(_appliedDiscount!, cart.totalCents) / 100).toStringAsFixed(2)}',
+                        '-€${(_discountCentsFor(_appliedDiscount!, cart.totalCents, cart.items) / 100).toStringAsFixed(2)}',
                         emphasised: false,
                         valueColor: theme.colorScheme.primary,
                       ),
@@ -301,7 +377,7 @@ class _CartBottomSheetState extends State<CartBottomSheet> {
                     _totalsRow(
                       theme,
                       l10n.total,
-                      '€${(((_appliedDiscount == null) ? cart.totalCents : (cart.totalCents - _discountCentsFor(_appliedDiscount!, cart.totalCents))) / 100).toStringAsFixed(2)}',
+                      '€${(((_appliedDiscount == null) ? cart.totalCents : (cart.totalCents - _discountCentsFor(_appliedDiscount!, cart.totalCents, cart.items))) / 100).toStringAsFixed(2)}',
                       emphasised: true,
                     ),
                     if (_error != null) ...[

@@ -248,14 +248,66 @@ class _DiscountCard extends StatelessWidget {
                     text: l10n.shopDiscountsValidFrom(discount.validFrom),
                     icon: Icons.event_outlined,
                   ),
+                if (discount.requiredCategory.isNotEmpty)
+                  _Pill(
+                    text: l10n.shopDiscountsRequires(discount.requiredCategory),
+                    icon: Icons.shopping_bag_outlined,
+                  ),
+                if (discount.targetCategory.isNotEmpty)
+                  _Pill(
+                    text: discount.targetQty > 0
+                        ? l10n.shopDiscountsAppliesQty(
+                            discount.targetQty, discount.targetCategory)
+                        : l10n.shopDiscountsAppliesAll(discount.targetCategory),
+                    icon: Icons.local_offer_outlined,
+                  ),
               ],
             ),
             if (discount.code.isNotEmpty) ...[
               const SizedBox(height: 14),
               _CodeChip(code: discount.code, l10n: l10n),
+            ] else ...[
+              const SizedBox(height: 14),
+              _ClaimAtCounterBanner(text: l10n.shopDiscountsClaimAtCounter),
             ],
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Shown on discount cards that have no promo code — explains how to redeem
+/// the offer in person since the user can't apply it at app checkout.
+class _ClaimAtCounterBanner extends StatelessWidget {
+  final String text;
+  const _ClaimAtCounterBanner({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.18),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.32)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.info_outline, color: Colors.white, size: 16),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 12.5,
+                fontWeight: FontWeight.w500,
+                height: 1.3,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

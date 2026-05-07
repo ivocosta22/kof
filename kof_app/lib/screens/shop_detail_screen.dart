@@ -92,8 +92,10 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
     final l10n = context.l10n;
     final nameCtrl = TextEditingController();
     final auth = context.read<AuthProvider>();
-    // Pre-fill with user's display name if available
-    nameCtrl.text = auth.user?.name ?? '';
+    // Pre-fill with the user's display name only for signed-in accounts —
+    // guests have a placeholder "Guest" name we don't want carried into
+    // the order, so they're forced to type a real name.
+    nameCtrl.text = auth.isGuest ? '' : (auth.user?.name ?? '');
 
     final confirmed = await showDialog<String>(
       context: context,
@@ -136,7 +138,14 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
     );
 
     final name = confirmed?.trim() ?? '';
-    if (name.isEmpty || !mounted) return;
+    if (name.isEmpty || name.toLowerCase() == 'guest' || !mounted) {
+      if (mounted && name.toLowerCase() == 'guest') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.shopWalkInNameInvalid)),
+        );
+      }
+      return;
+    }
 
     setState(() => _connectingWalkIn = true);
     try {
@@ -185,11 +194,12 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
   Future<void> _loadFollowState() async {
     final auth = context.read<AuthProvider>();
     final uid = auth.user?.id;
-    if (uid == null || auth.isGuest) {
+    if (uid == null) {
       setState(() => _isFollowing = false);
       return;
     }
-    final following = await _service.isFollowing(uid, widget.shop.id);
+    final following = await _service.isFollowing(uid, widget.shop.id,
+        isGuest: auth.isGuest);
     if (!mounted) return;
     setState(() => _isFollowing = following);
   }
@@ -198,18 +208,20 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
     final auth = context.read<AuthProvider>();
     final l10n = context.l10n;
     final uid = auth.user?.id;
-    if (uid == null || auth.isGuest) {
+    if (uid == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.shopFollowRequiresAccount)),
+        SnackBar(content: Text(l10n.shopFollowFailed)),
       );
       return;
     }
     setState(() => _busy = true);
     try {
       if (_isFollowing == true) {
-        await _service.unfollowShop(uid, widget.shop.id);
+        await _service.unfollowShop(uid, widget.shop.id,
+            isGuest: auth.isGuest);
       } else {
-        await _service.followShop(uid, widget.shop.id);
+        await _service.followShop(uid, widget.shop.id,
+            isGuest: auth.isGuest);
       }
       if (!mounted) return;
       setState(() {

@@ -199,6 +199,69 @@ class AppLocalizationsFi extends AppLocalizations {
   String get drawerContactUsFailed => 'Sähköpostia ei voitu avata';
 
   @override
+  String get receiptShare => 'Jaa';
+
+  @override
+  String get receiptShareFailed => 'Kuitin jakaminen epäonnistui';
+
+  @override
+  String get accountSettingsTakePhoto => 'Ota kuva';
+
+  @override
+  String get accountSettingsChooseFromLibrary => 'Valitse kirjastosta';
+
+  @override
+  String get accountSettingsPhotoUploadFailed =>
+      'Profiilikuvaa ei voitu päivittää';
+
+  @override
+  String get apiServerNotReachable => 'Palvelin ei tavoitettavissa';
+
+  @override
+  String get apiFailedLoadMenu => 'Menun lataus epäonnistui';
+
+  @override
+  String get apiFailedPlaceOrder => 'Tilauksen tekeminen epäonnistui';
+
+  @override
+  String get apiOrderNotFound => 'Tilausta ei löytynyt';
+
+  @override
+  String get apiFailedLoadDiscounts => 'Alennusten lataus epäonnistui';
+
+  @override
+  String get apiUnknownError => 'Jotain meni vikaan. Yritä uudelleen.';
+
+  @override
+  String get guestMigrateTitle => 'Siirretäänkö vierailutilisi tiedot?';
+
+  @override
+  String guestMigrateBody(int orders, int follows, String both) {
+    String _temp0 = intl.Intl.pluralLogic(
+      orders,
+      locale: localeName,
+      other: '$orders aiempaa tilausta',
+      one: '1 aiempi tilaus',
+      zero: '',
+    );
+    String _temp1 = intl.Intl.selectLogic(both, {'true': ' ja ', 'other': ''});
+    String _temp2 = intl.Intl.pluralLogic(
+      follows,
+      locale: localeName,
+      other: '$follows seurattua kahvilaa',
+      one: '1 seurattu kahvila',
+      zero: '',
+    );
+    return '$_temp0$_temp1$_temp2 vierailutililtä — siirretäänkö tilillesi?';
+  }
+
+  @override
+  String get guestMigrateKeep => 'Siirrä tililleni';
+
+  @override
+  String get guestMigrateDiscard => 'Hylkää';
+
+  @override
   String get drawerVersion => 'Kof v1.0.0';
 
   @override
@@ -331,6 +394,35 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get cartCouponInvalid => 'Virheellinen tai vanhentunut kuponki';
+
+  @override
+  String cartCouponRequiresCategory(String category) {
+    return 'Lisää tuote ryhmästä $category käyttääksesi kuponkia';
+  }
+
+  @override
+  String cartCouponNeedsTargetCategory(String category) {
+    return 'Kuponki koskee vain ryhmää $category — lisää yksi ensin';
+  }
+
+  @override
+  String shopDiscountsRequires(String category) {
+    return 'Vaatii $category';
+  }
+
+  @override
+  String shopDiscountsAppliesAll(String category) {
+    return 'Kohde: $category';
+  }
+
+  @override
+  String shopDiscountsAppliesQty(int qty, String category) {
+    return 'Kohde: $qty× $category';
+  }
+
+  @override
+  String get shopDiscountsClaimAtCounter =>
+      'Pyydä tämä alennus tiskillä maksaessasi';
 
   @override
   String get cartSubtotal => 'Välisumma';
@@ -603,6 +695,9 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get shopWalkInNameHint => 'esim. Matti';
+
+  @override
+  String get shopWalkInNameInvalid => 'Kirjoita oikea nimesi';
 
   @override
   String get shopWalkInWifi =>

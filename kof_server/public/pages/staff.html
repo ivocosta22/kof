@@ -24,6 +24,7 @@
       <button onclick="goInventory()" id="inventoryBtn"></button>
       <button onclick="goHistory()" id="historyBtn"></button>
       <button onclick="goSettings()" id="settingsBtn"></button>
+      <button id="managerBtn" style="display:none" onclick="goManager()"></button>
       <button id="adminBtn" style="display:none" onclick="goAdmin()"></button>
       <button onclick="logout()" id="logoutBtn" class="danger-soft"></button>
       <span id="soundState" class="muted"></span>
@@ -86,6 +87,7 @@
     const historyBtn = document.getElementById("historyBtn");
     const settingsBtn = document.getElementById("settingsBtn");
     const adminBtn = document.getElementById("adminBtn");
+    const managerBtn = document.getElementById("managerBtn");
     const logoutBtn = document.getElementById("logoutBtn");
     const newTitle = document.getElementById("newTitle");
     const makingTitle = document.getElementById("makingTitle");
@@ -126,6 +128,7 @@
       historyBtn.textContent = tf("common.history", "History");
       settingsBtn.textContent = tf("common.settings", "Settings");
       adminBtn.textContent = tf("common.admin", "Admin");
+      managerBtn.textContent = tf("common.manager", "Manager");
       logoutBtn.textContent = tf("common.logout", "Logout");
       newTitle.textContent = statusText("new");
       makingTitle.textContent = statusText("making");
@@ -827,6 +830,10 @@
         adminBtn.style.display = me.role === "manager" ? "inline-block" : "none";
       }
 
+      if (managerBtn) {
+        managerBtn.style.display = me.role === "manager" ? "inline-block" : "none";
+      }
+
       const settings = await loadUserSettings();
       applyTranslations();
 
@@ -859,6 +866,10 @@
 
     function goAdmin() {
       location.href = "/admin.html";
+    }
+
+    function goManager() {
+      location.href = "/manager.html";
     }
 
     function goInventory() {

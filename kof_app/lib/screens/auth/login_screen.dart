@@ -5,6 +5,7 @@ import '../../l10n/l10n.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/settings_provider.dart';
 import '../../services/auth_error_messages.dart';
+import '../../utils/guest_migration.dart';
 import '../home_screen.dart';
 import 'email_verification_screen.dart';
 import 'forgot_password_screen.dart';
@@ -42,8 +43,11 @@ class _LoginScreenState extends State<LoginScreen> {
       _loading = true;
       _error = null;
     });
+    final wasGuest = context.read<AuthProvider>().isGuest;
     try {
       await context.read<AuthProvider>().login(email, password);
+      if (!mounted) return;
+      await _promptGuestMigrationIfNeeded(wasGuest);
       if (!mounted) return;
       _routeAfterLogin();
     } catch (e) {
@@ -60,8 +64,11 @@ class _LoginScreenState extends State<LoginScreen> {
       _loading = true;
       _error = null;
     });
+    final wasGuest = context.read<AuthProvider>().isGuest;
     try {
       await context.read<AuthProvider>().loginWithGoogle();
+      if (!mounted) return;
+      await _promptGuestMigrationIfNeeded(wasGuest);
       if (!mounted) return;
       _routeAfterLogin();
     } catch (e) {
@@ -71,6 +78,15 @@ class _LoginScreenState extends State<LoginScreen> {
         _loading = false;
       });
     }
+  }
+
+  Future<void> _promptGuestMigrationIfNeeded(bool wasGuest) async {
+    final uid = context.read<AuthProvider>().user?.id ?? '';
+    await maybePromptGuestMigration(
+      context,
+      wasGuest: wasGuest,
+      newUid: uid,
+    );
   }
 
   void _loginWithApple() {

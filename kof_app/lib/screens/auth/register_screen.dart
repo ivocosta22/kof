@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../l10n/l10n.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/auth_error_messages.dart';
+import '../../utils/guest_migration.dart';
 import '../../widgets/country_picker_field.dart';
 import 'email_verification_screen.dart';
 
@@ -57,6 +58,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     try {
       final auth = context.read<AuthProvider>();
+      final wasGuest = auth.isGuest;
       await auth.register(
         name,
         email,
@@ -66,6 +68,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (_selectedCountry != null && mounted) {
         await auth.saveCountry(_selectedCountry!);
       }
+      if (!mounted) return;
+      await maybePromptGuestMigration(
+        context,
+        wasGuest: wasGuest,
+        newUid: auth.user?.id ?? '',
+      );
       if (!mounted) return;
       Navigator.pushReplacement(
         context,

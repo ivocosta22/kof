@@ -1,0 +1,975 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#f4efe7" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#121715" media="(prefers-color-scheme: dark)" />
+  <title>Kof Manager</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="admin-page">
+  <main class="admin-shell">
+    <section class="ops-hero">
+      <div>
+        <div class="ops-eyebrow" id="managerEyebrow"></div>
+        <h1 class="ops-title" id="pageTitle"></h1>
+        <p class="ops-subtitle" id="whoLine"></p>
+      </div>
+      <div class="ops-toolbar" id="managerToolbar">
+        <button onclick="goSettings()" id="settingsBtn" class="secondary"></button>
+        <button onclick="goStaff()" id="staffBtn" class="secondary"></button>
+        <button onclick="logout()" id="logoutBtn" class="secondary danger-soft"></button>
+      </div>
+    </section>
+
+    <div id="app" class="ops-stack">
+      <section class="admin-tabs-panel">
+        <div class="admin-tabs" role="tablist" aria-label="Manager sections">
+          <button type="button" class="admin-tab active" id="platformTabBtn" data-admin-tab-btn="platform"></button>
+          <button type="button" class="admin-tab" id="discountsTabBtn" data-admin-tab-btn="discounts"></button>
+          <button type="button" class="admin-tab" id="notificationsTabBtn" data-admin-tab-btn="notifications"></button>
+        </div>
+      </section>
+
+      <!-- Kof Platform registration -->
+      <section class="ops-section" data-admin-tab-section="platform">
+        <section class="ops-panel" id="kofPlatformPanel" style="grid-column: 1 / -1;">
+          <div class="ops-panel-title">
+            <div>
+              <h3 id="platformTitle"></h3>
+              <div class="muted" id="platformHint"></div>
+            </div>
+          </div>
+
+          <div id="platformStatus" style="margin-bottom:12px;"></div>
+          <div id="platformOfflineWarning" style="display:none; margin-bottom:12px; padding:10px 14px; border-radius:8px; background:#fff3cd; border:1px solid #f0c040; color:#7a5c00; font-size:13px;"></div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div class="field-card">
+              <label class="muted" for="fbName" id="fbNameLabel"></label>
+              <input id="fbName" type="text" autocomplete="off" />
+            </div>
+            <div class="field-card">
+              <label class="muted" for="fbDescription" id="fbDescriptionLabel"></label>
+              <input id="fbDescription" type="text" autocomplete="off" />
+            </div>
+            <div class="field-card">
+              <label class="muted" for="fbAddress" id="fbAddressLabel"></label>
+              <input id="fbAddress" type="text" autocomplete="off" />
+            </div>
+            <div class="field-card">
+              <label class="muted" for="fbCountry" id="fbCountryLabel"></label>
+              <select id="fbCountry"></select>
+            </div>
+            <div class="field-card">
+              <label class="muted" for="fbLat" id="fbLatLabel"></label>
+              <input id="fbLat" type="number" step="0.0001" min="-90" max="90" autocomplete="off" placeholder="38.7500" />
+            </div>
+            <div class="field-card">
+              <label class="muted" for="fbLng" id="fbLngLabel"></label>
+              <input id="fbLng" type="number" step="0.0001" min="-180" max="180" autocomplete="off" placeholder="-9.1400" />
+            </div>
+            <div class="field-card">
+              <label class="muted" for="fbPhone" id="fbPhoneLabel"></label>
+              <input id="fbPhone" type="tel" autocomplete="off" />
+            </div>
+            <div class="field-card">
+              <label class="muted" for="fbPhotoUrl" id="fbPhotoUrlLabel"></label>
+              <input id="fbPhotoUrl" type="url" autocomplete="off" />
+            </div>
+            <div class="field-card" style="grid-column: 1 / -1;">
+              <label class="muted" for="fbTags" id="fbTagsLabel"></label>
+              <input id="fbTags" type="text" autocomplete="off" />
+            </div>
+            <div class="field-card" style="grid-column: 1 / -1;">
+              <label class="muted" for="fbServerUrl" id="fbServerUrlLabel"></label>
+              <input id="fbServerUrl" type="url" autocomplete="off" placeholder="http://192.168.1.10:3000" />
+            </div>
+          </div>
+
+          <div style="display:flex; gap:10px; margin-top:14px;">
+            <button onclick="savePlatform()" id="savePlatformBtn" class="primary"></button>
+            <button onclick="removePlatform()" id="removePlatformBtn" class="secondary danger-soft" style="display:none;"></button>
+          </div>
+          <div class="muted auth-message" id="platformMsg"></div>
+        </section>
+      </section>
+
+      <!-- Discounts -->
+      <section class="ops-section" data-admin-tab-section="discounts" hidden>
+        <section class="ops-panel" id="kofDiscountsPanel" style="grid-column: 1 / -1;">
+          <div class="ops-panel-title">
+            <div>
+              <h3 id="discountsTitle"></h3>
+              <div class="muted" id="discountsHint"></div>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div class="field-card" style="grid-column: 1 / -1;">
+              <label class="muted" for="dcTitle" id="dcTitleLabel"></label>
+              <input id="dcTitle" type="text" maxlength="80" autocomplete="off" />
+            </div>
+            <div class="field-card" style="grid-column: 1 / -1;">
+              <label class="muted" for="dcDesc" id="dcDescLabel"></label>
+              <input id="dcDesc" type="text" maxlength="240" autocomplete="off" />
+            </div>
+            <div class="field-card">
+              <label class="muted" for="dcPercent" id="dcPercentLabel"></label>
+              <input id="dcPercent" type="number" min="0" max="100" step="1" placeholder="20" inputmode="numeric" />
+            </div>
+            <div class="field-card">
+              <label class="muted" for="dcAmount" id="dcAmountLabel"></label>
+              <input id="dcAmount" type="number" min="0" step="0.01" placeholder="2.50" inputmode="decimal" />
+            </div>
+            <div class="field-card">
+              <label class="muted" for="dcCode" id="dcCodeLabel"></label>
+              <input id="dcCode" type="text" maxlength="32" placeholder="SUMMER25" autocomplete="off" style="text-transform:uppercase" />
+            </div>
+            <div class="field-card">
+              <label class="muted" for="dcValidFrom" id="dcValidFromLabel"></label>
+              <input id="dcValidFrom" type="date" />
+            </div>
+            <div class="field-card">
+              <label class="muted" for="dcValidUntil" id="dcValidUntilLabel"></label>
+              <input id="dcValidUntil" type="date" />
+            </div>
+            <div class="field-card" style="grid-column: 1 / -1;">
+              <div class="muted" id="dcCartHint" style="font-size:12px; margin-bottom:6px;"></div>
+            </div>
+            <div class="field-card">
+              <label class="muted" for="dcRequiredCat" id="dcRequiredCatLabel"></label>
+              <input id="dcRequiredCat" type="text" maxlength="200" autocomplete="off" />
+            </div>
+            <div class="field-card">
+              <label class="muted" for="dcTargetCat" id="dcTargetCatLabel"></label>
+              <input id="dcTargetCat" type="text" maxlength="200" autocomplete="off" />
+            </div>
+            <div class="field-card">
+              <label class="muted" for="dcTargetQty" id="dcTargetQtyLabel"></label>
+              <input id="dcTargetQty" type="number" min="0" step="1" placeholder="0" inputmode="numeric" />
+            </div>
+          </div>
+
+          <div style="display:flex; gap:10px; margin-top:14px;">
+            <button onclick="saveDiscount()" id="saveDiscountBtn" class="primary"></button>
+            <button onclick="resetDiscountForm()" id="resetDiscountBtn" class="secondary" style="display:none;"></button>
+          </div>
+          <div class="muted auth-message" id="discountMsg"></div>
+
+          <h4 style="margin-top:20px; margin-bottom:8px;" id="discountsActiveHeading"></h4>
+          <div id="discountsList" class="muted" style="font-size:13px;"></div>
+        </section>
+      </section>
+
+      <!-- Customer notifications -->
+      <section class="ops-section" data-admin-tab-section="notifications" hidden>
+        <section class="ops-panel" id="kofNotificationsPanel" style="grid-column: 1 / -1;">
+          <div class="ops-panel-title">
+            <div>
+              <h3 id="notificationsTitle"></h3>
+              <div class="muted" id="notificationsHint"></div>
+            </div>
+          </div>
+
+          <div id="notificationsStatus" style="margin-bottom:12px;"></div>
+
+          <div style="display:grid; grid-template-columns:1fr; gap:12px;">
+            <div class="field-card">
+              <label class="muted" for="bcTitle" id="bcTitleLabel"></label>
+              <input id="bcTitle" type="text" maxlength="80" autocomplete="off" />
+              <div class="muted" id="bcTitleCount" style="font-size:11px; margin-top:4px;">0 / 80</div>
+            </div>
+            <div class="field-card">
+              <label class="muted" for="bcBody" id="bcBodyLabel"></label>
+              <textarea id="bcBody" maxlength="240" rows="3" autocomplete="off" style="resize:vertical; width:100%; font-family:inherit; padding:8px 10px; border-radius:8px; border:1px solid var(--border, #ccc);"></textarea>
+              <div class="muted" id="bcBodyCount" style="font-size:11px; margin-top:4px;">0 / 240</div>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:10px; margin-top:14px;">
+            <button onclick="sendBroadcast()" id="sendBroadcastBtn" class="primary"></button>
+          </div>
+          <div class="muted auth-message" id="broadcastMsg"></div>
+
+          <h4 style="margin-top:20px; margin-bottom:8px;" id="recentBroadcastsTitle"></h4>
+          <div id="recentBroadcasts" class="muted" style="font-size:13px;"></div>
+        </section>
+      </section>
+    </div>
+  </main>
+
+  <div id="toastWrap"></div>
+
+  <script src="/js/translations/en.js"></script>
+  <script src="/js/translations/pt.js"></script>
+  <script src="/js/translations/fi.js"></script>
+  <script src="/js/i18n.js"></script>
+
+  <script>
+// Cache browser storage keys, i18n helpers, and the main DOM elements used by
+// the manager page so logic stays clear and repeated lookups are reduced.
+    const TOKEN_KEY = "kof_admin_token_v1";
+    const WHO_KEY = "kof_admin_who_v1";
+
+    const t = window.kofI18n.t;
+    const translateError = window.kofI18n.translateError;
+    function tf(key, fallback, vars = {}) {
+      const value = t(key, vars);
+      return value === key ? fallback : value;
+    }
+
+    const pageTitleEl = document.getElementById("pageTitle");
+    const managerEyebrowEl = document.getElementById("managerEyebrow");
+    const whoLineEl = document.getElementById("whoLine");
+    const settingsBtnEl = document.getElementById("settingsBtn");
+    const staffBtnEl = document.getElementById("staffBtn");
+    const logoutBtnEl = document.getElementById("logoutBtn");
+    const toastWrapEl = document.getElementById("toastWrap");
+
+    const platformTabBtnEl = document.getElementById("platformTabBtn");
+    const discountsTabBtnEl = document.getElementById("discountsTabBtn");
+    const notificationsTabBtnEl = document.getElementById("notificationsTabBtn");
+    const adminTabButtons = Array.from(document.querySelectorAll("[data-admin-tab-btn]"));
+    const adminTabSections = Array.from(document.querySelectorAll("[data-admin-tab-section]"));
+
+    const kofPlatformPanelEl = document.getElementById("kofPlatformPanel");
+    const platformStatusEl = document.getElementById("platformStatus");
+    const platformMsgEl = document.getElementById("platformMsg");
+    const fbNameEl = document.getElementById("fbName");
+    const fbDescriptionEl = document.getElementById("fbDescription");
+    const fbAddressEl = document.getElementById("fbAddress");
+    const fbCountryEl = document.getElementById("fbCountry");
+    const fbLatEl = document.getElementById("fbLat");
+    const fbLngEl = document.getElementById("fbLng");
+    const fbPhoneEl = document.getElementById("fbPhone");
+    const fbPhotoUrlEl = document.getElementById("fbPhotoUrl");
+    const fbTagsEl = document.getElementById("fbTags");
+    const fbServerUrlEl = document.getElementById("fbServerUrl");
+    const savePlatformBtnEl = document.getElementById("savePlatformBtn");
+    const removePlatformBtnEl = document.getElementById("removePlatformBtn");
+    const platformOfflineWarningEl = document.getElementById("platformOfflineWarning");
+
+    let currentMe = null;
+    let _platformOffline = false;
+    let activeAdminTab = "platform";
+
+// Read the current admin auth token from browser storage.
+    function getToken() {
+      return localStorage.getItem(TOKEN_KEY);
+    }
+
+// Clear the stored admin session from browser storage.
+    function clearToken() {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(WHO_KEY);
+    }
+
+// Escape user-controlled text before injecting it into HTML strings.
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+// Apply localized static UI labels for the manager page.
+    function applyTranslations() {
+      document.title = tf("manager.title", "Kof Manager");
+      pageTitleEl.innerText = tf("manager.title", "Kof Manager");
+      managerEyebrowEl.innerText = tf("common.manager", "Manager");
+      settingsBtnEl.innerText = tf("common.settings", "Settings");
+      staffBtnEl.innerText = tf("common.staff", "Staff");
+      logoutBtnEl.innerText = tf("common.logout", "Logout");
+
+      platformTabBtnEl.innerText = tf("manager.tabs.platform", "Kof Platform");
+      discountsTabBtnEl.innerText = tf("manager.tabs.discounts", "Discounts");
+      notificationsTabBtnEl.innerText = tf("manager.tabs.notifications", "Customer Notifications");
+
+      document.getElementById("platformTitle").innerText = tf("manager.platform.title", "Kof Platform");
+      document.getElementById("platformHint").innerText = tf("manager.platform.hint", "Register this shop so it appears on the Kof app map.");
+      document.getElementById("fbNameLabel").innerText = tf("manager.platform.fields.name", "Shop name");
+      document.getElementById("fbDescriptionLabel").innerText = tf("manager.platform.fields.description", "Description (optional)");
+      document.getElementById("fbAddressLabel").innerText = tf("manager.platform.fields.address", "Address");
+      document.getElementById("fbCountryLabel").innerText = tf("manager.platform.fields.country", "Country");
+      document.getElementById("fbLatLabel").innerText = tf("manager.platform.fields.latitude", "Latitude (N/S) — e.g. 38.7500");
+      document.getElementById("fbLngLabel").innerText = tf("manager.platform.fields.longitude", "Longitude (E/W) — e.g. -9.1400");
+      document.getElementById("fbPhoneLabel").innerText = tf("manager.platform.fields.phone", "Phone (optional)");
+      document.getElementById("fbPhotoUrlLabel").innerText = tf("manager.platform.fields.photoUrl", "Photo URL (optional)");
+      document.getElementById("fbTagsLabel").innerText = tf("manager.platform.fields.tags", "Tags — comma separated (e.g. coffee, specialty)");
+      document.getElementById("fbServerUrlLabel").innerText = tf("manager.platform.fields.serverUrl", "Server URL (optional — enables in-app ordering)");
+      savePlatformBtnEl.innerText = _platformOffline
+        ? tf("manager.platform.saveDraft", "Save Draft")
+        : tf("manager.platform.savePublish", "Save & Publish");
+      removePlatformBtnEl.innerText = tf("manager.platform.removeBtn", "Remove from Map");
+      platformOfflineWarningEl.innerHTML = tf(
+        "manager.platform.offlineWarning",
+        "⚠️ <strong>No internet access detected.</strong> The server cannot reach Firebase. You can still save your details locally — they will be ready to publish once the connection is restored."
+      );
+
+      // Discounts panel
+      document.getElementById("discountsTitle").innerText = tf("manager.discounts.title", "Discounts");
+      document.getElementById("discountsHint").innerText = tf(
+        "manager.discounts.hint",
+        "Promotions shown on the shop's page in the customer app. Either a percentage or a flat euro amount must be set."
+      );
+      document.getElementById("dcTitleLabel").innerText = tf("manager.discounts.fields.title", "Title");
+      document.getElementById("dcTitle").placeholder = tf("manager.discounts.fields.titlePlaceholder", "e.g. Friday morning deal");
+      document.getElementById("dcDescLabel").innerText = tf("manager.discounts.fields.description", "Description");
+      document.getElementById("dcDesc").placeholder = tf("manager.discounts.fields.descriptionPlaceholder", "Optional details for customers");
+      document.getElementById("dcPercentLabel").innerText = tf("manager.discounts.fields.percent", "Percentage off (0–100)");
+      document.getElementById("dcAmountLabel").innerText = tf("manager.discounts.fields.amount", "Flat amount off (€)");
+      document.getElementById("dcCodeLabel").innerText = tf("manager.discounts.fields.code", "Promo code (optional)");
+      document.getElementById("dcValidFromLabel").innerText = tf("manager.discounts.fields.validFrom", "Valid from (optional)");
+      document.getElementById("dcValidUntilLabel").innerText = tf("manager.discounts.fields.validUntil", "Valid until (optional)");
+      document.getElementById("dcCartHint").innerText = tf(
+        "manager.discounts.cartHint",
+        'Cart conditions (optional). Both category fields accept a comma-separated list — use that to cover several categories at once (e.g. "Hot Drinks, Espresso, Cold Drinks" to cover any drink). To build "100% off 1 Drink when buying a Muffin": Required category = "Pastries", Target category = "Hot Drinks, Espresso, Cold Drinks", Target qty = 1, Percentage off = 100.'
+      );
+      document.getElementById("dcRequiredCatLabel").innerText = tf("manager.discounts.fields.requiredCategory", "Required category (optional, comma-separated)");
+      document.getElementById("dcRequiredCat").placeholder = tf("manager.discounts.fields.requiredCategoryPlaceholder", "e.g. Pastries, Food");
+      document.getElementById("dcTargetCatLabel").innerText = tf("manager.discounts.fields.targetCategory", "Target category (optional, comma-separated)");
+      document.getElementById("dcTargetCat").placeholder = tf("manager.discounts.fields.targetCategoryPlaceholder", "e.g. Hot Drinks, Espresso, Cold Drinks");
+      document.getElementById("dcTargetQtyLabel").innerText = tf("manager.discounts.fields.targetQty", "Target qty (0 = all units in target category)");
+      const saveDiscountBtnEl = document.getElementById("saveDiscountBtn");
+      saveDiscountBtnEl.innerText = _editingDiscountId
+        ? tf("manager.discounts.save", "Save changes")
+        : tf("manager.discounts.add", "Add discount");
+      document.getElementById("resetDiscountBtn").innerText = tf("common.cancel", "Cancel");
+      document.getElementById("discountsActiveHeading").innerText = tf("manager.discounts.activeHeading", "Active & recent");
+      const discountsListEl = document.getElementById("discountsList");
+      if (!discountsListEl.dataset.loaded) {
+        discountsListEl.innerText = tf("common.loading", "Loading…");
+      }
+
+      // Notifications panel
+      document.getElementById("notificationsTitle").innerText = tf("manager.notif.title", "Customer Notifications");
+      document.getElementById("notificationsHint").innerText = tf(
+        "manager.notif.hint",
+        "Send a push notification to everyone following this shop on the Kof app."
+      );
+      document.getElementById("bcTitleLabel").innerText = tf("manager.notif.titleLabel", "Title");
+      document.getElementById("bcTitle").placeholder = tf("manager.notif.titlePlaceholder", "e.g. Free coffee on Friday!");
+      document.getElementById("bcBodyLabel").innerText = tf("manager.notif.bodyLabel", "Message");
+      document.getElementById("bcBody").placeholder = tf("manager.notif.bodyPlaceholder", "What do you want followers to know?");
+      document.getElementById("sendBroadcastBtn").innerText = tf("manager.notif.sendBtn", "Send to followers");
+      document.getElementById("recentBroadcastsTitle").innerText = tf("manager.notif.recentHeading", "Recent broadcasts");
+      const recentBroadcastsEl = document.getElementById("recentBroadcasts");
+      if (!recentBroadcastsEl.dataset.loaded) {
+        recentBroadcastsEl.innerText = tf("common.loading", "Loading…");
+      }
+
+      if (currentMe) {
+        whoLineEl.innerText = t("settings.loggedInAs", {
+          username: currentMe.username,
+          role: currentMe.role,
+        });
+      }
+    }
+
+// Render a toast message using the shared fade-out only toast system.
+    function toast(type, title, msg) {
+      if (!toastWrapEl) {
+        return;
+      }
+
+      const toastEl = document.createElement("div");
+      toastEl.className = `toast ${type === "err" ? "err" : "ok"}`;
+      toastEl.innerHTML = `
+        <div class="tTitle">${escapeHtml(title || (type === "err" ? tf("common.error", "Error") : tf("common.done", "Done")))}</div>
+        <div class="tMsg">${escapeHtml(msg || "")}</div>
+      `;
+
+      toastWrapEl.appendChild(toastEl);
+
+      const ttlMs = type === "err" ? 4200 : 2200;
+
+      setTimeout(() => {
+        toastEl.classList.add("fade-out");
+
+        setTimeout(() => {
+          try {
+            toastEl.remove();
+          } catch {}
+        }, 350);
+      }, ttlMs);
+    }
+
+    function toastOk(title, msg) {
+      toast("ok", title, msg);
+    }
+
+    function toastErr(title, msg) {
+      toast("err", title, msg);
+    }
+
+// Call a protected admin API endpoint with the current bearer token and parse
+// JSON responses consistently.
+    async function api(path, opts = {}) {
+      const headers = Object.assign(
+        { "Content-Type": "application/json" },
+        opts.headers || {}
+      );
+
+      const token = getToken();
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      const response = await fetch(path, {
+        ...opts,
+        headers,
+      });
+
+      let data = {};
+
+      try {
+        data = await response.json();
+      } catch {
+        const text = await response.text().catch(() => "");
+        data = text ? { error: text } : {};
+      }
+
+      if (!response.ok) {
+        throw new Error(translateError(data.error || `Request failed (${response.status})`));
+      }
+
+      return data;
+    }
+
+// Apply the current dark mode state to the manager page body.
+    function applyDarkMode(enabled) {
+      document.body.classList.toggle("dark", !!enabled);
+    }
+
+    function setAdminTab(tab) {
+      activeAdminTab = tab;
+
+      adminTabButtons.forEach((button) => {
+        const isActive = button.dataset.adminTabBtn === tab;
+        button.classList.toggle("active", isActive);
+        button.setAttribute("aria-selected", isActive ? "true" : "false");
+      });
+
+      adminTabSections.forEach((section) => {
+        const isVisible = section.dataset.adminTabSection === tab;
+        section.hidden = !isVisible;
+        section.style.display = isVisible ? "flex" : "none";
+        section.setAttribute("aria-hidden", isVisible ? "false" : "true");
+      });
+    }
+
+    function logout() {
+      clearToken();
+      toastOk(tf("common.logout", "Logout"), tf("common.sessionCleared", "Session cleared"));
+      location.href = "/login.html";
+    }
+
+    function goSettings() {
+      location.href = "/settings.html";
+    }
+
+    function goStaff() {
+      location.href = "/staff.html";
+    }
+
+    const COUNTRIES = [
+      ["AF","Afghanistan"],["AL","Albania"],["DZ","Algeria"],["AR","Argentina"],
+      ["AU","Australia"],["AT","Austria"],["BE","Belgium"],["BR","Brazil"],
+      ["CA","Canada"],["CL","Chile"],["CN","China"],["CO","Colombia"],
+      ["HR","Croatia"],["CZ","Czech Republic"],["DK","Denmark"],["EG","Egypt"],
+      ["FI","Finland"],["FR","France"],["DE","Germany"],["GR","Greece"],
+      ["HU","Hungary"],["IN","India"],["ID","Indonesia"],["IE","Ireland"],
+      ["IL","Israel"],["IT","Italy"],["JP","Japan"],["KE","Kenya"],
+      ["MX","Mexico"],["NL","Netherlands"],["NZ","New Zealand"],["NG","Nigeria"],
+      ["NO","Norway"],["PK","Pakistan"],["PE","Peru"],["PH","Philippines"],
+      ["PL","Poland"],["PT","Portugal"],["RO","Romania"],["ZA","South Africa"],
+      ["KR","South Korea"],["ES","Spain"],["SE","Sweden"],["CH","Switzerland"],
+      ["TH","Thailand"],["TR","Turkey"],["UA","Ukraine"],["GB","United Kingdom"],
+      ["US","United States"],["VN","Vietnam"],
+    ];
+
+    function populateCountries(selectedCode) {
+      const placeholder = tf("manager.platform.selectCountry", "— Select country —");
+      fbCountryEl.innerHTML = `<option value="">${escapeHtml(placeholder)}</option>` +
+        COUNTRIES.map(([code, name]) =>
+          `<option value="${code}"${code === selectedCode ? " selected" : ""}>${name}</option>`
+        ).join("");
+    }
+
+    async function loadPlatform() {
+      // Check internet connectivity first
+      try {
+        const conn = await api("/api/admin/firebase/connectivity");
+        _platformOffline = !conn.online;
+      } catch {
+        _platformOffline = false;
+      }
+      platformOfflineWarningEl.style.display = _platformOffline ? "" : "none";
+      savePlatformBtnEl.disabled = false;
+      savePlatformBtnEl.innerText = _platformOffline
+        ? tf("manager.platform.saveDraft", "Save Draft")
+        : tf("manager.platform.savePublish", "Save & Publish");
+
+      try {
+        const data = await api("/api/admin/firebase/shop");
+        populateCountries(data.country || "");
+        fbNameEl.value = data.name || "";
+        fbDescriptionEl.value = data.description || "";
+        fbAddressEl.value = data.address || "";
+        fbLatEl.value = data.latitude ?? "";
+        fbLngEl.value = data.longitude ?? "";
+        fbPhoneEl.value = data.phone || "";
+        fbPhotoUrlEl.value = data.photo_url || "";
+        fbTagsEl.value = (data.tags || []).join(", ");
+        fbServerUrlEl.value = data.server_url || "";
+
+        if (data.registered) {
+          platformStatusEl.innerHTML =
+            `<span class="pill paid">✓ ${escapeHtml(tf("manager.platform.statusRegistered", "Registered on Kof Platform"))}</span>`;
+          removePlatformBtnEl.style.display = "inline-flex";
+        } else {
+          platformStatusEl.innerHTML =
+            `<span class="pill pending">${escapeHtml(tf("manager.platform.statusUnregistered", "Not registered yet"))}</span>`;
+          removePlatformBtnEl.style.display = "none";
+        }
+      } catch {
+        platformStatusEl.innerHTML =
+          `<span class="pill cancelled">${escapeHtml(tf("manager.platform.firestoreUnavailable", "Firestore not configured on server"))}</span>`;
+      }
+    }
+
+    async function savePlatform() {
+      platformMsgEl.innerText = "";
+      const name = fbNameEl.value.trim();
+      const description = fbDescriptionEl.value.trim();
+      const address = fbAddressEl.value.trim();
+      const country = fbCountryEl.value;
+      const latitude = parseFloat(parseFloat(fbLatEl.value).toFixed(4));
+      const longitude = parseFloat(parseFloat(fbLngEl.value).toFixed(4));
+      const phone = fbPhoneEl.value.trim();
+      const photo_url = fbPhotoUrlEl.value.trim();
+      const tags = fbTagsEl.value.split(",").map(s => s.trim()).filter(Boolean);
+      const server_url = fbServerUrlEl.value.trim();
+      const payload = { name, description, address, country, latitude, longitude, phone, photo_url, tags, server_url };
+
+      if (!name || !address || !country || !latitude || !longitude) {
+        platformMsgEl.innerText = tf(
+          "manager.platform.requiredFields",
+          "Name, address, country, latitude and longitude are required."
+        );
+        return;
+      }
+
+      try {
+        savePlatformBtnEl.disabled = true;
+
+        if (_platformOffline) {
+          // No internet — save locally only so the form is pre-filled when back online
+          await api("/api/admin/firebase/shop/draft", {
+            method: "PATCH",
+            body: JSON.stringify(payload),
+          });
+          toastOk(
+            tf("manager.platform.title", "Kof Platform"),
+            tf("manager.platform.savedLocallyToast", "Details saved locally. Publish when internet is available.")
+          );
+          platformMsgEl.innerText = tf(
+            "manager.platform.savedOffline",
+            "Saved locally. Come back when the server has internet to publish."
+          );
+        } else {
+          await api("/api/admin/firebase/shop", {
+            method: "PUT",
+            body: JSON.stringify(payload),
+          });
+          toastOk(
+            tf("manager.platform.title", "Kof Platform"),
+            tf("manager.platform.registeredToast", "Shop registered successfully.")
+          );
+          loadPlatform();
+        }
+      } catch (error) {
+        platformMsgEl.innerText = translateError(error);
+        toastErr(tf("manager.platform.title", "Kof Platform"), translateError(error));
+      } finally {
+        savePlatformBtnEl.disabled = false;
+      }
+    }
+
+    async function removePlatform() {
+      if (!confirm(tf("manager.platform.confirmRemove", "Remove this shop from the Kof Platform map?"))) return;
+      try {
+        await api("/api/admin/firebase/shop", { method: "DELETE" });
+        toastOk(
+          tf("manager.platform.title", "Kof Platform"),
+          tf("manager.platform.removedToast", "Shop removed from platform.")
+        );
+        loadPlatform();
+      } catch (error) {
+        toastErr(tf("manager.platform.title", "Kof Platform"), translateError(error));
+      }
+    }
+
+    // ── Customer notifications ───────────────────────────────────────────
+    // Wire up the title/body inputs with live character counters and
+    // disabled-state for the send button.
+    function initBroadcastUi() {
+      const titleEl = document.getElementById("bcTitle");
+      const bodyEl = document.getElementById("bcBody");
+      const titleCountEl = document.getElementById("bcTitleCount");
+      const bodyCountEl = document.getElementById("bcBodyCount");
+
+      function updateCounters() {
+        titleCountEl.innerText = `${titleEl.value.length} / 80`;
+        bodyCountEl.innerText = `${bodyEl.value.length} / 240`;
+      }
+      titleEl.addEventListener("input", updateCounters);
+      bodyEl.addEventListener("input", updateCounters);
+      updateCounters();
+    }
+
+    async function sendBroadcast() {
+      const titleEl = document.getElementById("bcTitle");
+      const bodyEl = document.getElementById("bcBody");
+      const msgEl = document.getElementById("broadcastMsg");
+      const btn = document.getElementById("sendBroadcastBtn");
+
+      const title = titleEl.value.trim();
+      const body = bodyEl.value.trim();
+      msgEl.innerText = "";
+
+      if (!title || !body) {
+        msgEl.innerText = tf("manager.notif.fieldsRequired", "Title and message are both required.");
+        return;
+      }
+
+      if (!confirm(tf("manager.notif.confirmSend", `Send "${title}" to all followers? This cannot be undone.`, { title }))) {
+        return;
+      }
+
+      btn.disabled = true;
+      const originalLabel = btn.innerText;
+      btn.innerText = tf("manager.notif.sending", "Sending…");
+      try {
+        await api("/api/admin/firebase/broadcast", {
+          method: "POST",
+          body: JSON.stringify({ title, body }),
+        });
+        toastOk(
+          tf("manager.notif.title", "Customer Notifications"),
+          tf("manager.notif.sentToast", "Broadcast sent.")
+        );
+        titleEl.value = "";
+        bodyEl.value = "";
+        document.getElementById("bcTitleCount").innerText = "0 / 80";
+        document.getElementById("bcBodyCount").innerText = "0 / 240";
+        loadRecentBroadcasts();
+      } catch (error) {
+        msgEl.innerText = translateError(error);
+        toastErr(tf("manager.notif.title", "Customer Notifications"), translateError(error));
+      } finally {
+        btn.disabled = false;
+        btn.innerText = originalLabel;
+      }
+    }
+
+    async function loadRecentBroadcasts() {
+      const listEl = document.getElementById("recentBroadcasts");
+      listEl.innerText = tf("common.loading", "Loading…");
+      try {
+        const data = await api("/api/admin/firebase/broadcasts");
+        const items = Array.isArray(data.broadcasts) ? data.broadcasts : [];
+        listEl.dataset.loaded = "1";
+        if (items.length === 0) {
+          listEl.innerText = tf("manager.notif.empty", "No broadcasts yet.");
+          return;
+        }
+        listEl.innerHTML = items
+          .map((b) => {
+            const when = b.created_at ? new Date(b.created_at) : null;
+            const whenLabel = when
+              ? `${when.toLocaleDateString()} · ${when.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+              : "—";
+            return `
+              <div style="padding:10px 12px; border:1px solid var(--border, #e1e1e1); border-radius:8px; margin-bottom:8px;">
+                <div style="display:flex; justify-content:space-between; gap:12px; align-items:baseline;">
+                  <strong>${escapeHtml(b.title)}</strong>
+                  <span class="muted" style="font-size:11px;">${escapeHtml(whenLabel)}</span>
+                </div>
+                <div style="margin-top:4px; color:var(--text-muted, #555);">${escapeHtml(b.body)}</div>
+              </div>
+            `;
+          })
+          .join("");
+      } catch (error) {
+        // 404 means the shop isn't published yet — show a friendly hint.
+        const message = (error && error.message) || "";
+        if (message.includes("not registered")) {
+          listEl.innerText = tf(
+            "manager.notif.notRegisteredHint",
+            "This shop isn't on the Kof Platform yet. Publish it from the Platform tab before sending notifications."
+          );
+        } else {
+          listEl.innerText = translateError(error);
+        }
+      }
+    }
+
+    // ── Discounts admin ──────────────────────────────────────────────────
+    // Tracks the discount currently being edited so saveDiscount() knows
+    // whether to POST (create) or PATCH (update).
+    let _editingDiscountId = null;
+
+    function discountFormFields() {
+      const titleEl = document.getElementById("dcTitle");
+      const descEl = document.getElementById("dcDesc");
+      const percentEl = document.getElementById("dcPercent");
+      const amountEl = document.getElementById("dcAmount");
+      const codeEl = document.getElementById("dcCode");
+      const fromEl = document.getElementById("dcValidFrom");
+      const untilEl = document.getElementById("dcValidUntil");
+      const reqCatEl = document.getElementById("dcRequiredCat");
+      const targetCatEl = document.getElementById("dcTargetCat");
+      const targetQtyEl = document.getElementById("dcTargetQty");
+      return {
+        titleEl, descEl, percentEl, amountEl, codeEl, fromEl, untilEl,
+        reqCatEl, targetCatEl, targetQtyEl,
+      };
+    }
+
+    function resetDiscountForm() {
+      const f = discountFormFields();
+      f.titleEl.value = "";
+      f.descEl.value = "";
+      f.percentEl.value = "";
+      f.amountEl.value = "";
+      f.codeEl.value = "";
+      f.fromEl.value = "";
+      f.untilEl.value = "";
+      f.reqCatEl.value = "";
+      f.targetCatEl.value = "";
+      f.targetQtyEl.value = "";
+      _editingDiscountId = null;
+      document.getElementById("saveDiscountBtn").innerText = tf("manager.discounts.add", "Add discount");
+      document.getElementById("resetDiscountBtn").style.display = "none";
+      document.getElementById("discountMsg").innerText = "";
+    }
+
+    async function saveDiscount() {
+      const f = discountFormFields();
+      const msgEl = document.getElementById("discountMsg");
+      msgEl.innerText = "";
+
+      const title = f.titleEl.value.trim();
+      const description = f.descEl.value.trim();
+      const percentage_off = Math.max(0, Math.min(100, Math.floor(Number(f.percentEl.value) || 0)));
+      const amount_off_cents = Math.max(0, Math.round((Number(f.amountEl.value) || 0) * 100));
+      const code = f.codeEl.value.trim().toUpperCase();
+      const valid_from = f.fromEl.value || "";
+      const valid_until = f.untilEl.value || "";
+
+      if (!title) {
+        msgEl.innerText = tf("manager.discounts.titleRequired", "Title is required.");
+        return;
+      }
+      if (percentage_off === 0 && amount_off_cents === 0) {
+        msgEl.innerText = tf("manager.discounts.amountRequired", "Set either a percentage or a flat amount off.");
+        return;
+      }
+      if (valid_from && valid_until && valid_until < valid_from) {
+        msgEl.innerText = tf("manager.discounts.dateOrderInvalid", "Valid until cannot be before valid from.");
+        return;
+      }
+
+      const required_category = f.reqCatEl.value.trim();
+      const target_category = f.targetCatEl.value.trim();
+      const target_qty = Math.max(0, Math.floor(Number(f.targetQtyEl.value) || 0));
+
+      const body = {
+        title,
+        description,
+        percentage_off,
+        amount_off_cents,
+        code,
+        valid_from,
+        valid_until,
+        required_category,
+        target_category,
+        target_qty,
+      };
+
+      try {
+        if (_editingDiscountId) {
+          await api(`/api/discounts/admin/${_editingDiscountId}`, {
+            method: "PATCH",
+            body: JSON.stringify(body),
+          });
+          toastOk(tf("manager.discounts.title", "Discounts"), tf("manager.discounts.updatedToast", "Updated."));
+        } else {
+          await api("/api/discounts/admin", {
+            method: "POST",
+            body: JSON.stringify(body),
+          });
+          toastOk(tf("manager.discounts.title", "Discounts"), tf("manager.discounts.addedToast", "Discount added."));
+        }
+        resetDiscountForm();
+        loadDiscounts();
+      } catch (error) {
+        msgEl.innerText = translateError(error);
+        toastErr(tf("manager.discounts.title", "Discounts"), translateError(error));
+      }
+    }
+
+    function startEditDiscount(d) {
+      const f = discountFormFields();
+      f.titleEl.value = d.title || "";
+      f.descEl.value = d.description || "";
+      f.percentEl.value = d.percentage_off || "";
+      f.amountEl.value = d.amount_off_cents
+        ? (d.amount_off_cents / 100).toFixed(2)
+        : "";
+      f.codeEl.value = d.code || "";
+      f.fromEl.value = d.valid_from || "";
+      f.untilEl.value = d.valid_until || "";
+      f.reqCatEl.value = d.required_category || "";
+      f.targetCatEl.value = d.target_category || "";
+      f.targetQtyEl.value = d.target_qty ? d.target_qty : "";
+      _editingDiscountId = d.id;
+      document.getElementById("saveDiscountBtn").innerText = tf("manager.discounts.save", "Save changes");
+      document.getElementById("resetDiscountBtn").style.display = "";
+      document.getElementById("discountMsg").innerText = "";
+      // Switch to the discounts tab so the manager sees the inputs they're editing.
+      setAdminTab("discounts");
+      document.getElementById("kofDiscountsPanel")
+        .scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    async function toggleDiscountActive(id, nextActive) {
+      try {
+        await api(`/api/discounts/admin/${id}`, {
+          method: "PATCH",
+          body: JSON.stringify({ is_active: nextActive }),
+        });
+        loadDiscounts();
+      } catch (error) {
+        toastErr(tf("manager.discounts.title", "Discounts"), translateError(error));
+      }
+    }
+
+    async function deleteDiscount(id) {
+      if (!confirm(tf("manager.discounts.confirmDelete", "Delete this discount? This cannot be undone."))) return;
+      try {
+        await api(`/api/discounts/admin/${id}`, { method: "DELETE" });
+        toastOk(tf("manager.discounts.title", "Discounts"), tf("manager.discounts.deletedToast", "Deleted."));
+        loadDiscounts();
+      } catch (error) {
+        toastErr(tf("manager.discounts.title", "Discounts"), translateError(error));
+      }
+    }
+
+    function discountSummary(d) {
+      const parts = [];
+      if (d.percentage_off > 0) parts.push(t("manager.discounts.percentOff", { n: d.percentage_off }));
+      if (d.amount_off_cents > 0) parts.push(t("manager.discounts.amountOff", { amount: (d.amount_off_cents / 100).toFixed(2) }));
+      if (d.code) parts.push(t("manager.discounts.codeLabel", { code: d.code }));
+      if (d.target_category) {
+        if (d.target_qty > 0) {
+          parts.push(t("manager.discounts.onCategoryQty", { qty: d.target_qty, category: d.target_category }));
+        } else {
+          parts.push(t("manager.discounts.onCategory", { category: d.target_category }));
+        }
+      }
+      if (d.required_category) parts.push(t("manager.discounts.requiresCategory", { category: d.required_category }));
+      return parts.join(" · ");
+    }
+
+    function discountValidity(d) {
+      if (d.valid_from && d.valid_until) {
+        return t("manager.discounts.validRange", { from: d.valid_from, until: d.valid_until });
+      }
+      if (d.valid_from) return t("manager.discounts.validFromLabel", { date: d.valid_from });
+      if (d.valid_until) return t("manager.discounts.validUntilLabel", { date: d.valid_until });
+      return tf("manager.discounts.noEndDate", "no end date");
+    }
+
+    async function loadDiscounts() {
+      const listEl = document.getElementById("discountsList");
+      listEl.innerText = tf("common.loading", "Loading…");
+      try {
+        const data = await api("/api/discounts/admin");
+        const items = Array.isArray(data.discounts) ? data.discounts : [];
+        if (items.length === 0) {
+          listEl.innerText = tf("manager.discounts.empty", "No discounts yet.");
+          return;
+        }
+        const editLabel = tf("manager.discounts.edit", "Edit");
+        const deactivateLabel = tf("manager.discounts.deactivate", "Deactivate");
+        const activateLabel = tf("manager.discounts.activate", "Activate");
+        const deleteLabel = tf("manager.discounts.delete", "Delete");
+        listEl.innerHTML = items
+          .map((d) => `
+            <div style="padding:10px 12px; border:1px solid var(--border, #e1e1e1); border-radius:8px; margin-bottom:8px; ${d.is_active ? "" : "opacity:0.55;"}">
+              <div style="display:flex; justify-content:space-between; gap:12px; align-items:baseline;">
+                <strong>${escapeHtml(d.title)}</strong>
+                <span class="muted" style="font-size:11px;">${escapeHtml(discountValidity(d))}</span>
+              </div>
+              <div style="margin-top:4px;">${escapeHtml(discountSummary(d))}</div>
+              ${d.description ? `<div class="muted" style="margin-top:4px;">${escapeHtml(d.description)}</div>` : ""}
+              <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="secondary" onclick='startEditDiscount(${JSON.stringify(d).replace(/'/g, "&#39;")})'>${escapeHtml(editLabel)}</button>
+                <button class="secondary" onclick="toggleDiscountActive(${d.id}, ${!d.is_active})">${escapeHtml(d.is_active ? deactivateLabel : activateLabel)}</button>
+                <button class="secondary danger-soft" onclick="deleteDiscount(${d.id})">${escapeHtml(deleteLabel)}</button>
+              </div>
+            </div>
+          `)
+          .join("");
+      } catch (error) {
+        listEl.innerText = translateError(error);
+      }
+    }
+
+    adminTabButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        setAdminTab(button.dataset.adminTabBtn);
+      });
+    });
+
+// Boot the manager page: require manager auth, then load all three sections.
+    (async () => {
+      if (!getToken()) {
+        location.href = "/login.html";
+        return;
+      }
+
+      try {
+        currentMe = await api("/api/admin/me");
+      } catch {
+        clearToken();
+        location.href = "/login.html";
+        return;
+      }
+
+      if (currentMe.role !== "manager") {
+        location.href = "/staff.html";
+        return;
+      }
+
+      try {
+        const settings = await api("/api/admin/me/settings");
+        window.kofI18n.setLanguage(settings?.language || window.kofI18n.DEFAULT_LANG);
+        applyDarkMode(!!settings.dark_mode);
+      } catch {}
+
+      applyTranslations();
+      setAdminTab(activeAdminTab);
+
+      try { await loadPlatform(); } catch {}
+      try { initBroadcastUi(); } catch {}
+      try { await loadRecentBroadcasts(); } catch {}
+      try { await loadDiscounts(); } catch {}
+    })();
+  </script>
+</body>
+</html>

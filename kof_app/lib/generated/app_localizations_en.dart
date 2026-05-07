@@ -197,6 +197,69 @@ class AppLocalizationsEn extends AppLocalizations {
   String get drawerContactUsFailed => 'Could not open email app';
 
   @override
+  String get receiptShare => 'Share';
+
+  @override
+  String get receiptShareFailed => 'Could not share receipt';
+
+  @override
+  String get accountSettingsTakePhoto => 'Take a photo';
+
+  @override
+  String get accountSettingsChooseFromLibrary => 'Choose from library';
+
+  @override
+  String get accountSettingsPhotoUploadFailed =>
+      'Could not update profile photo';
+
+  @override
+  String get apiServerNotReachable => 'Server not reachable';
+
+  @override
+  String get apiFailedLoadMenu => 'Failed to load menu';
+
+  @override
+  String get apiFailedPlaceOrder => 'Failed to place order';
+
+  @override
+  String get apiOrderNotFound => 'Order not found';
+
+  @override
+  String get apiFailedLoadDiscounts => 'Failed to load discounts';
+
+  @override
+  String get apiUnknownError => 'Something went wrong. Please try again.';
+
+  @override
+  String get guestMigrateTitle => 'Transfer your guest data?';
+
+  @override
+  String guestMigrateBody(int orders, int follows, String both) {
+    String _temp0 = intl.Intl.pluralLogic(
+      orders,
+      locale: localeName,
+      other: '$orders past orders',
+      one: '1 past order',
+      zero: '',
+    );
+    String _temp1 = intl.Intl.selectLogic(both, {'true': ' and ', 'other': ''});
+    String _temp2 = intl.Intl.pluralLogic(
+      follows,
+      locale: localeName,
+      other: '$follows followed shops',
+      one: '1 followed shop',
+      zero: '',
+    );
+    return '$_temp0$_temp1$_temp2 from your guest session — move to your account?';
+  }
+
+  @override
+  String get guestMigrateKeep => 'Move to my account';
+
+  @override
+  String get guestMigrateDiscard => 'Discard';
+
+  @override
   String get drawerVersion => 'Kof v1.0.0';
 
   @override
@@ -330,6 +393,35 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cartCouponInvalid => 'Invalid or expired coupon';
+
+  @override
+  String cartCouponRequiresCategory(String category) {
+    return 'Add a $category item to use this coupon';
+  }
+
+  @override
+  String cartCouponNeedsTargetCategory(String category) {
+    return 'This coupon only applies to $category — add one first';
+  }
+
+  @override
+  String shopDiscountsRequires(String category) {
+    return 'Requires $category';
+  }
+
+  @override
+  String shopDiscountsAppliesAll(String category) {
+    return 'On $category';
+  }
+
+  @override
+  String shopDiscountsAppliesQty(int qty, String category) {
+    return 'On $qty× $category';
+  }
+
+  @override
+  String get shopDiscountsClaimAtCounter =>
+      'Claim this discount at the counter when paying';
 
   @override
   String get cartSubtotal => 'Subtotal';
@@ -600,6 +692,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get shopWalkInNameHint => 'e.g. Jane';
+
+  @override
+  String get shopWalkInNameInvalid => 'Please enter your real name';
 
   @override
   String get shopWalkInWifi =>

@@ -45,13 +45,14 @@ class FollowedShopsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.followedShopsTitle)),
-      body: (uid == null || auth.isGuest)
+      body: (uid == null)
           ? emptyState(
               title: l10n.followedShopsGuestTitle,
               body: l10n.followedShopsGuestBody,
             )
           : StreamBuilder<List<Shop>>(
-              stream: service.streamFollowedShops(uid),
+              stream:
+                  service.streamFollowedShops(uid, isGuest: auth.isGuest),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());

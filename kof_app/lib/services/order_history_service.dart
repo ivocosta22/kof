@@ -68,6 +68,54 @@ class OrderHistoryService {
     await prefs.remove(_key);
   }
 
+  static String _keyFor(String userKey) => '${_basePrefix}__$userKey';
+
+  /// Drop the guest bucket entirely. Used when a guest signs in and declines
+  /// the data-transfer prompt — keeps the prompt from re-firing on next sign-in.
+  static Future<void> clearGuestBucket() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_keyFor('guest'));
+  }
+
+  /// Number of orders in the guest bucket — used to decide whether to prompt
+  /// for migration when a guest signs in.
+  static Future<int> guestOrderCount() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.reload();
+    return (prefs.getStringList(_keyFor('guest')) ?? const []).length;
+  }
+
+  /// Move every order from the guest bucket into [targetUid]'s bucket. Newer
+  /// guest orders win in case of duplicates. Empties the guest bucket on
+  /// success. Caps the resulting list at [_maxOrders].
+  static Future<void> migrateGuestToUser(String targetUid) async {
+    if (targetUid.isEmpty) return;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.reload();
+    final guestKey = _keyFor('guest');
+    final userKey = _keyFor(targetUid);
+    final guestRaw = prefs.getStringList(guestKey) ?? const [];
+    if (guestRaw.isEmpty) return;
+    final userRaw = prefs.getStringList(userKey) ?? const [];
+
+    // De-dupe by orderId (string compare on serialised orderId entry).
+    final seen = <int>{};
+    final merged = <String>[];
+    for (final entry in [...guestRaw, ...userRaw]) {
+      try {
+        final map = jsonDecode(entry) as Map<String, dynamic>;
+        final id = map['orderId'] as int?;
+        if (id == null || seen.add(id)) merged.add(entry);
+      } catch (_) {
+        merged.add(entry);
+      }
+    }
+    if (merged.length > _maxOrders) merged.removeRange(_maxOrders, merged.length);
+
+    await prefs.setStringList(userKey, merged);
+    await prefs.remove(guestKey);
+  }
+
   // Re-fetch entries that may have stale data: active orders (status can
   // change any moment) and entries with empty items (older saves from before
   // the server returned items on create). Persists fresh values back to local

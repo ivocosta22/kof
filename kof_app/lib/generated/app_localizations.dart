@@ -460,6 +460,96 @@ abstract class AppLocalizations {
   /// **'Could not open email app'**
   String get drawerContactUsFailed;
 
+  /// No description provided for @receiptShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get receiptShare;
+
+  /// No description provided for @receiptShareFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not share receipt'**
+  String get receiptShareFailed;
+
+  /// No description provided for @accountSettingsTakePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a photo'**
+  String get accountSettingsTakePhoto;
+
+  /// No description provided for @accountSettingsChooseFromLibrary.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from library'**
+  String get accountSettingsChooseFromLibrary;
+
+  /// No description provided for @accountSettingsPhotoUploadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not update profile photo'**
+  String get accountSettingsPhotoUploadFailed;
+
+  /// No description provided for @apiServerNotReachable.
+  ///
+  /// In en, this message translates to:
+  /// **'Server not reachable'**
+  String get apiServerNotReachable;
+
+  /// No description provided for @apiFailedLoadMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load menu'**
+  String get apiFailedLoadMenu;
+
+  /// No description provided for @apiFailedPlaceOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to place order'**
+  String get apiFailedPlaceOrder;
+
+  /// No description provided for @apiOrderNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Order not found'**
+  String get apiOrderNotFound;
+
+  /// No description provided for @apiFailedLoadDiscounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load discounts'**
+  String get apiFailedLoadDiscounts;
+
+  /// No description provided for @apiUnknownError.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get apiUnknownError;
+
+  /// No description provided for @guestMigrateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer your guest data?'**
+  String get guestMigrateTitle;
+
+  /// No description provided for @guestMigrateBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{orders, plural, =0{} =1{1 past order} other{{orders} past orders}}{both, select, true{ and } other{}}{follows, plural, =0{} =1{1 followed shop} other{{follows} followed shops}} from your guest session — move to your account?'**
+  String guestMigrateBody(int orders, int follows, String both);
+
+  /// No description provided for @guestMigrateKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Move to my account'**
+  String get guestMigrateKeep;
+
+  /// No description provided for @guestMigrateDiscard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get guestMigrateDiscard;
+
   /// No description provided for @drawerVersion.
   ///
   /// In en, this message translates to:
@@ -717,6 +807,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Invalid or expired coupon'**
   String get cartCouponInvalid;
+
+  /// No description provided for @cartCouponRequiresCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a {category} item to use this coupon'**
+  String cartCouponRequiresCategory(String category);
+
+  /// No description provided for @cartCouponNeedsTargetCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'This coupon only applies to {category} — add one first'**
+  String cartCouponNeedsTargetCategory(String category);
+
+  /// No description provided for @shopDiscountsRequires.
+  ///
+  /// In en, this message translates to:
+  /// **'Requires {category}'**
+  String shopDiscountsRequires(String category);
+
+  /// No description provided for @shopDiscountsAppliesAll.
+  ///
+  /// In en, this message translates to:
+  /// **'On {category}'**
+  String shopDiscountsAppliesAll(String category);
+
+  /// No description provided for @shopDiscountsAppliesQty.
+  ///
+  /// In en, this message translates to:
+  /// **'On {qty}× {category}'**
+  String shopDiscountsAppliesQty(int qty, String category);
+
+  /// No description provided for @shopDiscountsClaimAtCounter.
+  ///
+  /// In en, this message translates to:
+  /// **'Claim this discount at the counter when paying'**
+  String get shopDiscountsClaimAtCounter;
 
   /// No description provided for @cartSubtotal.
   ///
@@ -1221,6 +1347,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'e.g. Jane'**
   String get shopWalkInNameHint;
+
+  /// No description provided for @shopWalkInNameInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your real name'**
+  String get shopWalkInNameInvalid;
 
   /// No description provided for @shopWalkInWifi.
   ///

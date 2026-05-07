@@ -146,6 +146,7 @@ const pageRoutes = {
   "/login.html": "login.html",
   "/staff.html": "staff.html",
   "/admin.html": "admin.html",
+  "/manager.html": "manager.html",
   "/settings.html": "settings.html",
   "/inventory.html": "inventory.html",
   "/receipt.html": "receipt.html",

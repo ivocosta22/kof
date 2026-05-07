@@ -6,6 +6,7 @@ import '../l10n/l10n.dart';
 import '../models/menu_item.dart';
 import '../providers/cart_provider.dart';
 import '../providers/session_provider.dart';
+import '../services/api_error_messages.dart';
 import '../services/api_service.dart';
 import '../utils/menu_item_image.dart';
 import '../widgets/cart_bottom_sheet.dart';
@@ -83,7 +84,7 @@ class _MenuScreenState extends State<MenuScreen> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = e.toString().replaceFirst('Exception: ', '');
+          _error = localizedApiError(context.l10n, e);
           _loading = false;
         });
       }

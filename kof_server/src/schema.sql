@@ -131,6 +131,15 @@ CREATE TABLE IF NOT EXISTS discounts (
   valid_from TEXT NOT NULL DEFAULT '',
   valid_until TEXT NOT NULL DEFAULT '',
   is_active INTEGER NOT NULL DEFAULT 1,
+  -- Cart-aware conditions. All three default to "no restriction":
+  --   required_category — cart must contain ≥1 line in this menu category
+  --   target_category   — discount basis is the sum of line totals in this
+  --                       category (instead of the whole subtotal)
+  --   target_qty        — when target_category is set, only the cheapest N
+  --                       units in that category form the basis (0 = all)
+  required_category TEXT NOT NULL DEFAULT '',
+  target_category TEXT NOT NULL DEFAULT '',
+  target_qty INTEGER NOT NULL DEFAULT 0,
   created_at TEXT NOT NULL DEFAULT (datetime('now','localtime'))
 );
 

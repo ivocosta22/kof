@@ -48,6 +48,18 @@ if (!hasColumn("orders", "discount_amount_cents")) {
   db.exec(`ALTER TABLE orders ADD COLUMN discount_amount_cents INTEGER NOT NULL DEFAULT 0`);
 }
 
+if (!hasColumn("discounts", "required_category")) {
+  db.exec(`ALTER TABLE discounts ADD COLUMN required_category TEXT NOT NULL DEFAULT ''`);
+}
+
+if (!hasColumn("discounts", "target_category")) {
+  db.exec(`ALTER TABLE discounts ADD COLUMN target_category TEXT NOT NULL DEFAULT ''`);
+}
+
+if (!hasColumn("discounts", "target_qty")) {
+  db.exec(`ALTER TABLE discounts ADD COLUMN target_qty INTEGER NOT NULL DEFAULT 0`);
+}
+
 // Normalize legacy order rows after migrations so fulfillment fields are always consistent
 db.exec(`
   UPDATE orders

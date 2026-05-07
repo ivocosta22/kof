@@ -22,6 +22,75 @@ export default function createOrdersRouter({ broadcast }) {
     message: "Too many orders from this device. Please wait 1 minute.",
   });
 
+  // Split a discount's category field on commas. Empty/whitespace entries are
+  // dropped. An empty list means "no restriction" (whole subtotal applies).
+  function parseCategoryList(raw) {
+    return String(raw || "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
+  }
+
+  // Compute the cents to deduct from the order subtotal for a given discount,
+  // taking cart-aware conditions into account.
+  //
+  //   required_category: if set, the cart must contain ≥1 line in that
+  //                      category — otherwise the discount returns 0.
+  //   target_category:   if set, the basis is the sum of line_totals in that
+  //                      category instead of the whole subtotal. When
+  //                      target_qty > 0, only the cheapest N units in the
+  //                      target category contribute to the basis.
+  //   percentage_off / amount_off_cents are applied to that basis.
+  function computeDiscountCents({ discount, subtotalCents, lines }) {
+    const reqCats = parseCategoryList(discount.required_category);
+    const targetCats = parseCategoryList(discount.target_category);
+    const targetQty = Number(discount.target_qty) || 0;
+
+    if (reqCats.length > 0) {
+      const ok = lines.some((l) => reqCats.includes((l.category || "")));
+      if (!ok) return 0;
+    }
+
+    let basis;
+    if (targetCats.length === 0) {
+      basis = subtotalCents;
+    } else {
+      const targetLines = lines.filter((l) =>
+        targetCats.includes((l.category || ""))
+      );
+      if (targetLines.length === 0) return 0;
+
+      if (targetQty <= 0) {
+        basis = targetLines.reduce(
+          (sum, l) => sum + Number(l.line_total_cents || 0),
+          0
+        );
+      } else {
+        // Expand each line into its individual unit prices, sort ascending,
+        // sum the cheapest target_qty units.
+        const unitPrices = [];
+        for (const l of targetLines) {
+          const qty = Math.max(1, Number(l.qty) || 1);
+          const lineTotal = Number(l.line_total_cents || 0);
+          const unit = Math.floor(lineTotal / qty);
+          for (let i = 0; i < qty; i++) unitPrices.push(unit);
+        }
+        unitPrices.sort((a, b) => a - b);
+        basis = unitPrices.slice(0, targetQty).reduce((s, p) => s + p, 0);
+      }
+    }
+
+    let cents = 0;
+    if (Number(discount.percentage_off) > 0) {
+      cents = Math.floor((basis * Number(discount.percentage_off)) / 100);
+    } else if (Number(discount.amount_off_cents) > 0) {
+      cents = Number(discount.amount_off_cents);
+    }
+    if (cents > basis) cents = basis;
+    if (cents > subtotalCents) cents = subtotalCents;
+    return cents;
+  }
+
   // Next daily order number — resets each local calendar day
   function nextOrderNumber() {
     const row = db.prepare(`
@@ -597,7 +666,8 @@ export default function createOrdersRouter({ broadcast }) {
       if (trimmedCode) {
         const today = new Date().toISOString().slice(0, 10);
         const discount = db.prepare(`
-          SELECT percentage_off, amount_off_cents
+          SELECT percentage_off, amount_off_cents,
+                 required_category, target_category, target_qty
           FROM discounts
           WHERE code = ? AND is_active = 1
             AND (valid_from = '' OR valid_from <= ?)
@@ -606,16 +676,19 @@ export default function createOrdersRouter({ broadcast }) {
         `).get(trimmedCode, today, today);
 
         if (discount) {
-          let discountCents = 0;
-          if (discount.percentage_off > 0) {
-            discountCents = Math.floor(
-              (subtotalCents * discount.percentage_off) / 100
-            );
-          } else if (discount.amount_off_cents > 0) {
-            discountCents = discount.amount_off_cents;
-          }
-          // Never let a discount take the total below zero.
-          if (discountCents > subtotalCents) discountCents = subtotalCents;
+          // Pull every line's category + unit price for cart-aware matching.
+          const orderLines = db.prepare(`
+            SELECT oi.qty, oi.line_total_cents, mi.category
+            FROM order_items oi
+            JOIN menu_items mi ON mi.id = oi.menu_item_id
+            WHERE oi.order_id = ?
+          `).all(orderId);
+
+          const discountCents = computeDiscountCents({
+            discount,
+            subtotalCents,
+            lines: orderLines,
+          });
 
           if (discountCents > 0) {
             db.prepare(`
