@@ -5,17 +5,16 @@ import '../providers/active_orders_provider.dart';
 import '../services/order_history_service.dart';
 import '../services/shop_service.dart';
 
-/// Call after a successful sign-in/registration when the user was previously
-/// browsing as guest. If the guest session accumulated any past orders or
-/// followed shops, prompts the user to move them into [newUid]'s account.
-/// Either way the guest buckets end up empty so the next guest session
-/// starts clean.
+/// Call after a successful sign-in/registration. If the device has any past
+/// orders or followed shops sitting in the local guest buckets, prompts the
+/// user to move them into [newUid]'s account. Triggered by data presence —
+/// not by the prior auth state — so it still fires when the user logged
+/// out as guest before signing in to a real account.
 Future<void> maybePromptGuestMigration(
   BuildContext context, {
-  required bool wasGuest,
   required String newUid,
 }) async {
-  if (!wasGuest || newUid.isEmpty) return;
+  if (newUid.isEmpty) return;
 
   final orderCount = await OrderHistoryService.guestOrderCount();
   final followCount = await ShopService.guestFollowedCount();

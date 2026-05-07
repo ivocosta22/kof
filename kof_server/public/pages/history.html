@@ -21,6 +21,7 @@
           <button onclick="goStaff()" id="staffBtn" class="secondary"></button>
           <button onclick="goInventory()" id="inventoryBtn"></button>
           <button onclick="goSettings()" id="settingsBtn"></button>
+          <button id="managerBtn" style="display:none" onclick="goManager()"></button>
           <button id="adminBtn" style="display:none" onclick="goAdmin()"></button>
           <button onclick="logout()" id="logoutBtn" class="danger-soft"></button>
         </div>
@@ -53,6 +54,7 @@
     const inventoryBtnEl = document.getElementById("inventoryBtn");
     const settingsBtnEl = document.getElementById("settingsBtn");
     const adminBtnEl = document.getElementById("adminBtn");
+    const managerBtnEl = document.getElementById("managerBtn");
     const logoutBtnEl = document.getElementById("logoutBtn");
     const historyListEl = document.getElementById("historyList");
     const toastWrap = document.getElementById("toastWrap");
@@ -233,6 +235,7 @@
       inventoryBtnEl.textContent = tf("common.inventory", "Inventory");
       settingsBtnEl.textContent = tf("common.settings", "Settings");
       adminBtnEl.textContent = tf("common.admin", "Admin");
+      managerBtnEl.textContent = tf("common.manager", "Manager");
       logoutBtnEl.textContent = tf("common.logout", "Logout");
     }
 
@@ -240,6 +243,7 @@
     function goInventory() { location.href = "/inventory.html"; }
     function goSettings() { location.href = "/settings.html"; }
     function goAdmin() { location.href = "/admin.html"; }
+    function goManager() { location.href = "/manager.html"; }
 
     function logout() {
       localStorage.removeItem(TOKEN_KEY);
@@ -255,6 +259,7 @@
 
       const me = await api("/api/admin/me");
       adminBtnEl.style.display = me.role === "manager" ? "inline-block" : "none";
+      managerBtnEl.style.display = me.role === "manager" ? "inline-block" : "none";
 
       const settings = await api("/api/admin/me/settings");
       window.kofI18n.setLanguage(settings?.language || window.kofI18n.DEFAULT_LANG);

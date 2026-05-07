@@ -43,11 +43,10 @@ class _LoginScreenState extends State<LoginScreen> {
       _loading = true;
       _error = null;
     });
-    final wasGuest = context.read<AuthProvider>().isGuest;
     try {
       await context.read<AuthProvider>().login(email, password);
       if (!mounted) return;
-      await _promptGuestMigrationIfNeeded(wasGuest);
+      await _promptGuestMigrationIfNeeded();
       if (!mounted) return;
       _routeAfterLogin();
     } catch (e) {
@@ -64,11 +63,10 @@ class _LoginScreenState extends State<LoginScreen> {
       _loading = true;
       _error = null;
     });
-    final wasGuest = context.read<AuthProvider>().isGuest;
     try {
       await context.read<AuthProvider>().loginWithGoogle();
       if (!mounted) return;
-      await _promptGuestMigrationIfNeeded(wasGuest);
+      await _promptGuestMigrationIfNeeded();
       if (!mounted) return;
       _routeAfterLogin();
     } catch (e) {
@@ -80,13 +78,9 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Future<void> _promptGuestMigrationIfNeeded(bool wasGuest) async {
+  Future<void> _promptGuestMigrationIfNeeded() async {
     final uid = context.read<AuthProvider>().user?.id ?? '';
-    await maybePromptGuestMigration(
-      context,
-      wasGuest: wasGuest,
-      newUid: uid,
-    );
+    await maybePromptGuestMigration(context, newUid: uid);
   }
 
   void _loginWithApple() {

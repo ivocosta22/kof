@@ -58,7 +58,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     try {
       final auth = context.read<AuthProvider>();
-      final wasGuest = auth.isGuest;
       await auth.register(
         name,
         email,
@@ -71,7 +70,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (!mounted) return;
       await maybePromptGuestMigration(
         context,
-        wasGuest: wasGuest,
         newUid: auth.user?.id ?? '',
       );
       if (!mounted) return;

@@ -16,8 +16,11 @@
         <p class="ops-subtitle" id="whoLine"></p>
       </div>
       <div class="ops-toolbar" id="managerToolbar">
-        <button onclick="goSettings()" id="settingsBtn" class="secondary"></button>
         <button onclick="goStaff()" id="staffBtn" class="secondary"></button>
+        <button onclick="goInventory()" id="inventoryBtn" class="secondary"></button>
+        <button onclick="goHistory()" id="historyBtn" class="secondary"></button>
+        <button onclick="goAdmin()" id="adminBtn" class="secondary"></button>
+        <button onclick="goSettings()" id="settingsBtn" class="secondary"></button>
         <button onclick="logout()" id="logoutBtn" class="secondary danger-soft"></button>
       </div>
     </section>
@@ -224,6 +227,9 @@
     const whoLineEl = document.getElementById("whoLine");
     const settingsBtnEl = document.getElementById("settingsBtn");
     const staffBtnEl = document.getElementById("staffBtn");
+    const inventoryBtnEl = document.getElementById("inventoryBtn");
+    const historyBtnEl = document.getElementById("historyBtn");
+    const adminBtnEl = document.getElementById("adminBtn");
     const logoutBtnEl = document.getElementById("logoutBtn");
     const toastWrapEl = document.getElementById("toastWrap");
 
@@ -281,6 +287,9 @@
       managerEyebrowEl.innerText = tf("common.manager", "Manager");
       settingsBtnEl.innerText = tf("common.settings", "Settings");
       staffBtnEl.innerText = tf("common.staff", "Staff");
+      inventoryBtnEl.innerText = tf("common.inventory", "Inventory");
+      historyBtnEl.innerText = tf("common.history", "History");
+      adminBtnEl.innerText = tf("common.admin", "Admin");
       logoutBtnEl.innerText = tf("common.logout", "Logout");
 
       platformTabBtnEl.innerText = tf("manager.tabs.platform", "Kof Platform");
@@ -472,6 +481,18 @@
 
     function goStaff() {
       location.href = "/staff.html";
+    }
+
+    function goInventory() {
+      location.href = "/inventory.html";
+    }
+
+    function goHistory() {
+      location.href = "/history.html";
+    }
+
+    function goAdmin() {
+      location.href = "/admin.html";
     }
 
     const COUNTRIES = [

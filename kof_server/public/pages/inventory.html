@@ -18,6 +18,7 @@
     </div>
     <div class="row ops-toolbar">
       <button onclick="goStaff()" id="staffBtn"></button>
+      <button id="managerBtn" style="display:none" onclick="goManager()"></button>
       <button id="adminBtn" style="display:none" onclick="goAdmin()"></button>
       <button onclick="goSettings()" id="settingsBtn"></button>
       <button onclick="logout()" id="logoutBtn" class="danger-soft"></button>
@@ -52,6 +53,14 @@
     <div class="muted" id="addIngredientMsg"></div>
   </div>
 
+  <div id="adjustmentsCard" class="card" style="display:none">
+    <div class="titleRow">
+      <h3 style="margin:0" id="recentAdjustmentsTitle"></h3>
+      <button onclick="loadAdjustments()" id="refreshAdjustmentsBtn" class="primary"></button>
+    </div>
+    <div id="adjustmentsWrap" class="stack" style="margin-top:12px"></div>
+  </div>
+
   <div class="grid inventory-grid">
     <div class="card">
       <div class="titleRow">
@@ -68,14 +77,6 @@
       </div>
       <div id="menuRecipesWrap" class="stack" style="margin-top:12px"></div>
     </div>
-  </div>
-
-  <div id="adjustmentsCard" class="card" style="display:none">
-    <div class="titleRow">
-      <h3 style="margin:0" id="recentAdjustmentsTitle"></h3>
-      <button onclick="loadAdjustments()" id="refreshAdjustmentsBtn" class="primary"></button>
-    </div>
-    <div id="adjustmentsWrap" class="stack" style="margin-top:12px"></div>
   </div>
   </main>
 
@@ -107,6 +108,7 @@
     const whoLineEl = document.getElementById("whoLine");
     const staffBtnEl = document.getElementById("staffBtn");
     const adminBtnEl = document.getElementById("adminBtn");
+    const managerBtnEl = document.getElementById("managerBtn");
     const settingsBtnEl = document.getElementById("settingsBtn");
     const logoutBtnEl = document.getElementById("logoutBtn");
     const managerAddCardEl = document.getElementById("managerAddCard");
@@ -125,6 +127,7 @@
       whoLineEl.textContent = tf("inventory.loadingWho", tf("common.loading", "Loading…"));
       staffBtnEl.textContent = tf("common.staff", "Staff");
       adminBtnEl.textContent = tf("common.admin", "Admin");
+      managerBtnEl.textContent = tf("common.manager", "Manager");
       settingsBtnEl.textContent = tf("common.settings", "Settings");
       logoutBtnEl.textContent = tf("common.logout", "Logout");
 
@@ -340,6 +343,7 @@
       const isManager = currentMe.role === "manager";
 
       adminBtnEl.style.display = isManager ? "inline-block" : "none";
+      managerBtnEl.style.display = isManager ? "inline-block" : "none";
       managerAddCardEl.style.display = isManager ? "block" : "none";
       adjustmentsCardEl.style.display = "block";
     }
@@ -845,6 +849,10 @@
 
     function goAdmin() {
       location.href = "/admin.html";
+    }
+
+    function goManager() {
+      location.href = "/manager.html";
     }
 
     function goSettings() {

@@ -18,6 +18,7 @@
     <div class="ops-toolbar" id="adminToolbar" style="display:none">
       <button id="staffBtn" style="display:none" onclick="goStaff()" class="secondary"></button>
       <button onclick="goInventory()" id="inventoryBtn" class="secondary"></button>
+      <button onclick="goManager()" id="managerBtn" class="secondary"></button>
       <button onclick="goSettings()" id="settingsBtn" class="secondary"></button>
       <button onclick="logout()" id="logoutBtn" class="secondary danger-soft"></button>
     </div>
@@ -246,6 +247,7 @@
     const pinEl = document.getElementById("pin");
     const loginBtnEl = document.getElementById("loginBtn");
     const inventoryBtnEl = document.getElementById("inventoryBtn");
+    const managerBtnEl = document.getElementById("managerBtn");
     const settingsBtnEl = document.getElementById("settingsBtn");
     const logoutBtnEl = document.getElementById("logoutBtn");
     const securityTitleEl = document.getElementById("securityTitle");
@@ -290,6 +292,7 @@
 
       staffBtnEl.innerText = tf("common.staff", "Staff");
       inventoryBtnEl.innerText = tf("common.inventory", "Inventory");
+      managerBtnEl.innerText = tf("common.manager", "Manager");
       settingsBtnEl.innerText = tf("common.settings", "Settings");
       logoutBtnEl.innerText = tf("common.logout", "Logout");
 
@@ -649,6 +652,10 @@
 
     function goInventory() {
       location.href = "/inventory.html";
+    }
+
+    function goManager() {
+      location.href = "/manager.html";
     }
 
 // Change the currently authenticated admin user's PIN.
