@@ -11,6 +11,7 @@ import '../providers/session_provider.dart';
 import '../models/shop_discount.dart';
 import '../services/api_service.dart';
 import '../services/shop_service.dart';
+import '../utils/haptics.dart';
 import 'menu_screen.dart';
 import 'shop_discounts_screen.dart';
 import 'shop_menu_preview_screen.dart';
@@ -214,6 +215,7 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
       );
       return;
     }
+    Haptics.light();
     setState(() => _busy = true);
     try {
       if (_isFollowing == true) {

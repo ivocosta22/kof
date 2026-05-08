@@ -6,6 +6,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/settings_provider.dart';
 import '../../services/auth_error_messages.dart';
 import '../../utils/guest_migration.dart';
+import '../../utils/haptics.dart';
 import '../home_screen.dart';
 import 'email_verification_screen.dart';
 import 'forgot_password_screen.dart';
@@ -39,6 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() => _error = context.l10n.loginFieldsRequired);
       return;
     }
+    Haptics.light();
     setState(() {
       _loading = true;
       _error = null;
@@ -59,6 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _loginWithGoogle() async {
+    Haptics.light();
     setState(() {
       _loading = true;
       _error = null;
@@ -84,12 +87,14 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _loginWithApple() {
+    Haptics.light();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(context.l10n.loginAppleNotAvailable)),
     );
   }
 
   void _loginAsGuest() {
+    Haptics.light();
     context.read<AuthProvider>().loginAsGuest();
     _goHome();
   }

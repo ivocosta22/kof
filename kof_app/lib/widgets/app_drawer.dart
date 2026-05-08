@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../l10n/l10n.dart';
+import '../utils/haptics.dart';
 import '../providers/active_orders_provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/cart_provider.dart';
@@ -219,6 +220,7 @@ class AppDrawer extends StatelessWidget {
   }
 
   Future<void> _logout(BuildContext context, VoidCallback close) async {
+    Haptics.medium();
     close();
     await context.read<AuthProvider>().logout();
     if (!context.mounted) return;

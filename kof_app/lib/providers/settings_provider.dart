@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../utils/haptics.dart';
 
 class SettingsProvider extends ChangeNotifier {
   static const _keyHaptic = 'setting_haptic_feedback';
@@ -18,6 +18,7 @@ class SettingsProvider extends ChangeNotifier {
   Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
     _hapticFeedback = prefs.getBool(_keyHaptic) ?? true;
+    Haptics.enabled = _hapticFeedback;
 
     final themeStr = prefs.getString(_keyTheme);
     _themeMode = switch (themeStr) {
@@ -34,8 +35,9 @@ class SettingsProvider extends ChangeNotifier {
 
   Future<void> setHapticFeedback(bool value) async {
     _hapticFeedback = value;
+    Haptics.enabled = value;
     notifyListeners();
-    if (value) HapticFeedback.lightImpact();
+    if (value) Haptics.light();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_keyHaptic, value);
   }

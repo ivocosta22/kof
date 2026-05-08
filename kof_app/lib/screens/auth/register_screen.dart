@@ -5,6 +5,7 @@ import '../../l10n/l10n.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/auth_error_messages.dart';
 import '../../utils/guest_migration.dart';
+import '../../utils/haptics.dart';
 import '../../widgets/country_picker_field.dart';
 import 'email_verification_screen.dart';
 
@@ -50,6 +51,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       setState(() => _error = l10n.registerPasswordShort);
       return;
     }
+    Haptics.light();
 
     setState(() {
       _loading = true;

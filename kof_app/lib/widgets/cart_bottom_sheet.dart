@@ -6,6 +6,7 @@ import '../models/cart_item.dart';
 import '../models/shop_discount.dart';
 import '../providers/active_orders_provider.dart';
 import '../providers/cart_provider.dart';
+import '../utils/haptics.dart';
 import '../providers/session_provider.dart';
 import '../models/past_order.dart';
 import '../services/api_error_messages.dart';
@@ -99,6 +100,7 @@ class _CartBottomSheetState extends State<CartBottomSheet> {
     if (session == null) return;
     final code = _couponController.text.trim();
     if (code.isEmpty) return;
+    Haptics.light();
 
     setState(() {
       _validatingCoupon = true;
@@ -158,6 +160,7 @@ class _CartBottomSheetState extends State<CartBottomSheet> {
   }
 
   void _removeCoupon() {
+    Haptics.selection();
     setState(() {
       _appliedDiscount = null;
       _couponError = null;
@@ -169,6 +172,7 @@ class _CartBottomSheetState extends State<CartBottomSheet> {
     final cart = context.read<CartProvider>();
     final session = context.read<SessionProvider>().session;
     if (session == null || cart.isEmpty) return;
+    Haptics.medium();
 
     setState(() {
       _isPlacing = true;
@@ -306,12 +310,18 @@ class _CartBottomSheetState extends State<CartBottomSheet> {
                             const SizedBox(width: 12),
                             _SmallQtyControl(
                               qty: item.qty,
-                              onIncrement: () => context
-                                  .read<CartProvider>()
-                                  .add(item.menuItem, size: item.size),
-                              onDecrement: () => context
-                                  .read<CartProvider>()
-                                  .decrementLine(item.lineKey),
+                              onIncrement: () {
+                                Haptics.selection();
+                                context
+                                    .read<CartProvider>()
+                                    .add(item.menuItem, size: item.size);
+                              },
+                              onDecrement: () {
+                                Haptics.selection();
+                                context
+                                    .read<CartProvider>()
+                                    .decrementLine(item.lineKey);
+                              },
                             ),
                           ],
                         ),

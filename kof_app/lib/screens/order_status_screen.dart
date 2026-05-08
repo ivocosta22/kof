@@ -10,6 +10,8 @@ import '../providers/session_provider.dart';
 import '../services/api_service.dart';
 import '../services/order_history_service.dart';
 import '../services/websocket_service.dart';
+import '../utils/haptics.dart';
+import 'home_screen.dart';
 import 'menu_screen.dart';
 import 'receipt_screen.dart';
 import 'scan_screen.dart';
@@ -232,15 +234,34 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
     final color = _statusColor(theme, _order.status);
     final shopName =
         widget.shopNameOverride ?? session?.shopName ?? l10n.appName;
-    final canPop = Navigator.of(context).canPop();
+    // Back from this screen always lands on the home screen (instead of the
+    // previous route in the stack), so customers don't end up back at the
+    // post-checkout cart, scan screen, or My Orders list.
+    void goHome() {
+      Haptics.selection();
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        (route) => false,
+      );
+    }
 
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        goHome();
+      },
+      child: Scaffold(
       backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
         backgroundColor: theme.colorScheme.surface,
         elevation: 0,
         scrolledUnderElevation: 0,
-        automaticallyImplyLeading: canPop,
+        automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: goHome,
+        ),
         title: Text(
           shopName,
           style: theme.textTheme.titleMedium
@@ -288,6 +309,7 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
             ],
           ),
         ),
+      ),
       ),
     );
   }

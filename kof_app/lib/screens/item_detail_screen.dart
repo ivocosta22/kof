@@ -4,6 +4,7 @@ import '../l10n/l10n.dart';
 import '../models/menu_item.dart';
 import '../models/menu_item_size.dart';
 import '../providers/cart_provider.dart';
+import '../utils/haptics.dart';
 import '../utils/menu_item_image.dart';
 
 class ItemDetailScreen extends StatefulWidget {
@@ -35,6 +36,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
   int get _totalPriceCents => _unitPriceCents * _qty;
 
   void _addToCartAndClose() {
+    Haptics.light();
     context.read<CartProvider>().add(
           widget.item,
           size: _selectedSize,
@@ -151,7 +153,10 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                               sizes: item.sizes,
                               selected: _selectedSize,
                               labelFor: (s) => _localizedSizeLabel(l10n, s.name),
-                              onChanged: (s) => setState(() => _selectedSize = s),
+                              onChanged: (s) {
+                                Haptics.selection();
+                                setState(() => _selectedSize = s);
+                              },
                             ),
                             const SizedBox(height: 24),
                           ],
@@ -183,7 +188,10 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                               ),
                               _QtyStepper(
                                 value: _qty,
-                                onChanged: (v) => setState(() => _qty = v),
+                                onChanged: (v) {
+                                  Haptics.selection();
+                                  setState(() => _qty = v);
+                                },
                               ),
                             ],
                           ),
