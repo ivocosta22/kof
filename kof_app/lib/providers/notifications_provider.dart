@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
+import '../demo/demo_data.dart';
+import '../demo/demo_mode.dart';
 import '../models/notification_item.dart';
 import '../navigation.dart';
 import '../screens/shop_detail_screen.dart';
@@ -40,6 +42,20 @@ class NotificationsProvider extends ChangeNotifier {
   void hookFcm() {
     if (_fcmHooked) return;
     _fcmHooked = true;
+
+    if (kDemoMode) {
+      _items = DemoData.sampleNotifications
+          .map((n) => NotificationItem(
+                id: n['id'] as String,
+                title: n['title'] as String,
+                body: n['body'] as String,
+                data: {'shopId': (n['shopId'] as String?) ?? ''},
+                receivedAt: DateTime.now()
+                    .subtract(Duration(minutes: n['minutesAgo'] as int)),
+              ))
+          .toList();
+      return;
+    }
 
     _onMessageSub = FirebaseMessaging.onMessage.listen(_onRemote);
     _onOpenedSub = FirebaseMessaging.onMessageOpenedApp.listen((msg) {
@@ -133,6 +149,7 @@ class NotificationsProvider extends ChangeNotifier {
   /// Auth scope sync. Same shape as ActiveOrdersProvider.onAuthChanged so
   /// the proxy provider in main.dart can simply chain both.
   void onAuthChanged(String? userId) {
+    if (kDemoMode) return;
     final next = (userId == null || userId.isEmpty) ? 'guest' : userId;
     if (_currentUserKey == next) return;
     _currentUserKey = next;

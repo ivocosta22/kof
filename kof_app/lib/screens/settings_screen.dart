@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import '../utils/haptics.dart';
 import '../data/countries.dart';
 import '../l10n/l10n.dart';
 import '../providers/active_orders_provider.dart';
@@ -62,7 +63,10 @@ class SettingsScreen extends StatelessWidget {
                 const Icon(Icons.chevron_right),
               ],
             ),
-            onTap: () => _pickLanguage(context, settings, l10n),
+            onTap: () {
+              Haptics.selection();
+              _pickLanguage(context, settings, l10n);
+            },
           ),
           if (!auth.isGuest)
             ListTile(
@@ -82,7 +86,10 @@ class SettingsScreen extends StatelessWidget {
                   const Icon(Icons.chevron_right),
                 ],
               ),
-              onTap: () => _pickCountry(context, auth),
+              onTap: () {
+                Haptics.selection();
+                _pickCountry(context, auth);
+              },
             ),
 
           // ── Preferences ────────────────────────────────────────────
@@ -149,7 +156,10 @@ class SettingsScreen extends StatelessWidget {
               l10n.settingsLogout,
               style: TextStyle(color: theme.colorScheme.error),
             ),
-            onTap: () => _confirmLogout(context, l10n),
+            onTap: () {
+              Haptics.medium();
+              _confirmLogout(context, l10n);
+            },
           ),
         ],
       ),

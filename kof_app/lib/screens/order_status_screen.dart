@@ -2,6 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../demo/demo_api_service.dart';
+import '../demo/demo_mode.dart';
+import '../demo/demo_websocket_service.dart';
 import '../l10n/l10n.dart';
 import '../models/order.dart';
 import '../providers/active_orders_provider.dart';
@@ -39,7 +42,7 @@ class OrderStatusScreen extends StatefulWidget {
 class _OrderStatusScreenState extends State<OrderStatusScreen>
     with SingleTickerProviderStateMixin {
   late Order _order;
-  final WebSocketService _ws = WebSocketService();
+  late final WebSocketService _ws;
   bool _wsConnected = false;
   late final AnimationController _radarController;
 
@@ -49,6 +52,7 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
   void initState() {
     super.initState();
     _order = widget.order;
+    _ws = kDemoMode ? DemoWebSocketService() : WebSocketService();
     _radarController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 2400),
@@ -125,7 +129,9 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
     final serverUrl = _effectiveServerUrl;
     if (serverUrl == null) return;
     try {
-      final fresh = await ApiService(serverUrl).getOrder(_order.id);
+      final fresh = kDemoMode
+          ? await DemoApiService().getOrder(_order.id)
+          : await ApiService(serverUrl).getOrder(_order.id);
       if (!mounted) return;
       if (fresh.status != _order.status) {
         OrderHistoryService().updateStatus(_order.id, fresh.status);
@@ -240,7 +246,18 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
     void goHome() {
       Haptics.selection();
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        PageRouteBuilder<void>(
+          pageBuilder: (_, _, _) => const HomeScreen(),
+          transitionDuration: const Duration(milliseconds: 300),
+          reverseTransitionDuration: const Duration(milliseconds: 300),
+          transitionsBuilder: (_, animation, _, child) => SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(-1.0, 0.0),
+              end: Offset.zero,
+            ).animate(CurvedAnimation(parent: animation, curve: Curves.easeInOut)),
+            child: child,
+          ),
+        ),
         (route) => false,
       );
     }

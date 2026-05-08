@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../demo/demo_mode.dart';
 import '../models/past_order.dart';
 import 'api_service.dart';
 
@@ -123,7 +124,10 @@ class OrderHistoryService {
   // those individual entries untouched.
   Future<List<PastOrder>> refreshFromServer(List<PastOrder> orders) async {
     final candidates = orders.where(
-      (o) => (o.isActive || o.items.isEmpty) && o.serverUrl.isNotEmpty,
+      (o) =>
+          (o.isActive || o.items.isEmpty) &&
+          o.serverUrl.isNotEmpty &&
+          !(kDemoMode || o.serverUrl.startsWith('demo://')),
     );
     if (candidates.isEmpty) return orders;
 

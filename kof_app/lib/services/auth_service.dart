@@ -29,7 +29,8 @@ class AuthException implements Exception {
 }
 
 class AuthService {
-  final fb.FirebaseAuth _auth = fb.FirebaseAuth.instance;
+  fb.FirebaseAuth? __auth;
+  fb.FirebaseAuth get _auth => __auth ??= fb.FirebaseAuth.instance;
 
   Stream<fb.User?> authStateChanges() => _auth.authStateChanges();
   fb.User? get currentFirebaseUser => _auth.currentUser;

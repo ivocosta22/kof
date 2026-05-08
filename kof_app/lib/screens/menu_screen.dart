@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../demo/demo_api_service.dart';
+import '../demo/demo_mode.dart';
 import '../l10n/l10n.dart';
 import '../models/menu_item.dart';
 import '../providers/cart_provider.dart';
@@ -74,7 +76,9 @@ class _MenuScreenState extends State<MenuScreen> {
     });
 
     try {
-      final items = await ApiService(session.serverUrl).getMenu();
+      final items = kDemoMode
+          ? await DemoApiService().getMenu()
+          : await ApiService(session.serverUrl).getMenu();
       if (mounted) {
         setState(() {
           _items = items;

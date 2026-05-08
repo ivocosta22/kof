@@ -2,18 +2,21 @@ import 'dart:async';
 import 'dart:io' show Platform;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import '../demo/demo_mode.dart';
 
 /// Stores this device's FCM token under users/{uid}/devices/{token}.
 /// The Cloud Function fans broadcasts out by reading these subcollections.
 class FcmService {
-  final FirebaseMessaging _fcm = FirebaseMessaging.instance;
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  FirebaseMessaging get _fcm => FirebaseMessaging.instance;
+  FirebaseFirestore? __db;
+  FirebaseFirestore get _db => __db ??= FirebaseFirestore.instance;
 
   StreamSubscription<String>? _refreshSub;
   String? _currentUid;
   String? _currentToken;
 
   Future<void> registerForUser(String uid) async {
+    if (kDemoMode) return;
     _currentUid = uid;
 
     final token = await _fcm.getToken();
@@ -52,6 +55,7 @@ class FcmService {
   }
 
   Future<void> unregister() async {
+    if (kDemoMode) return;
     final uid = _currentUid;
     final token = _currentToken;
     _refreshSub?.cancel();

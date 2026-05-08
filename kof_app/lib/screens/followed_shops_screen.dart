@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/l10n.dart';
+import '../utils/haptics.dart';
 import '../models/shop.dart';
 import '../providers/auth_provider.dart';
 import '../services/shop_service.dart';
@@ -90,11 +91,14 @@ class FollowedShopsScreen extends StatelessWidget {
                               overflow: TextOverflow.ellipsis)
                           : null,
                       trailing: const Icon(Icons.chevron_right),
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => ShopDetailScreen(shop: shop)),
-                      ),
+                      onTap: () {
+                        Haptics.selection();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => ShopDetailScreen(shop: shop)),
+                        );
+                      },
                     );
                   },
                 );

@@ -204,6 +204,14 @@ flutter pub get
 flutter gen-l10n
 flutter run
 ```
+**Mobile app (DEMO VERSION):**
+```bash
+cd kof_app
+flutter pub get
+flutter gen-l10n
+flutter run --dart-define=DEMO_MODE=true
+```
+
 
 For Firebase features you'll need:
 - `kof_app/android/app/google-services.json`

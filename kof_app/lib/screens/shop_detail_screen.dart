@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
+import '../demo/demo_api_service.dart';
+import '../demo/demo_mode.dart';
 import '../l10n/l10n.dart';
 import '../models/shop.dart';
 import '../models/table_session.dart';
@@ -54,13 +56,15 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
 
   Future<void> _loadDiscountCount() async {
     try {
-      final List<ShopDiscount> discounts =
-          await ApiService(widget.shop.serverUrl!).getDiscounts();
+      final List<ShopDiscount> discounts = kDemoMode
+          ? await DemoApiService().getDiscounts()
+          : await ApiService(widget.shop.serverUrl!).getDiscounts();
       if (mounted) setState(() => _activeDiscountCount = discounts.length);
     } catch (_) {}
   }
 
   Future<void> _computeDistance() async {
+    if (kDemoMode) return;
     try {
       var permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
@@ -90,6 +94,7 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
   }
 
   Future<void> _startWalkIn() async {
+    Haptics.light();
     final l10n = context.l10n;
     final nameCtrl = TextEditingController();
     final auth = context.read<AuthProvider>();
@@ -151,7 +156,9 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
     setState(() => _connectingWalkIn = true);
     try {
       final serverUrl = widget.shop.serverUrl!;
-      final info = await ApiService(serverUrl).walkin();
+      final info = kDemoMode
+          ? await DemoApiService().walkin()
+          : await ApiService(serverUrl).walkin();
       if (!mounted) return;
       if (info['ok'] != true) throw Exception(l10n.shopWalkInError);
 
@@ -454,6 +461,7 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
   bool get _walkInAvailable {
     final url = widget.shop.serverUrl;
     if (url == null || url.isEmpty) return false;
+    if (kDemoMode) return true;
     final d = _distanceMeters;
     return d != null && d <= _proximityThresholdMeters;
   }
@@ -548,7 +556,10 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
       color: theme.colorScheme.surfaceContainerLow,
       borderRadius: BorderRadius.circular(14),
       child: InkWell(
-        onTap: onTap,
+        onTap: () {
+          Haptics.selection();
+          onTap();
+        },
         borderRadius: BorderRadius.circular(14),
         child: Padding(
           padding: const EdgeInsets.all(16),

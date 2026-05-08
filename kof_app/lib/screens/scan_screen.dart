@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:provider/provider.dart';
+import '../demo/demo_data.dart';
+import '../demo/demo_mode.dart';
+import '../utils/haptics.dart';
 import '../l10n/l10n.dart';
 import '../models/table_session.dart';
 import '../providers/session_provider.dart';
@@ -92,8 +95,88 @@ class _ScanScreenState extends State<ScanScreen> {
     }
   }
 
+  void _startDemoSession({String tableLabel = '3'}) {
+    context.read<CartProvider>().clear();
+    context.read<SessionProvider>().setSession(
+          TableSession(
+            serverUrl: DemoData.kServerUrl,
+            tableLabel: tableLabel,
+            tableToken: 'demo-token',
+            shopName: DemoData.shop1.name,
+          ),
+        );
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const MenuScreen()),
+    );
+  }
+
+  Widget _buildDemoBody() {
+    final theme = Theme.of(context);
+    return Scaffold(
+      appBar: AppBar(title: const Text('Demo Mode')),
+      body: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Icon(Icons.qr_code_2,
+                size: 80, color: theme.colorScheme.primary),
+            const SizedBox(height: 24),
+            Text(
+              'Select a demo scenario',
+              style: theme.textTheme.headlineSmall
+                  ?.copyWith(fontWeight: FontWeight.w700),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'No camera or real shop required.',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 40),
+            FilledButton.icon(
+              onPressed: () {
+                Haptics.light();
+                _startDemoSession(tableLabel: '3');
+              },
+              icon: const Icon(Icons.table_restaurant),
+              label: Text('${DemoData.shop1.name} — Table 3'),
+              style: FilledButton.styleFrom(
+                minimumSize: const Size.fromHeight(52),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14)),
+              ),
+            ),
+            const SizedBox(height: 12),
+            FilledButton.icon(
+              onPressed: () {
+                Haptics.light();
+                _startDemoSession(tableLabel: '7');
+              },
+              icon: const Icon(Icons.table_restaurant),
+              label: Text('${DemoData.shop1.name} — Table 7'),
+              style: FilledButton.styleFrom(
+                minimumSize: const Size.fromHeight(52),
+                backgroundColor: theme.colorScheme.secondary,
+                foregroundColor: theme.colorScheme.onSecondary,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (kDemoMode) return _buildDemoBody();
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(

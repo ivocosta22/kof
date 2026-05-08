@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../demo/demo_api_service.dart';
+import '../demo/demo_mode.dart';
 import '../l10n/l10n.dart';
 import '../models/menu_item.dart';
 import '../models/shop.dart';
@@ -37,7 +39,9 @@ class _ShopMenuPreviewScreenState extends State<ShopMenuPreviewScreen> {
       return;
     }
     try {
-      final items = await ApiService(serverUrl).getMenu();
+      final items = kDemoMode
+          ? await DemoApiService().getMenu()
+          : await ApiService(serverUrl).getMenu();
       if (!mounted) return;
       setState(() {
         _items = items;

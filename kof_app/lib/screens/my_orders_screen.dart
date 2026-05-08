@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../demo/demo_api_service.dart';
+import '../demo/demo_data.dart';
+import '../demo/demo_mode.dart';
 import '../l10n/l10n.dart';
+import '../utils/haptics.dart';
 import '../models/past_order.dart';
 import '../models/order.dart';
 import '../providers/active_orders_provider.dart';
@@ -49,6 +53,16 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
   // saves from before the server returned items on create). Falls back to the
   // cached entries if the shop is unreachable.
   Future<List<PastOrder>> _loadOrders() async {
+    if (kDemoMode) {
+      final stored = await OrderHistoryService().getAll();
+      final storedIds = stored.map((o) => o.orderId).toSet();
+      final merged = [
+        ...stored,
+        ...DemoData.demoPastOrders.where((o) => !storedIds.contains(o.orderId)),
+      ]..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      if (mounted) context.read<ActiveOrdersProvider>().refresh();
+      return merged;
+    }
     final service = OrderHistoryService();
     final orders = await service.getAll();
     final refreshed = await service.refreshFromServer(orders);
@@ -85,7 +99,9 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
 
     Order order;
     try {
-      order = await ApiService(past.serverUrl).getOrder(past.orderId);
+      order = kDemoMode
+          ? await DemoApiService().getOrder(past.orderId)
+          : await ApiService(past.serverUrl).getOrder(past.orderId);
       // Persist any status change immediately so the list reflects reality
       // even if the user backs out without triggering OrderStatusScreen's
       // own refresh path.
@@ -221,10 +237,13 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                   textAlign: TextAlign.center),
               const SizedBox(height: 32),
               FilledButton.icon(
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const ScanScreen()),
-                ),
+                onPressed: () {
+                  Haptics.light();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ScanScreen()),
+                  );
+                },
                 icon: const Icon(Icons.qr_code_scanner),
                 label: Text(l10n.myOrdersScanCta),
                 style: FilledButton.styleFrom(
@@ -272,7 +291,10 @@ class _OrderCard extends StatelessWidget {
           ? statusColor.withValues(alpha: 0.06)
           : theme.colorScheme.surfaceContainerLow,
       child: InkWell(
-        onTap: onTap,
+        onTap: onTap == null ? null : () {
+          Haptics.selection();
+          onTap!();
+        },
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(

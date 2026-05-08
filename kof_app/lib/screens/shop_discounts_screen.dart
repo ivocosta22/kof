@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../demo/demo_api_service.dart';
+import '../demo/demo_mode.dart';
 import '../l10n/l10n.dart';
 import '../models/shop.dart';
 import '../models/shop_discount.dart';
@@ -37,7 +39,9 @@ class _ShopDiscountsScreenState extends State<ShopDiscountsScreen> {
       return;
     }
     try {
-      final list = await ApiService(serverUrl).getDiscounts();
+      final list = kDemoMode
+          ? await DemoApiService().getDiscounts()
+          : await ApiService(serverUrl).getDiscounts();
       if (!mounted) return;
       setState(() {
         _discounts = list;

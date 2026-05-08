@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../demo/demo_api_service.dart';
+import '../demo/demo_mode.dart';
 import '../l10n/l10n.dart';
 import '../navigation.dart';
 import '../models/order.dart';
@@ -10,6 +12,7 @@ import '../screens/my_orders_screen.dart';
 import '../screens/order_status_screen.dart';
 import '../services/api_service.dart';
 import '../services/order_history_service.dart';
+import '../utils/haptics.dart';
 
 /// Floating pill that surfaces active orders from anywhere in the app.
 /// Tapping with one active order opens its status screen; with multiple it
@@ -47,6 +50,7 @@ class _ActiveOrdersBubbleState extends State<ActiveOrdersBubble>
   // MaterialApp.builder, OUTSIDE the Navigator's subtree — Navigator.of(context)
   // can't find a Navigator from here.
   Future<void> _onTap(List<PastOrder> active) async {
+    Haptics.selection();
     final nav = rootNavigatorKey.currentState;
     if (nav == null) return;
 
@@ -68,7 +72,9 @@ class _ActiveOrdersBubbleState extends State<ActiveOrdersBubble>
   Future<void> _openSingle(NavigatorState nav, PastOrder past) async {
     Order order;
     try {
-      order = await ApiService(past.serverUrl).getOrder(past.orderId);
+      order = kDemoMode
+          ? await DemoApiService().getOrder(past.orderId)
+          : await ApiService(past.serverUrl).getOrder(past.orderId);
       if (order.status != past.status) {
         await OrderHistoryService()
             .updateStatus(past.orderId, order.status);

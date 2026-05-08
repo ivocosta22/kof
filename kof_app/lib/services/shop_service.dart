@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../demo/demo_data.dart';
+import '../demo/demo_mode.dart';
 import '../models/shop.dart';
 
 /// Guest follows are persisted locally on the device. Once the user signs in
@@ -53,7 +55,9 @@ class _GuestFollowsStore {
 }
 
 class ShopService {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  // Lazy so Firebase is never accessed before initializeApp() in demo mode.
+  FirebaseFirestore? __db;
+  FirebaseFirestore get _db => __db ??= FirebaseFirestore.instance;
 
   CollectionReference<Map<String, dynamic>> get _shops =>
       _db.collection('shops');
@@ -62,6 +66,12 @@ class ShopService {
       _db.collection('users').doc(uid).collection('following');
 
   Stream<List<Shop>> streamShops({String? country}) {
+    if (kDemoMode) {
+      final filtered = country != null
+          ? DemoData.allShops.where((s) => s.country == country).toList()
+          : DemoData.allShops;
+      return Stream.value(filtered);
+    }
     final query = country != null
         ? _shops.where('country', isEqualTo: country)
         : _shops as Query<Map<String, dynamic>>;
@@ -70,6 +80,9 @@ class ShopService {
   }
 
   Future<Shop?> getShop(String shopId) async {
+    if (kDemoMode) {
+      return DemoData.allShops.where((s) => s.id == shopId).firstOrNull;
+    }
     final doc = await _shops.doc(shopId).get();
     if (!doc.exists) return null;
     return Shop.fromDoc(doc);
@@ -77,22 +90,30 @@ class ShopService {
 
   Stream<Set<String>> streamFollowedShopIds(String uid,
       {bool isGuest = false}) {
-    if (isGuest) return _GuestFollowsStore.stream();
+    // In demo mode, always use local storage regardless of account type.
+    if (isGuest || kDemoMode) return _GuestFollowsStore.stream();
     return _followingCol(uid).snapshots().map(
           (snap) => snap.docs.map((d) => d.id).toSet(),
         );
   }
 
-  Stream<List<Shop>> streamFollowedShops(String uid, {bool isGuest = false}) async* {
+  Stream<List<Shop>> streamFollowedShops(String uid,
+      {bool isGuest = false}) async* {
     await for (final ids in streamFollowedShopIds(uid, isGuest: isGuest)) {
       if (ids.isEmpty) {
         yield const [];
         continue;
       }
+      // In demo mode, look up shops from DemoData — no Firestore needed.
+      if (kDemoMode) {
+        yield DemoData.allShops.where((s) => ids.contains(s.id)).toList();
+        continue;
+      }
       final chunks = <List<String>>[];
       final list = ids.toList();
       for (var i = 0; i < list.length; i += 10) {
-        chunks.add(list.sublist(i, i + 10 > list.length ? list.length : i + 10));
+        chunks.add(list.sublist(
+            i, i + 10 > list.length ? list.length : i + 10));
       }
       final results = <Shop>[];
       for (final chunk in chunks) {
@@ -106,14 +127,14 @@ class ShopService {
 
   Future<bool> isFollowing(String uid, String shopId,
       {bool isGuest = false}) async {
-    if (isGuest) return _GuestFollowsStore.contains(shopId);
+    if (isGuest || kDemoMode) return _GuestFollowsStore.contains(shopId);
     final doc = await _followingCol(uid).doc(shopId).get();
     return doc.exists;
   }
 
   Future<void> followShop(String uid, String shopId,
       {bool isGuest = false}) async {
-    if (isGuest) {
+    if (isGuest || kDemoMode) {
       await _GuestFollowsStore.add(shopId);
       return;
     }
@@ -126,7 +147,7 @@ class ShopService {
 
   Future<void> unfollowShop(String uid, String shopId,
       {bool isGuest = false}) async {
-    if (isGuest) {
+    if (isGuest || kDemoMode) {
       await _GuestFollowsStore.remove(shopId);
       return;
     }
@@ -144,7 +165,7 @@ class ShopService {
   /// the local guest store. Best-effort: a failure on one shop won't roll
   /// back the others.
   Future<void> migrateGuestFollowsToUser(String uid) async {
-    if (uid.isEmpty) return;
+    if (kDemoMode || uid.isEmpty) return;
     final ids = await _GuestFollowsStore.drain();
     if (ids.isEmpty) return;
     for (final shopId in ids) {
@@ -159,18 +180,12 @@ class ShopService {
   static Future<void> clearGuestFollows() => _GuestFollowsStore.drain();
 
   /// Persist a computed review average + count back onto the shop document.
-  /// Used by the reviews screen so the shop card / detail header on the map
-  /// reflect the live rating instead of staying at whatever was last set on
-  /// the kof_server platform panel.
-  ///
-  /// Only writes when the rounded average or the count actually differ from
-  /// what's already on the doc — avoids spurious writes every time anyone
-  /// opens the reviews screen.
   Future<void> syncRating(
     String shopId, {
     required double average,
     required int count,
   }) async {
+    if (kDemoMode) return;
     final ref = _shops.doc(shopId);
     final snap = await ref.get();
     if (!snap.exists) return;

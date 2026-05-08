@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'demo/demo_mode.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'l10n/l10n.dart';
@@ -24,8 +25,10 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  if (!kDemoMode) {
+    await Firebase.initializeApp();
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  }
   runApp(const KofApp());
 }
 
@@ -149,8 +152,8 @@ class _StartupGateState extends State<_StartupGate> {
     ]);
     if (!mounted) return;
 
-    // Request notification permissions (no-op until APNs is configured on iOS)
-    await FirebaseMessaging.instance.requestPermission();
+    // Request notification permissions (skipped in demo mode and until APNs is configured on iOS)
+    if (!kDemoMode) await FirebaseMessaging.instance.requestPermission();
 
     if (!mounted) return;
     final auth = context.read<AuthProvider>();

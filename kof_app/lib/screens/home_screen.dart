@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/l10n.dart';
+import '../utils/haptics.dart';
 import '../providers/auth_provider.dart';
 import '../providers/cart_provider.dart';
 import '../providers/notifications_provider.dart';
@@ -26,7 +27,10 @@ class HomeScreen extends StatelessWidget {
         leading: Builder(
           builder: (ctx) => IconButton(
             icon: const Icon(Icons.menu),
-            onPressed: () => AppShell.of(ctx)?.toggle(),
+            onPressed: () {
+              Haptics.selection();
+              AppShell.of(ctx)?.toggle();
+            },
           ),
         ),
         title: Text(
@@ -44,11 +48,13 @@ class HomeScreen extends StatelessWidget {
               child: const Icon(Icons.notifications_outlined),
             ),
             tooltip: l10n.homeNotificationsTooltip,
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (_) => const NotificationsScreen()),
-            ),
+            onPressed: () {
+              Haptics.selection();
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+              );
+            },
           ),
         ],
       ),
@@ -128,7 +134,10 @@ class _ActionCard extends StatelessWidget {
       color: theme.colorScheme.surfaceContainerLow,
       borderRadius: BorderRadius.circular(18),
       child: InkWell(
-        onTap: onTap,
+        onTap: () {
+          Haptics.selection();
+          onTap();
+        },
         borderRadius: BorderRadius.circular(18),
         child: Container(
           padding: const EdgeInsets.all(20),

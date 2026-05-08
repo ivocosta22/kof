@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../demo/demo_api_service.dart';
+import '../demo/demo_mode.dart';
 import '../l10n/l10n.dart';
 import '../models/cart_item.dart';
 import '../models/shop_discount.dart';
@@ -108,7 +110,9 @@ class _CartBottomSheetState extends State<CartBottomSheet> {
     });
 
     try {
-      final discounts = await ApiService(session.serverUrl).getDiscounts();
+      final discounts = kDemoMode
+          ? await DemoApiService().getDiscounts()
+          : await ApiService(session.serverUrl).getDiscounts();
       final match = discounts.where(
         (d) => d.code.toLowerCase() == code.toLowerCase(),
       );
@@ -180,7 +184,8 @@ class _CartBottomSheetState extends State<CartBottomSheet> {
     });
 
     try {
-      final order = await ApiService(session.serverUrl).placeOrder(
+      final api = kDemoMode ? DemoApiService() : ApiService(session.serverUrl);
+      final order = await api.placeOrder(
         fulfillmentType: session.fulfillmentType,
         tableLabel: session.tableLabel,
         tableToken: session.tableToken,

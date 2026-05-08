@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../l10n/l10n.dart';
+import '../demo/demo_mode.dart';
 import '../utils/haptics.dart';
 import '../providers/active_orders_provider.dart';
 import '../providers/auth_provider.dart';
@@ -42,8 +43,9 @@ class AppDrawer extends StatelessWidget {
           children: [
             // ── Profile header ──────────────────────────────────────
             InkWell(
-              onTap: user != null && !user.isGuest
+              onTap: user != null && !user.isGuest && !kDemoMode
                   ? () {
+                      Haptics.selection();
                       close();
                       Navigator.push(
                         context,
@@ -86,7 +88,7 @@ class AppDrawer extends StatelessWidget {
                         ],
                       ),
                     ),
-                    if (user != null && !user.isGuest)
+                    if (user != null && !user.isGuest && !kDemoMode)
                       Icon(
                         Icons.chevron_right,
                         color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
@@ -264,7 +266,10 @@ class _DrawerItem extends StatelessWidget {
           fontWeight: small ? FontWeight.normal : FontWeight.w500,
         ),
       ),
-      onTap: onTap,
+      onTap: () {
+        Haptics.selection();
+        onTap();
+      },
       dense: small,
       contentPadding: const EdgeInsets.symmetric(horizontal: 20),
     );

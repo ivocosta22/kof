@@ -1,5 +1,6 @@
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import '../utils/haptics.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl_phone_field/countries.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
@@ -173,6 +174,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   }
 
   Future<void> _saveProfile() async {
+    Haptics.light();
     final auth = context.read<AuthProvider>();
     final l10n = context.l10n;
     setState(() => _saving = true);
@@ -309,7 +311,10 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
           // ── Avatar ───────────────────────────────────────────────────
           Center(
             child: GestureDetector(
-              onTap: _uploadingPhoto ? null : _pickPhoto,
+              onTap: _uploadingPhoto ? null : () {
+                Haptics.selection();
+                _pickPhoto();
+              },
               child: _buildAvatar(theme, initial),
             ),
           ),
@@ -569,7 +574,10 @@ class _PasswordTile extends StatelessWidget {
       color: theme.colorScheme.surfaceContainerLow,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
-        onTap: onTap,
+        onTap: () {
+          Haptics.selection();
+          onTap();
+        },
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),

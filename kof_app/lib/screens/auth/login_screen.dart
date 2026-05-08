@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import '../../demo/demo_mode.dart';
 import '../../l10n/l10n.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/settings_provider.dart';
@@ -99,6 +100,12 @@ class _LoginScreenState extends State<LoginScreen> {
     _goHome();
   }
 
+  void _loginAsDemo() {
+    Haptics.light();
+    context.read<AuthProvider>().loginAsDemo();
+    _goHome();
+  }
+
   void _goHome() {
     Navigator.pushReplacement(
       context,
@@ -165,6 +172,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     hint: l10n.emailHint,
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
+                    enabled: !kDemoMode,
                   ),
                   const SizedBox(height: 12),
                   _buildField(
@@ -173,7 +181,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     label: l10n.passwordLabel,
                     obscure: _obscurePassword,
                     textInputAction: TextInputAction.done,
-                    onSubmitted: (_) => _login(),
+                    onSubmitted: kDemoMode ? null : (_) => _login(),
+                    enabled: !kDemoMode,
                     suffix: IconButton(
                       icon: Icon(
                         _obscurePassword
@@ -182,20 +191,23 @@ class _LoginScreenState extends State<LoginScreen> {
                         color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                         size: 20,
                       ),
-                      onPressed: () =>
-                          setState(() => _obscurePassword = !_obscurePassword),
+                      onPressed: kDemoMode
+                          ? null
+                          : () => setState(() => _obscurePassword = !_obscurePassword),
                     ),
                   ),
                   const SizedBox(height: 8),
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const ForgotPasswordScreen(),
-                        ),
-                      ),
+                      onPressed: kDemoMode
+                          ? null
+                          : () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const ForgotPasswordScreen(),
+                                ),
+                              ),
                       style: TextButton.styleFrom(
                         padding: EdgeInsets.zero,
                         minimumSize: Size.zero,
@@ -216,7 +228,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 16),
                   ],
                   FilledButton(
-                    onPressed: _loading ? null : _login,
+                    onPressed: _loading || kDemoMode ? null : _login,
                     style: FilledButton.styleFrom(
                       minimumSize: const Size.fromHeight(52),
                       shape: RoundedRectangleBorder(
@@ -235,6 +247,22 @@ class _LoginScreenState extends State<LoginScreen> {
                                 fontSize: 16, fontWeight: FontWeight.w600),
                           ),
                   ),
+                  if (kDemoMode) ...[
+                    const SizedBox(height: 12),
+                    FilledButton.icon(
+                      onPressed: _loginAsDemo,
+                      icon: const Icon(Icons.play_arrow_rounded),
+                      label: const Text(
+                        'Login as Demo User',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size.fromHeight(52),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14)),
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 24),
                   Row(
                     children: [
@@ -260,14 +288,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 16),
                   _buildSocialButton(
                     context: context,
-                    onPressed: _loading ? null : _loginWithGoogle,
+                    onPressed: _loading || kDemoMode ? null : _loginWithGoogle,
                     icon: const _GoogleIcon(),
                     label: l10n.loginWithGoogle,
                   ),
                   const SizedBox(height: 12),
                   _buildSocialButton(
                     context: context,
-                    onPressed: _loginWithApple,
+                    onPressed: kDemoMode ? null : _loginWithApple,
                     icon: Icon(Icons.apple,
                         size: 22,
                         color: theme.colorScheme.onSurface),
@@ -275,7 +303,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 12),
                   TextButton(
-                    onPressed: _loading ? null : _loginAsGuest,
+                    onPressed: _loading || kDemoMode ? null : _loginAsGuest,
                     child: Text(
                       l10n.loginAsGuest,
                       style: TextStyle(
@@ -299,15 +327,20 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         GestureDetector(
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const RegisterScreen()),
-                          ),
+                          onTap: kDemoMode
+                              ? null
+                              : () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => const RegisterScreen()),
+                                  ),
                           child: Text(
                             l10n.loginRegister,
                             style: TextStyle(
-                              color: theme.colorScheme.primary,
+                              color: kDemoMode
+                                  ? theme.colorScheme.onSurface
+                                      .withValues(alpha: 0.35)
+                                  : theme.colorScheme.primary,
                               fontWeight: FontWeight.w700,
                               fontSize: 14,
                             ),
@@ -331,6 +364,7 @@ class _LoginScreenState extends State<LoginScreen> {
     required String label,
     String? hint,
     bool obscure = false,
+    bool enabled = true,
     TextInputType? keyboardType,
     TextInputAction? textInputAction,
     ValueChanged<String>? onSubmitted,
@@ -351,6 +385,7 @@ class _LoginScreenState extends State<LoginScreen> {
       child: TextField(
         controller: controller,
         obscureText: obscure,
+        enabled: enabled,
         keyboardType: keyboardType,
         textInputAction: textInputAction,
         onSubmitted: onSubmitted,

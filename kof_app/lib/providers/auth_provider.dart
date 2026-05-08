@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
+import '../demo/demo_data.dart';
+import '../demo/demo_mode.dart';
 import '../models/user.dart';
 import '../services/auth_service.dart';
 import '../services/fcm_service.dart';
@@ -23,6 +25,11 @@ class AuthProvider extends ChangeNotifier {
   /// Hydrates [_user] from Firebase's persisted session and starts listening
   /// for future auth state changes (sign-in/out on other tabs, token refresh).
   Future<void> tryRestoreSession() async {
+    if (kDemoMode) {
+      // Demo mode: don't auto-login; the login screen shows a demo button.
+      SchedulerBinding.instance.addPostFrameCallback((_) => notifyListeners());
+      return;
+    }
     _attachListener();
     final fbUser = _service.currentFirebaseUser;
     if (fbUser != null) _user = _userFromFirebase(fbUser);
@@ -68,6 +75,11 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> updateProfile({String? name, String? photoUrl}) async {
+    if (kDemoMode) {
+      _user = _user?.copyWith(name: name, photoUrl: photoUrl);
+      notifyListeners();
+      return;
+    }
     final uid = _user?.id;
     if (uid == null || (_user?.isGuest ?? true)) return;
     await _service.updateProfile(name: name, photoUrl: photoUrl);
@@ -85,6 +97,11 @@ class AuthProvider extends ChangeNotifier {
       _service.updateEmail(newEmail, currentPassword: currentPassword);
 
   Future<void> updatePhone(String phone) async {
+    if (kDemoMode) {
+      _user = _user?.copyWith(phone: phone.trim());
+      notifyListeners();
+      return;
+    }
     final uid = _user?.id;
     if (uid == null || (_user?.isGuest ?? true)) return;
     await _userService.savePhone(uid, phone);
@@ -93,6 +110,11 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> saveCountry(String country) async {
+    if (kDemoMode) {
+      _user = _user?.copyWith(country: country);
+      notifyListeners();
+      return;
+    }
     final uid = _user?.id;
     if (uid == null || (_user?.isGuest ?? true)) return;
     await _userService.saveCountry(uid, country);
@@ -142,6 +164,11 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void loginAsDemo() {
+    _user = DemoData.demoUser;
+    notifyListeners();
+  }
+
   /// Polls Firebase for an updated emailVerified flag (call after user
   /// taps "I've verified" on the verification screen).
   Future<bool> refreshEmailVerified() async {
@@ -159,6 +186,11 @@ class AuthProvider extends ChangeNotifier {
   Future<void> resendEmailVerification() => _service.sendEmailVerification();
 
   Future<void> logout() async {
+    if (kDemoMode) {
+      _user = null;
+      notifyListeners();
+      return;
+    }
     await _service.logout();
     _user = null;
     notifyListeners();

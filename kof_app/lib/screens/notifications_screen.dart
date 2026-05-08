@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/l10n.dart';
+import '../utils/haptics.dart';
 import '../models/notification_item.dart';
 import '../providers/notifications_provider.dart';
 import '../services/shop_service.dart';
@@ -156,7 +157,10 @@ class _NotificationCard extends StatelessWidget {
     final unread = !item.read;
     final tappable = item.shopId != null && item.shopId!.isNotEmpty;
     return GestureDetector(
-      onTap: tappable ? () => _openShop(context) : null,
+      onTap: tappable ? () {
+        Haptics.selection();
+        _openShop(context);
+      } : null,
       child: Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
