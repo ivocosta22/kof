@@ -365,6 +365,17 @@ window.kofTranslations.fi = __kofDeepMergeFI(
       welcome: "Tervetuloa {username}"
     },
 
+    history: {
+      title: "Tilaushistoria",
+      loading: "Ladataan…",
+      subtitle: "{count} aiempaa tilausta",
+      noOrders: "Ei aiempia tilauksia.",
+      noMatches: "Yksikään tilaus ei vastaa hakua.",
+      idLabel: "ID #{id}",
+      searchPlaceholder: "Etsi tunnuksella, tuotteella, nimellä tai hinnalla",
+      searchCount: "{shown} / {total}"
+    },
+
     staff: {
       title: "Kof-henkilökunta",
       noOrders: "Ei {kind}-tilauksia",

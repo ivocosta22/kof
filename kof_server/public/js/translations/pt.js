@@ -365,6 +365,17 @@ window.kofTranslations.pt = __kofDeepMergePT(
       welcome: "Bem-vindo {username}"
     },
 
+    history: {
+      title: "Histórico de Pedidos",
+      loading: "A carregar…",
+      subtitle: "{count} pedidos anteriores",
+      noOrders: "Sem pedidos anteriores.",
+      noMatches: "Nenhum pedido corresponde à pesquisa.",
+      idLabel: "ID #{id}",
+      searchPlaceholder: "Pesquisar por id, artigo, nome ou preço",
+      searchCount: "{shown} de {total}"
+    },
+
     staff: {
       title: "Staff Kof",
       noOrders: "Sem pedidos {kind}",

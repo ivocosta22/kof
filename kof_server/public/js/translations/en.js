@@ -339,6 +339,16 @@ window.kofTranslations.en = {
     "status": "Status",
     "welcome": "Welcome {username}"
   },
+  "history": {
+    "title": "Kof Order History",
+    "loading": "Loading…",
+    "subtitle": "{count} past orders",
+    "noOrders": "No past orders found.",
+    "noMatches": "No orders match your search.",
+    "idLabel": "ID #{id}",
+    "searchPlaceholder": "Search by id, item, name, or price",
+    "searchCount": "{shown} of {total}"
+  },
   "staff": {
     "title": "Kof Staff",
     "noOrders": "No {kind} orders",

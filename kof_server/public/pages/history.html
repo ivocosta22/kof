@@ -5,7 +5,24 @@
   <meta name="theme-color" content="#f4efe7" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#121715" media="(prefers-color-scheme: dark)" />
   <title>Kof Order History</title>
+  <link rel="icon" type="image/png" href="/images/logo_app.png" />
   <link rel="stylesheet" href="/css/styles.css" />
+  <style>
+    /* Stronger, mode-aware border for the search field — the default beige
+       border was too subtle on the dark theme background. */
+    #historySearch {
+      border: 1.5px solid rgba(60, 50, 35, 0.45);
+      transition: border-color 120ms ease, box-shadow 120ms ease;
+    }
+    body.dark #historySearch {
+      border-color: rgba(223, 214, 199, 0.45);
+    }
+    #historySearch:focus {
+      outline: none;
+      border-color: var(--brand, #3D6B52);
+      box-shadow: 0 0 0 3px rgba(61, 107, 82, 0.18);
+    }
+  </style>
 </head>
 <body class="staff-page">
   <main class="admin-shell">
@@ -29,6 +46,11 @@
     </section>
 
     <section class="ops-panel" id="historyPanel">
+      <div class="row" style="margin-bottom:14px;gap:10px;align-items:center">
+        <input id="historySearch" type="search" autocomplete="off"
+               style="flex:1;padding:10px 12px;border-radius:10px;background:transparent;color:inherit;font-size:14px" />
+        <span id="historyResultCount" class="muted" style="font-size:12px"></span>
+      </div>
       <div id="historyList" class="ops-stack"></div>
     </section>
 
@@ -57,7 +79,13 @@
     const managerBtnEl = document.getElementById("managerBtn");
     const logoutBtnEl = document.getElementById("logoutBtn");
     const historyListEl = document.getElementById("historyList");
+    const historySearchEl = document.getElementById("historySearch");
+    const historyResultCountEl = document.getElementById("historyResultCount");
     const toastWrap = document.getElementById("toastWrap");
+
+    // Cache of all loaded orders so the search field can filter without
+    // re-hitting the API on every keystroke.
+    let _allOrders = [];
 
     function tf(key, fallback, vars = {}) {
       const value = t(key, vars);
@@ -156,9 +184,61 @@
         : "";
     }
 
+    // Match orders against the user's search query. Looks at order id, daily
+    // order number, customer name, item names, and total price. The total is
+    // matched both with "." and "," decimal separators so a Portuguese or
+    // Finnish user can type "5,70" and still find a €5.70 order.
+    function filterOrders(orders, query) {
+      const q = String(query || "").trim().toLowerCase();
+      if (!q) return orders;
+
+      // "#N" → restrict to order id / daily order number lookups, so the user
+      // doesn't get accidental hits inside item names or customer labels that
+      // happen to contain "#N".
+      if (q.startsWith("#")) {
+        const idQ = q.slice(1).trim();
+        if (!idQ) return orders;
+        return orders.filter((o) =>
+          String(o.id).includes(idQ) ||
+          String(o.order_number).includes(idQ)
+        );
+      }
+
+      const qDot = q.replace(",", ".");
+      return orders.filter((o) => {
+        if (String(o.id).includes(q)) return true;
+        if (String(o.order_number).includes(q)) return true;
+        if ((o.customer_label || "").toLowerCase().includes(q)) return true;
+        if ((o.table_label || "").toLowerCase().includes(q)) return true;
+        const itemNames = (o.items || [])
+          .map((i) => (i.item_name || "").toLowerCase())
+          .join(" ");
+        if (itemNames.includes(q)) return true;
+        const totalCents = o.total_cents ?? (o.items || []).reduce(
+          (s, i) => s + Number(i.line_total_cents || 0), 0
+        );
+        const totalStr = (totalCents / 100).toFixed(2);
+        if (totalStr.includes(qDot)) return true;
+        return false;
+      });
+    }
+
+    function applyHistoryFilter() {
+      const filtered = filterOrders(_allOrders, historySearchEl.value);
+      renderOrders(filtered);
+      const total = _allOrders.length;
+      const shown = filtered.length;
+      historyResultCountEl.textContent = historySearchEl.value.trim()
+        ? tf("history.searchCount", `${shown} of ${total}`, { shown, total })
+        : "";
+    }
+
     function renderOrders(orders) {
       if (!orders.length) {
-        historyListEl.innerHTML = `<div class="muted">${escapeHtml(tf("history.noOrders", "No past orders found."))}</div>`;
+        const msg = historySearchEl.value.trim()
+          ? tf("history.noMatches", "No orders match your search.")
+          : tf("history.noOrders", "No past orders found.");
+        historyListEl.innerHTML = `<div class="muted">${escapeHtml(msg)}</div>`;
         return;
       }
 
@@ -237,6 +317,10 @@
       adminBtnEl.textContent = tf("common.admin", "Admin");
       managerBtnEl.textContent = tf("common.manager", "Manager");
       logoutBtnEl.textContent = tf("common.logout", "Logout");
+      historySearchEl.placeholder = tf(
+        "history.searchPlaceholder",
+        "Search by id, item, name, or price"
+      );
     }
 
     function goStaff() { location.href = "/staff.html"; }
@@ -270,6 +354,7 @@
 
       const data = await api("/api/orders/history");
       const orders = Array.isArray(data.orders) ? data.orders : [];
+      _allOrders = orders;
 
       subEl.textContent = tf(
         "history.subtitle",
@@ -277,7 +362,8 @@
         { count: orders.length }
       );
 
-      renderOrders(orders);
+      historySearchEl.addEventListener("input", applyHistoryFilter);
+      applyHistoryFilter();
     }
 
     boot().catch((error) => {
