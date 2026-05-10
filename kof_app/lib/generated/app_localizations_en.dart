@@ -955,4 +955,173 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get accountSettingsEmailChanged =>
       'Verification email sent. Check your inbox.';
+
+  @override
+  String get loginAsDemoUser => 'Login as Demo User';
+
+  @override
+  String get myOrdersClearAllTooltip => 'Clear all orders (Demo only)';
+
+  @override
+  String get myOrdersClearAllTitle => 'Clear all orders?';
+
+  @override
+  String get myOrdersClearAllBody =>
+      'This will remove every order from your history, including demo seed orders.';
+
+  @override
+  String get myOrdersClearAllConfirm => 'Clear all';
+
+  @override
+  String get demoModeTitle => 'Demo Mode';
+
+  @override
+  String get demoScanHeading => 'Select a demo scenario';
+
+  @override
+  String get demoScanSubtitle => 'No camera or real shop required.';
+
+  @override
+  String get demoShop1Description =>
+      'Specialty coffee and homemade pastries in the heart of Helsinki. Our beans are sourced from single-origin farms and roasted in-house.';
+
+  @override
+  String get demoShop2Description =>
+      "Porto's favourite third-wave coffee shop. Great espresso, vegan pastries, and a sun-drenched terrace overlooking the river.";
+
+  @override
+  String get demoDiscount1Title => 'Pastry + Drink Deal';
+
+  @override
+  String get demoDiscount1Description =>
+      'Buy any pastry and get one espresso or hot/cold drink free.';
+
+  @override
+  String get demoDiscount2Title => 'Summer Special';
+
+  @override
+  String get demoDiscount2Description =>
+      '25% off your entire order. No minimum spend.';
+
+  @override
+  String get demoNotif1Title => 'Weekend Special!';
+
+  @override
+  String get demoNotif1Body =>
+      'Half-price croissants today. Come in before noon and mention Kof!';
+
+  @override
+  String get demoNotif2Title => 'New Seasonal Blend';
+
+  @override
+  String get demoNotif2Body =>
+      'Our Autumn Spice Latte is now available. Try it today!';
+
+  @override
+  String get privacyLastUpdated => 'Last updated: 2026-05-02';
+
+  @override
+  String get privacySection1Title => 'Who we are';
+
+  @override
+  String get privacySection1Body =>
+      'Kof is a personal-project ordering app that lets you browse coffee shops, place orders ahead of time, and follow shops you like. This is a portfolio project — there is no real company behind it.';
+
+  @override
+  String get privacySection2Title => 'What we collect';
+
+  @override
+  String get privacySection2Body =>
+      'When you create an account, we store your email, display name, and (optionally) a phone number and profile photo. When you place an order, we store the order contents, time, and which shop received it. If you follow a shop, we store that relationship so we can deliver notifications.';
+
+  @override
+  String get privacySection3Title => 'How we use it';
+
+  @override
+  String get privacySection3Body =>
+      'Account data is used to sign you in and personalise the app. Order data is shown to you in My Orders and to the shop staff so they can prepare your order. Notification preferences let you receive push messages from shops you follow.';
+
+  @override
+  String get privacySection4Title => 'Who we share it with';
+
+  @override
+  String get privacySection4Body =>
+      'We do not sell your data. Order details are shared only with the specific shop you ordered from. Authentication and push delivery are handled by Firebase (Google) under their own privacy terms.';
+
+  @override
+  String get privacySection5Title => 'Your choices';
+
+  @override
+  String get privacySection5Body =>
+      'You can edit or remove your name, phone, and profile photo from Account Settings at any time. You can unfollow a shop to stop receiving its notifications. Sign out clears your local session.';
+
+  @override
+  String get privacySection6Title => 'Contact';
+
+  @override
+  String get privacySection6Body =>
+      'Questions about this policy? Reach us at customersupport@kof.example.com.';
+
+  @override
+  String get termsLastUpdated => 'Last updated: 2026-05-02';
+
+  @override
+  String get termsSection1Title => '1. About this app';
+
+  @override
+  String get termsSection1Body =>
+      'Kof is a personal portfolio project. By using it you acknowledge that there is no real commercial entity behind the app and that orders, prices, and shops shown may be demonstrations rather than real businesses.';
+
+  @override
+  String get termsSection2Title => '2. Your account';
+
+  @override
+  String get termsSection2Body =>
+      'You are responsible for keeping your sign-in credentials safe. You must provide an email you control. We may suspend an account that is used to abuse the service or its participating shops.';
+
+  @override
+  String get termsSection3Title => '3. Orders and payment';
+
+  @override
+  String get termsSection3Body =>
+      "Orders placed through the app are sent to the relevant shop for preparation. Payment is handled at the counter or via the shop's own systems — the app does not currently process payments. Discount codes shown in the app are subject to the issuing shop's terms.";
+
+  @override
+  String get termsSection4Title => '4. Acceptable use';
+
+  @override
+  String get termsSection4Body =>
+      "Do not use the app to harass shop staff, place fraudulent orders, or attempt to access other users' data. Automated scraping or load-testing without permission is not allowed.";
+
+  @override
+  String get termsSection5Title => '5. Limitation of liability';
+
+  @override
+  String get termsSection5Body =>
+      'The app is provided "as is" without warranties of any kind. We are not responsible for missed orders, incorrect items, or any loss arising from use of the app.';
+
+  @override
+  String get termsSection6Title => '6. Changes';
+
+  @override
+  String get termsSection6Body =>
+      'These terms may be updated from time to time. Continued use after changes constitutes acceptance of the updated terms.';
+
+  @override
+  String get termsSection7Title => '7. Contact';
+
+  @override
+  String get termsSection7Body =>
+      'Questions or complaints? Reach us at customersupport@kof.example.com.';
+
+  @override
+  String activeOrdersCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count active orders',
+      one: '1 active order',
+    );
+    return '$_temp0';
+  }
 }

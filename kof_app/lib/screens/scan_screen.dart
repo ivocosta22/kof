@@ -113,8 +113,9 @@ class _ScanScreenState extends State<ScanScreen> {
 
   Widget _buildDemoBody() {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
     return Scaffold(
-      appBar: AppBar(title: const Text('Demo Mode')),
+      appBar: AppBar(title: Text(l10n.demoModeTitle)),
       body: Padding(
         padding: const EdgeInsets.all(32),
         child: Column(
@@ -125,14 +126,14 @@ class _ScanScreenState extends State<ScanScreen> {
                 size: 80, color: theme.colorScheme.primary),
             const SizedBox(height: 24),
             Text(
-              'Select a demo scenario',
+              l10n.demoScanHeading,
               style: theme.textTheme.headlineSmall
                   ?.copyWith(fontWeight: FontWeight.w700),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
-              'No camera or real shop required.',
+              l10n.demoScanSubtitle,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
@@ -145,7 +146,7 @@ class _ScanScreenState extends State<ScanScreen> {
                 _startDemoSession(tableLabel: '3');
               },
               icon: const Icon(Icons.table_restaurant),
-              label: Text('${DemoData.shop1.name} — Table 3'),
+              label: Text('${DemoData.shop1.name} — ${l10n.tableLabel('3')}'),
               style: FilledButton.styleFrom(
                 minimumSize: const Size.fromHeight(52),
                 shape: RoundedRectangleBorder(
@@ -159,7 +160,7 @@ class _ScanScreenState extends State<ScanScreen> {
                 _startDemoSession(tableLabel: '7');
               },
               icon: const Icon(Icons.table_restaurant),
-              label: Text('${DemoData.shop1.name} — Table 7'),
+              label: Text('${DemoData.shop1.name} — ${l10n.tableLabel('7')}'),
               style: FilledButton.styleFrom(
                 minimumSize: const Size.fromHeight(52),
                 backgroundColor: theme.colorScheme.secondary,

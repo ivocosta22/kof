@@ -43,7 +43,7 @@ class AppDrawer extends StatelessWidget {
           children: [
             // ── Profile header ──────────────────────────────────────
             InkWell(
-              onTap: user != null && !user.isGuest && !kDemoMode
+              onTap: user != null && !user.isGuest
                   ? () {
                       Haptics.selection();
                       close();

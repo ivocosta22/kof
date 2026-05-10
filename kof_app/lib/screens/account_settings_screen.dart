@@ -1,5 +1,6 @@
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import '../demo/demo_mode.dart';
 import '../utils/haptics.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl_phone_field/countries.dart';
@@ -311,7 +312,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
           // ── Avatar ───────────────────────────────────────────────────
           Center(
             child: GestureDetector(
-              onTap: _uploadingPhoto ? null : () {
+              onTap: (_uploadingPhoto || kDemoMode) ? null : () {
                 Haptics.selection();
                 _pickPhoto();
               },
@@ -328,14 +329,18 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             label: l10n.accountSettingsName,
             icon: Icons.person_outline,
             textCapitalization: TextCapitalization.words,
+            readOnly: kDemoMode,
           ),
           const SizedBox(height: 14),
-          _phoneField(theme, l10n.accountSettingsPhone),
+          IgnorePointer(
+            ignoring: kDemoMode,
+            child: _phoneField(theme, l10n.accountSettingsPhone),
+          ),
           const SizedBox(height: 20),
           SizedBox(
             width: double.infinity,
             child: FilledButton(
-              onPressed: _saving ? null : _saveProfile,
+              onPressed: (_saving || kDemoMode) ? null : _saveProfile,
               style: FilledButton.styleFrom(
                 minimumSize: const Size.fromHeight(48),
                 shape: RoundedRectangleBorder(
@@ -368,11 +373,12 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                     label: l10n.accountSettingsEmail,
                     icon: Icons.mail_outline,
                     keyboardType: TextInputType.emailAddress,
+                    readOnly: kDemoMode,
                   ),
                 ),
                 const SizedBox(width: 10),
                 FilledButton.tonal(
-                  onPressed: _savingEmail ? null : _changeEmail,
+                  onPressed: (_savingEmail || kDemoMode) ? null : _changeEmail,
                   style: FilledButton.styleFrom(
                     minimumSize: const Size(72, 52),
                     shape: RoundedRectangleBorder(
@@ -393,7 +399,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             _PasswordTile(
               subtitle: l10n.accountSettingsChangePasswordSubtitle,
               label: l10n.accountSettingsChangePassword,
-              onTap: _sendPasswordReset,
+              onTap: kDemoMode ? null : _sendPasswordReset,
             ),
           ] else ...[
             _field(
@@ -559,7 +565,7 @@ class _SectionHeader extends StatelessWidget {
 class _PasswordTile extends StatelessWidget {
   final String label;
   final String subtitle;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   const _PasswordTile({
     required this.label,
@@ -574,10 +580,12 @@ class _PasswordTile extends StatelessWidget {
       color: theme.colorScheme.surfaceContainerLow,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
-        onTap: () {
-          Haptics.selection();
-          onTap();
-        },
+        onTap: onTap == null
+            ? null
+            : () {
+                Haptics.selection();
+                onTap!();
+              },
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),

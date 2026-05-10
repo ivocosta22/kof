@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../demo/demo_localizations.dart';
+import '../demo/demo_mode.dart';
 import '../l10n/l10n.dart';
 import '../utils/haptics.dart';
 import '../models/notification_item.dart';
@@ -156,6 +158,12 @@ class _NotificationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final unread = !item.read;
     final tappable = item.shopId != null && item.shopId!.isNotEmpty;
+    final title = kDemoMode
+        ? DemoL10n.notificationTitle(l10n, item.id, item.title)
+        : item.title;
+    final body = kDemoMode
+        ? DemoL10n.notificationBody(l10n, item.id, item.body)
+        : item.body;
     return GestureDetector(
       onTap: tappable ? () {
         Haptics.selection();
@@ -200,7 +208,7 @@ class _NotificationCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        item.title.isEmpty ? '—' : item.title,
+                        title.isEmpty ? '—' : title,
                         style: theme.textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.w700,
                         ),
@@ -215,10 +223,10 @@ class _NotificationCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                if (item.body.isNotEmpty) ...[
+                if (body.isNotEmpty) ...[
                   const SizedBox(height: 4),
                   Text(
-                    item.body,
+                    body,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurface
                           .withValues(alpha: 0.85),

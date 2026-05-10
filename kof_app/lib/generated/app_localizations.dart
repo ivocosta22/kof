@@ -1803,6 +1803,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Verification email sent. Check your inbox.'**
   String get accountSettingsEmailChanged;
+
+  /// No description provided for @loginAsDemoUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Login as Demo User'**
+  String get loginAsDemoUser;
+
+  /// No description provided for @myOrdersClearAllTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all orders'**
+  String get myOrdersClearAllTooltip;
+
+  /// No description provided for @myOrdersClearAllTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all orders?'**
+  String get myOrdersClearAllTitle;
+
+  /// No description provided for @myOrdersClearAllBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This will remove every order from your history, including demo seed orders.'**
+  String get myOrdersClearAllBody;
+
+  /// No description provided for @myOrdersClearAllConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all'**
+  String get myOrdersClearAllConfirm;
+
+  /// No description provided for @demoModeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Demo Mode'**
+  String get demoModeTitle;
+
+  /// No description provided for @demoScanHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a demo scenario'**
+  String get demoScanHeading;
+
+  /// No description provided for @demoScanSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No camera or real shop required.'**
+  String get demoScanSubtitle;
+
+  /// No description provided for @demoShop1Description.
+  String get demoShop1Description;
+
+  /// No description provided for @demoShop2Description.
+  String get demoShop2Description;
+
+  /// No description provided for @demoDiscount1Title.
+  String get demoDiscount1Title;
+
+  /// No description provided for @demoDiscount1Description.
+  String get demoDiscount1Description;
+
+  /// No description provided for @demoDiscount2Title.
+  String get demoDiscount2Title;
+
+  /// No description provided for @demoDiscount2Description.
+  String get demoDiscount2Description;
+
+  /// No description provided for @demoNotif1Title.
+  String get demoNotif1Title;
+
+  /// No description provided for @demoNotif1Body.
+  String get demoNotif1Body;
+
+  /// No description provided for @demoNotif2Title.
+  String get demoNotif2Title;
+
+  /// No description provided for @demoNotif2Body.
+  String get demoNotif2Body;
+
+  String get privacyLastUpdated;
+  String get privacySection1Title;
+  String get privacySection1Body;
+  String get privacySection2Title;
+  String get privacySection2Body;
+  String get privacySection3Title;
+  String get privacySection3Body;
+  String get privacySection4Title;
+  String get privacySection4Body;
+  String get privacySection5Title;
+  String get privacySection5Body;
+  String get privacySection6Title;
+  String get privacySection6Body;
+
+  String get termsLastUpdated;
+  String get termsSection1Title;
+  String get termsSection1Body;
+  String get termsSection2Title;
+  String get termsSection2Body;
+  String get termsSection3Title;
+  String get termsSection3Body;
+  String get termsSection4Title;
+  String get termsSection4Body;
+  String get termsSection5Title;
+  String get termsSection5Body;
+  String get termsSection6Title;
+  String get termsSection6Body;
+  String get termsSection7Title;
+  String get termsSection7Body;
+
+  /// No description provided for @activeOrdersCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 active order} other{{count} active orders}}'**
+  String activeOrdersCount(int count);
 }
 
 class _AppLocalizationsDelegate

@@ -961,4 +961,173 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get accountSettingsEmailChanged =>
       'Vahvistusviesti lähetetty. Tarkista postilaatikkosi.';
+
+  @override
+  String get loginAsDemoUser => 'Kirjaudu demokäyttäjänä';
+
+  @override
+  String get myOrdersClearAllTooltip => 'Tyhjennä kaikki tilaukset (Vain demo)';
+
+  @override
+  String get myOrdersClearAllTitle => 'Tyhjennä kaikki tilaukset?';
+
+  @override
+  String get myOrdersClearAllBody =>
+      'Tämä poistaa kaikki tilaukset historiastasi, mukaan lukien demotilaukset.';
+
+  @override
+  String get myOrdersClearAllConfirm => 'Tyhjennä kaikki';
+
+  @override
+  String get demoModeTitle => 'Demotila';
+
+  @override
+  String get demoScanHeading => 'Valitse demoskenaario';
+
+  @override
+  String get demoScanSubtitle => 'Kameraa tai oikeaa kahvilaa ei tarvita.';
+
+  @override
+  String get demoShop1Description =>
+      'Erikoiskahvia ja kotitekoisia leivonnaisia Helsingin sydämessä. Pavumme tulevat yksittäisiltä tiloilta ja paahdetaan paikan päällä.';
+
+  @override
+  String get demoShop2Description =>
+      'Porton suosikki kolmannen aallon kahvila. Loistava espresso, vegaaniset leivonnaiset ja aurinkoinen terassi jokinäkymällä.';
+
+  @override
+  String get demoDiscount1Title => 'Leivonnais- ja juomatarjous';
+
+  @override
+  String get demoDiscount1Description =>
+      'Osta mikä tahansa leivonnainen ja saat espresson tai kuuman/kylmän juoman ilmaiseksi.';
+
+  @override
+  String get demoDiscount2Title => 'Kesätarjous';
+
+  @override
+  String get demoDiscount2Description =>
+      '25 % alennus koko tilauksestasi. Ei vähimmäisostoa.';
+
+  @override
+  String get demoNotif1Title => 'Viikonlopputarjous!';
+
+  @override
+  String get demoNotif1Body =>
+      'Croissantit puoleen hintaan tänään. Tule ennen puoltapäivää ja mainitse Kof!';
+
+  @override
+  String get demoNotif2Title => 'Uusi kausijuoma';
+
+  @override
+  String get demoNotif2Body =>
+      'Syksyinen Spice Latte on nyt saatavilla. Kokeile tänään!';
+
+  @override
+  String get privacyLastUpdated => 'Päivitetty viimeksi: 2026-05-02';
+
+  @override
+  String get privacySection1Title => 'Keitä olemme';
+
+  @override
+  String get privacySection1Body =>
+      'Kof on henkilökohtainen tilaussovellus, jonka avulla voit selata kahviloita, tehdä tilauksia etukäteen ja seurata suosikkikahviloitasi. Tämä on portfolioprojekti — sen takana ei ole oikeaa yritystä.';
+
+  @override
+  String get privacySection2Title => 'Mitä keräämme';
+
+  @override
+  String get privacySection2Body =>
+      'Kun luot tilin, tallennamme sähköpostisi, näyttönimesi ja (valinnaisesti) puhelinnumerosi sekä profiilikuvasi. Kun teet tilauksen, tallennamme tilauksen sisällön, ajan ja sen kahvilan, joka tilauksen vastaanotti. Jos seuraat kahvilaa, tallennamme tämän yhteyden voidaksemme lähettää ilmoituksia.';
+
+  @override
+  String get privacySection3Title => 'Miten käytämme tietoja';
+
+  @override
+  String get privacySection3Body =>
+      'Tilitietoja käytetään kirjautumiseen ja sovelluksen personointiin. Tilaustietoja näytetään sinulle Tilauksissa ja kahvilan henkilökunnalle tilauksen valmistamista varten. Ilmoitusasetuksilla voit vastaanottaa push-viestejä seuraamiltasi kahviloilta.';
+
+  @override
+  String get privacySection4Title => 'Kenelle jaamme tietoja';
+
+  @override
+  String get privacySection4Body =>
+      'Emme myy tietojasi. Tilauksen tiedot jaetaan vain sen kahvilan kanssa, josta tilasit. Tunnistautumisen ja push-viestien lähettämisen hoitaa Firebase (Google) omien tietosuojaehtojensa mukaisesti.';
+
+  @override
+  String get privacySection5Title => 'Sinun valintasi';
+
+  @override
+  String get privacySection5Body =>
+      'Voit muokata tai poistaa nimesi, puhelinnumerosi ja profiilikuvasi Tilin asetuksissa milloin tahansa. Voit lopettaa kahvilan seuraamisen lopettaaksesi sen ilmoitusten vastaanottamisen. Uloskirjautuminen tyhjentää paikallisen istuntosi.';
+
+  @override
+  String get privacySection6Title => 'Yhteystiedot';
+
+  @override
+  String get privacySection6Body =>
+      'Kysymyksiä tästä käytännöstä? Ota yhteyttä customersupport@kof.example.com.';
+
+  @override
+  String get termsLastUpdated => 'Päivitetty viimeksi: 2026-05-02';
+
+  @override
+  String get termsSection1Title => '1. Tietoja sovelluksesta';
+
+  @override
+  String get termsSection1Body =>
+      'Kof on henkilökohtainen portfolioprojekti. Käyttämällä sovellusta hyväksyt, että sen takana ei ole oikeaa kaupallista yritystä ja että sovelluksessa näkyvät tilaukset, hinnat ja kahvilat saattavat olla esittelyjä eivätkä oikeita yrityksiä.';
+
+  @override
+  String get termsSection2Title => '2. Tilisi';
+
+  @override
+  String get termsSection2Body =>
+      'Olet vastuussa kirjautumistietojesi turvassa pitämisestä. Sinun on annettava sähköpostiosoite, johon sinulla on pääsy. Voimme jäädyttää tilin, jota käytetään palvelun tai osallistuvien kahviloiden väärinkäyttöön.';
+
+  @override
+  String get termsSection3Title => '3. Tilaukset ja maksut';
+
+  @override
+  String get termsSection3Body =>
+      'Sovelluksen kautta tehdyt tilaukset lähetetään asianomaiselle kahvilalle valmistettavaksi. Maksu hoidetaan tiskillä tai kahvilan omien järjestelmien kautta — sovellus ei tällä hetkellä käsittele maksuja. Sovelluksessa näytettävät alennuskoodit ovat niiden myöntäneen kahvilan ehtojen alaisia.';
+
+  @override
+  String get termsSection4Title => '4. Hyväksyttävä käyttö';
+
+  @override
+  String get termsSection4Body =>
+      'Älä käytä sovellusta kahviloiden henkilökunnan häirintään, vilpillisten tilausten tekemiseen tai yritä päästä käsiksi muiden käyttäjien tietoihin. Automaattinen tietojen kaapiminen tai kuormitustestaus ilman lupaa ei ole sallittua.';
+
+  @override
+  String get termsSection5Title => '5. Vastuunrajoitus';
+
+  @override
+  String get termsSection5Body =>
+      'Sovellus tarjotaan "sellaisenaan" ilman minkäänlaisia takuita. Emme ole vastuussa puuttuvista tilauksista, vääristä tuotteista tai mistään sovelluksen käytöstä aiheutuvista tappioista.';
+
+  @override
+  String get termsSection6Title => '6. Muutokset';
+
+  @override
+  String get termsSection6Body =>
+      'Näitä ehtoja voidaan päivittää ajoittain. Käytön jatkaminen muutosten jälkeen tarkoittaa päivitettyjen ehtojen hyväksymistä.';
+
+  @override
+  String get termsSection7Title => '7. Yhteystiedot';
+
+  @override
+  String get termsSection7Body =>
+      'Kysymyksiä tai valituksia? Ota yhteyttä customersupport@kof.example.com.';
+
+  @override
+  String activeOrdersCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count aktiivista tilausta',
+      one: '1 aktiivinen tilaus',
+    );
+    return '$_temp0';
+  }
 }

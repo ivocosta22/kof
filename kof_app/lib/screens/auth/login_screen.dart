@@ -252,9 +252,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     FilledButton.icon(
                       onPressed: _loginAsDemo,
                       icon: const Icon(Icons.play_arrow_rounded),
-                      label: const Text(
-                        'Login as Demo User',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                      label: Text(
+                        l10n.loginAsDemoUser,
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                       ),
                       style: FilledButton.styleFrom(
                         minimumSize: const Size.fromHeight(52),

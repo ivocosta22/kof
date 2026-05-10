@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../demo/demo_api_service.dart';
+import '../demo/demo_localizations.dart';
 import '../demo/demo_mode.dart';
 import '../l10n/l10n.dart';
 import '../models/shop.dart';
@@ -205,7 +206,9 @@ class _DiscountCard extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    discount.title,
+                    kDemoMode
+                        ? DemoL10n.discountTitle(l10n, discount.id, discount.title)
+                        : discount.title,
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 18,
@@ -219,7 +222,10 @@ class _DiscountCard extends StatelessWidget {
             if (discount.description.isNotEmpty) ...[
               const SizedBox(height: 6),
               Text(
-                discount.description,
+                kDemoMode
+                    ? DemoL10n.discountDescription(
+                        l10n, discount.id, discount.description)
+                    : discount.description,
                 style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.92),
                   fontSize: 13,

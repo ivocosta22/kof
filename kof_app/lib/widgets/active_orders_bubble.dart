@@ -148,7 +148,7 @@ class _ActiveOrdersBubbleState extends State<ActiveOrdersBubble>
             active.first.status,
             isTable: active.first.tableLabel.isNotEmpty,
           )
-        : '${active.length} active orders';
+        : l10n.activeOrdersCount(active.length);
     final subLabel = active.length == 1
         ? l10n.orderNumber(active.first.orderNumber)
         : null;

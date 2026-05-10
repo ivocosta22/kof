@@ -962,4 +962,173 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get accountSettingsEmailChanged =>
       'Email de verificação enviado. Verifique a sua caixa de entrada.';
+
+  @override
+  String get loginAsDemoUser => 'Entrar como utilizador de demonstração';
+
+  @override
+  String get myOrdersClearAllTooltip => 'Limpar todos os pedidos (Apenas demonstração)';
+
+  @override
+  String get myOrdersClearAllTitle => 'Limpar todos os pedidos?';
+
+  @override
+  String get myOrdersClearAllBody =>
+      'Isto irá remover todos os pedidos do seu histórico, incluindo os pedidos de demonstração.';
+
+  @override
+  String get myOrdersClearAllConfirm => 'Limpar tudo';
+
+  @override
+  String get demoModeTitle => 'Modo de demonstração';
+
+  @override
+  String get demoScanHeading => 'Selecione um cenário de demonstração';
+
+  @override
+  String get demoScanSubtitle => 'Não é necessária câmara nem loja real.';
+
+  @override
+  String get demoShop1Description =>
+      'Café de especialidade e bolos caseiros no coração de Helsínquia. Os nossos grãos provêm de fazendas de origem única e são torrados internamente.';
+
+  @override
+  String get demoShop2Description =>
+      'A casa de café de terceira vaga favorita do Porto. Excelente espresso, bolos vegan e uma esplanada soalheira com vista para o rio.';
+
+  @override
+  String get demoDiscount1Title => 'Combo Bolo + Bebida';
+
+  @override
+  String get demoDiscount1Description =>
+      'Compre qualquer bolo e receba um espresso ou bebida quente/fria grátis.';
+
+  @override
+  String get demoDiscount2Title => 'Especial de Verão';
+
+  @override
+  String get demoDiscount2Description =>
+      '25% de desconto em toda a sua encomenda. Sem mínimo de compra.';
+
+  @override
+  String get demoNotif1Title => 'Oferta de fim de semana!';
+
+  @override
+  String get demoNotif1Body =>
+      'Croissants a metade do preço hoje. Venha antes do meio-dia e mencione Kof!';
+
+  @override
+  String get demoNotif2Title => 'Nova mistura sazonal';
+
+  @override
+  String get demoNotif2Body =>
+      'O nosso Latte de Outono já está disponível. Experimente hoje!';
+
+  @override
+  String get privacyLastUpdated => 'Última atualização: 2026-05-02';
+
+  @override
+  String get privacySection1Title => 'Quem somos';
+
+  @override
+  String get privacySection1Body =>
+      'Kof é uma aplicação de encomendas, criada como projeto pessoal, que lhe permite ver cafetarias, encomendar antecipadamente e seguir as cafetarias de que gosta. Este é um projeto de portefólio — não existe uma empresa real por trás.';
+
+  @override
+  String get privacySection2Title => 'O que recolhemos';
+
+  @override
+  String get privacySection2Body =>
+      'Quando cria uma conta, guardamos o seu email, nome de utilizador e (opcionalmente) número de telefone e foto de perfil. Quando faz uma encomenda, guardamos o conteúdo, hora e a cafetaria que a recebeu. Se seguir uma cafetaria, guardamos essa relação para podermos enviar notificações.';
+
+  @override
+  String get privacySection3Title => 'Como utilizamos os dados';
+
+  @override
+  String get privacySection3Body =>
+      'Os dados da conta são usados para autenticação e personalização da app. Os dados de encomendas são mostrados em "As Minhas Encomendas" e ao pessoal da cafetaria para preparar a sua encomenda. As preferências de notificação permitem receber mensagens push das cafetarias que segue.';
+
+  @override
+  String get privacySection4Title => 'Com quem partilhamos';
+
+  @override
+  String get privacySection4Body =>
+      'Não vendemos os seus dados. Os detalhes das encomendas são partilhados apenas com a cafetaria específica onde encomendou. A autenticação e o envio de notificações são tratados pelo Firebase (Google) sob os seus próprios termos de privacidade.';
+
+  @override
+  String get privacySection5Title => 'As suas escolhas';
+
+  @override
+  String get privacySection5Body =>
+      'Pode editar ou remover o seu nome, telefone e foto de perfil em Definições da Conta a qualquer momento. Pode deixar de seguir uma cafetaria para parar de receber as suas notificações. Terminar sessão limpa a sua sessão local.';
+
+  @override
+  String get privacySection6Title => 'Contacto';
+
+  @override
+  String get privacySection6Body =>
+      'Questões sobre esta política? Contacte-nos em customersupport@kof.example.com.';
+
+  @override
+  String get termsLastUpdated => 'Última atualização: 2026-05-02';
+
+  @override
+  String get termsSection1Title => '1. Sobre esta app';
+
+  @override
+  String get termsSection1Body =>
+      'Kof é um projeto pessoal de portefólio. Ao utilizar a app, reconhece que não existe uma entidade comercial real por trás dela e que as encomendas, preços e cafetarias mostradas podem ser demonstrações em vez de negócios reais.';
+
+  @override
+  String get termsSection2Title => '2. A sua conta';
+
+  @override
+  String get termsSection2Body =>
+      'É responsável por manter as suas credenciais de início de sessão seguras. Deve fornecer um email do qual seja titular. Podemos suspender uma conta usada para abusar do serviço ou das cafetarias participantes.';
+
+  @override
+  String get termsSection3Title => '3. Encomendas e pagamento';
+
+  @override
+  String get termsSection3Body =>
+      'As encomendas feitas através da app são enviadas à cafetaria relevante para preparação. O pagamento é tratado no balcão ou pelos próprios sistemas da cafetaria — a app não processa atualmente pagamentos. Os códigos de desconto mostrados na app estão sujeitos aos termos da cafetaria que os emite.';
+
+  @override
+  String get termsSection4Title => '4. Utilização aceitável';
+
+  @override
+  String get termsSection4Body =>
+      'Não use a app para assediar o pessoal das cafetarias, fazer encomendas fraudulentas ou tentar aceder a dados de outros utilizadores. Recolha automatizada de dados ou testes de carga sem autorização não são permitidos.';
+
+  @override
+  String get termsSection5Title => '5. Limitação de responsabilidade';
+
+  @override
+  String get termsSection5Body =>
+      'A app é fornecida "tal como está", sem garantias de qualquer tipo. Não somos responsáveis por encomendas perdidas, itens incorretos ou qualquer perda decorrente do uso da app.';
+
+  @override
+  String get termsSection6Title => '6. Alterações';
+
+  @override
+  String get termsSection6Body =>
+      'Estes termos podem ser atualizados periodicamente. O uso continuado após alterações constitui aceitação dos termos atualizados.';
+
+  @override
+  String get termsSection7Title => '7. Contacto';
+
+  @override
+  String get termsSection7Body =>
+      'Questões ou reclamações? Contacte-nos em customersupport@kof.example.com.';
+
+  @override
+  String activeOrdersCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pedidos ativos',
+      one: '1 pedido ativo',
+    );
+    return '$_temp0';
+  }
 }

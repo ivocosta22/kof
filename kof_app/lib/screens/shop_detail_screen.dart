@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import '../demo/demo_api_service.dart';
+import '../demo/demo_localizations.dart';
 import '../demo/demo_mode.dart';
 import '../l10n/l10n.dart';
 import '../models/shop.dart';
@@ -172,10 +173,11 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
             ),
           );
 
-      Navigator.pushReplacement(
+      Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const MenuScreen()),
       );
+      if (mounted) setState(() => _connectingWalkIn = false);
     } catch (_) {
       if (!mounted) return;
       setState(() => _connectingWalkIn = false);
@@ -362,8 +364,13 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
                         style: theme.textTheme.titleMedium
                             ?.copyWith(fontWeight: FontWeight.w700)),
                     const SizedBox(height: 8),
-                    Text(shop.description,
-                        style: theme.textTheme.bodyMedium),
+                    Text(
+                      kDemoMode
+                          ? DemoL10n.shopDescription(
+                              l10n, shop.id, shop.description)
+                          : shop.description,
+                      style: theme.textTheme.bodyMedium,
+                    ),
                     const SizedBox(height: 28),
                   ],
                   _navSection(
@@ -414,20 +421,29 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
 
   Widget _header(ThemeData theme) {
     final url = widget.shop.photoUrl;
-    final image = (url != null && url.isNotEmpty)
-        ? Image.network(
-            url,
-            fit: BoxFit.cover,
-            errorBuilder: (_, _, _) => _fallbackHeader(theme),
-            loadingBuilder: (_, child, progress) {
-              if (progress == null) return child;
-              return Container(
-                color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                child: const Center(child: CircularProgressIndicator()),
-              );
-            },
-          )
-        : _fallbackHeader(theme);
+    final Widget image;
+    if (url == null || url.isEmpty) {
+      image = _fallbackHeader(theme);
+    } else if (url.startsWith('assets/')) {
+      image = Image.asset(
+        url,
+        fit: BoxFit.cover,
+        errorBuilder: (_, _, _) => _fallbackHeader(theme),
+      );
+    } else {
+      image = Image.network(
+        url,
+        fit: BoxFit.cover,
+        errorBuilder: (_, _, _) => _fallbackHeader(theme),
+        loadingBuilder: (_, child, progress) {
+          if (progress == null) return child;
+          return Container(
+            color: theme.colorScheme.primary.withValues(alpha: 0.1),
+            child: const Center(child: CircularProgressIndicator()),
+          );
+        },
+      );
+    }
 
     return Stack(
       fit: StackFit.expand,

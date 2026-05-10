@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../demo/demo_api_service.dart';
 import '../demo/demo_data.dart';
 import '../demo/demo_mode.dart';
@@ -21,6 +22,8 @@ class MyOrdersScreen extends StatefulWidget {
 }
 
 class _MyOrdersScreenState extends State<MyOrdersScreen> {
+  static const _demoSeedsClearedKey = 'kof_demo_seeds_cleared_v1';
+
   late Future<List<PastOrder>> _future;
   // Bumped on every reload — used as the FutureBuilder key so it fully resets
   // (rather than potentially showing the previous future's resolved data).
@@ -54,11 +57,14 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
   // cached entries if the shop is unreachable.
   Future<List<PastOrder>> _loadOrders() async {
     if (kDemoMode) {
+      final prefs = await SharedPreferences.getInstance();
+      final seedsCleared = prefs.getBool(_demoSeedsClearedKey) ?? false;
       final stored = await OrderHistoryService().getAll();
       final storedIds = stored.map((o) => o.orderId).toSet();
       final merged = [
         ...stored,
-        ...DemoData.demoPastOrders.where((o) => !storedIds.contains(o.orderId)),
+        if (!seedsCleared)
+          ...DemoData.demoPastOrders.where((o) => !storedIds.contains(o.orderId)),
       ]..sort((a, b) => b.createdAt.compareTo(a.createdAt));
       if (mounted) context.read<ActiveOrdersProvider>().refresh();
       return merged;
@@ -143,13 +149,51 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
     if (mounted) _reload();
   }
 
+  Future<void> _clearAllDemoOrders() async {
+    final l10n = context.l10n;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.myOrdersClearAllTitle),
+        content: Text(l10n.myOrdersClearAllBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.myOrdersClearAllConfirm),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    Haptics.medium();
+    await OrderHistoryService().clear();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_demoSeedsClearedKey, true);
+    if (!mounted) return;
+    await _reload();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = context.l10n;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.myOrdersTitle)),
+      appBar: AppBar(
+        title: Text(l10n.myOrdersTitle),
+        actions: [
+          if (kDemoMode)
+            IconButton(
+              tooltip: l10n.myOrdersClearAllTooltip,
+              icon: const Icon(Icons.delete_sweep_outlined),
+              onPressed: _clearAllDemoOrders,
+            ),
+        ],
+      ),
       body: FutureBuilder<List<PastOrder>>(
         key: ValueKey(_reloadEpoch),
         future: _future,

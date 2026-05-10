@@ -6,9 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
-import '../demo/demo_mode.dart';
 import '../l10n/l10n.dart';
-import '../utils/haptics.dart';
 import '../models/shop.dart';
 import '../providers/auth_provider.dart';
 import '../services/shop_service.dart';
@@ -187,42 +185,6 @@ class _MapScreenState extends State<MapScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = context.l10n;
-
-    if (kDemoMode) {
-      return Scaffold(
-        appBar: AppBar(title: Text(l10n.mapTitle)),
-        body: ListView(
-          padding: const EdgeInsets.all(16),
-          children: _shops
-              .map((s) => Card(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    child: ListTile(
-                      leading: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color:
-                              theme.colorScheme.primary.withValues(alpha: 0.12),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(Icons.storefront_outlined,
-                            color: theme.colorScheme.primary, size: 22),
-                      ),
-                      title: Text(s.name,
-                          style:
-                              const TextStyle(fontWeight: FontWeight.w600)),
-                      subtitle: Text(s.address),
-                      trailing: const Icon(Icons.chevron_right),
-                      onTap: () {
-                        Haptics.selection();
-                        _openShop(s);
-                      },
-                    ),
-                  ))
-              .toList(),
-        ),
-      );
-    }
 
     final markers = _buildMarkers();
 
