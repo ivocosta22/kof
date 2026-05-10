@@ -14,6 +14,16 @@ This is a purely personal portfolio project. It is not a real commercial product
 
 ---
 
+## Quick Tour
+
+### Kof App Demo
+[![Kof App Demo](https://img.youtube.com/vi/bn0NXUxBooo/hqdefault.jpg)](https://www.youtube.com/watch?v=bn0NXUxBooo)
+
+### Kof Server/App - Live Production Technical Test
+[![Kof Server/App - Live Production Technical Test](https://img.youtube.com/vi/QB91my-WNFQ/hqdefault.jpg)](https://www.youtube.com/watch?v=QB91my-WNFQ)
+
+---
+
 ## A normal day with Kof, from the customer's side
 
 Imagine you walk into a café called **Helsinki's Finest**. Here is how Kof works for you:
