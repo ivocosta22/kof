@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../demo/demo_api_service.dart';
+import '../demo/demo_localizations.dart';
 import '../demo/demo_mode.dart';
 import '../l10n/l10n.dart';
 import '../models/menu_item.dart';
@@ -191,8 +192,14 @@ class _PreviewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
     final unavailable = !item.isOrderable;
     final imagePath = imageAssetForItem(item.name);
+    final displayName =
+        kDemoMode ? DemoL10n.itemName(l10n, item.id, item.name) : item.name;
+    final displayDescription = kDemoMode
+        ? DemoL10n.itemDescription(l10n, item.id, item.description)
+        : item.description;
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 6),
@@ -234,7 +241,7 @@ class _PreviewCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  item.name,
+                  displayName,
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: unavailable
@@ -242,10 +249,10 @@ class _PreviewCard extends StatelessWidget {
                         : null,
                   ),
                 ),
-                if (item.description.isNotEmpty) ...[
+                if (displayDescription.isNotEmpty) ...[
                   const SizedBox(height: 2),
                   Text(
-                    item.description,
+                    displayDescription,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color:
                           theme.colorScheme.onSurface.withValues(alpha: 0.6),

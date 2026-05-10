@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../demo/demo_api_service.dart';
+import '../demo/demo_localizations.dart';
 import '../demo/demo_mode.dart';
 import '../l10n/l10n.dart';
 import '../models/cart_item.dart';
@@ -292,7 +293,10 @@ class _CartBottomSheetState extends State<CartBottomSheet> {
                         contentPadding: const EdgeInsets.symmetric(
                             horizontal: 20, vertical: 2),
                         title: Text(
-                          item.menuItem.name,
+                          kDemoMode
+                              ? DemoL10n.itemName(
+                                  l10n, item.menuItem.id, item.menuItem.name)
+                              : item.menuItem.name,
                           style:
                               const TextStyle(fontWeight: FontWeight.w500),
                         ),

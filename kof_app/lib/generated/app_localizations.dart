@@ -1966,6 +1966,150 @@ abstract class AppLocalizations {
   /// **'Our Autumn Spice Latte is now available. Try it today!'**
   String get demoNotif2Body;
 
+  /// No description provided for @demoItem1Name.
+  ///
+  /// In en, this message translates to:
+  /// **'Espresso'**
+  String get demoItem1Name;
+
+  /// No description provided for @demoItem1Description.
+  ///
+  /// In en, this message translates to:
+  /// **'A rich, full-bodied shot of our house blend.'**
+  String get demoItem1Description;
+
+  /// No description provided for @demoItem3Name.
+  ///
+  /// In en, this message translates to:
+  /// **'Americano'**
+  String get demoItem3Name;
+
+  /// No description provided for @demoItem3Description.
+  ///
+  /// In en, this message translates to:
+  /// **'Espresso diluted with hot water — clean and smooth.'**
+  String get demoItem3Description;
+
+  /// No description provided for @demoItem4Name.
+  ///
+  /// In en, this message translates to:
+  /// **'Cappuccino'**
+  String get demoItem4Name;
+
+  /// No description provided for @demoItem4Description.
+  ///
+  /// In en, this message translates to:
+  /// **'Equal parts espresso, steamed milk, and velvety foam.'**
+  String get demoItem4Description;
+
+  /// No description provided for @demoItem5Name.
+  ///
+  /// In en, this message translates to:
+  /// **'Latte'**
+  String get demoItem5Name;
+
+  /// No description provided for @demoItem5Description.
+  ///
+  /// In en, this message translates to:
+  /// **'Espresso with silky steamed milk. Add oat, almond or soy.'**
+  String get demoItem5Description;
+
+  /// No description provided for @demoItem7Name.
+  ///
+  /// In en, this message translates to:
+  /// **'Hot Chocolate'**
+  String get demoItem7Name;
+
+  /// No description provided for @demoItem7Description.
+  ///
+  /// In en, this message translates to:
+  /// **'Rich Belgian chocolate with steamed whole milk.'**
+  String get demoItem7Description;
+
+  /// No description provided for @demoItem8Name.
+  ///
+  /// In en, this message translates to:
+  /// **'Iced Americano'**
+  String get demoItem8Name;
+
+  /// No description provided for @demoItem8Description.
+  ///
+  /// In en, this message translates to:
+  /// **'Double espresso poured over ice. Refreshing.'**
+  String get demoItem8Description;
+
+  /// No description provided for @demoItem9Name.
+  ///
+  /// In en, this message translates to:
+  /// **'Cold Brew'**
+  String get demoItem9Name;
+
+  /// No description provided for @demoItem9Description.
+  ///
+  /// In en, this message translates to:
+  /// **'Steeped for 18 hours — silky smooth with low acidity.'**
+  String get demoItem9Description;
+
+  /// No description provided for @demoItem10Name.
+  ///
+  /// In en, this message translates to:
+  /// **'Matcha Latte'**
+  String get demoItem10Name;
+
+  /// No description provided for @demoItem10Description.
+  ///
+  /// In en, this message translates to:
+  /// **'Ceremonial-grade matcha with oat milk.'**
+  String get demoItem10Description;
+
+  /// No description provided for @demoItem11Name.
+  ///
+  /// In en, this message translates to:
+  /// **'Chocolate Muffin'**
+  String get demoItem11Name;
+
+  /// No description provided for @demoItem11Description.
+  ///
+  /// In en, this message translates to:
+  /// **'Baked fresh daily. Rich dark chocolate with a soft centre.'**
+  String get demoItem11Description;
+
+  /// No description provided for @demoItem12Name.
+  ///
+  /// In en, this message translates to:
+  /// **'Croissant'**
+  String get demoItem12Name;
+
+  /// No description provided for @demoItem12Description.
+  ///
+  /// In en, this message translates to:
+  /// **'Buttery and flaky. Best enjoyed still warm.'**
+  String get demoItem12Description;
+
+  /// No description provided for @demoItem13Name.
+  ///
+  /// In en, this message translates to:
+  /// **'Cinnamon Roll'**
+  String get demoItem13Name;
+
+  /// No description provided for @demoItem13Description.
+  ///
+  /// In en, this message translates to:
+  /// **'Classic Nordic cardamom bun with icing.'**
+  String get demoItem13Description;
+
+  /// No description provided for @demoItem14Name.
+  ///
+  /// In en, this message translates to:
+  /// **'Avocado Toast'**
+  String get demoItem14Name;
+
+  /// No description provided for @demoItem14Description.
+  ///
+  /// In en, this message translates to:
+  /// **'Sourdough, smashed avocado, chilli flakes, poached egg.'**
+  String get demoItem14Description;
+
   /// No description provided for @privacyLastUpdated.
   ///
   /// In en, this message translates to:

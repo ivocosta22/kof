@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../demo/demo_api_service.dart';
+import '../demo/demo_localizations.dart';
 import '../demo/demo_mode.dart';
 import '../l10n/l10n.dart';
 import '../models/menu_item.dart';
@@ -424,7 +425,10 @@ class _FeaturedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
     final imagePath = imageAssetForItem(item.name);
+    final displayName =
+        kDemoMode ? DemoL10n.itemName(l10n, item.id, item.name) : item.name;
 
     return GestureDetector(
       onTap: onTap,
@@ -479,7 +483,7 @@ class _FeaturedCard extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      item.name,
+                      displayName,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
@@ -591,6 +595,11 @@ class _MenuListCard extends StatelessWidget {
     final qty = cart.qtyFor(item.id);
     final unavailable = !item.isOrderable;
     final imagePath = imageAssetForItem(item.name);
+    final displayName =
+        kDemoMode ? DemoL10n.itemName(l10n, item.id, item.name) : item.name;
+    final displayDescription = kDemoMode
+        ? DemoL10n.itemDescription(l10n, item.id, item.description)
+        : item.description;
 
     return GestureDetector(
       onTap: unavailable ? null : onTap,
@@ -645,7 +654,7 @@ class _MenuListCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          item.name,
+                          displayName,
                           style: theme.textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.w600,
                             color: unavailable
@@ -668,10 +677,10 @@ class _MenuListCard extends StatelessWidget {
                         ),
                     ],
                   ),
-                  if (item.description.isNotEmpty) ...[
+                  if (displayDescription.isNotEmpty) ...[
                     const SizedBox(height: 2),
                     Text(
-                      item.description,
+                      displayDescription,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurface
                             .withValues(alpha: 0.6),

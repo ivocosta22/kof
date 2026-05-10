@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../demo/demo_api_service.dart';
+import '../demo/demo_localizations.dart';
 import '../demo/demo_mode.dart';
 import '../demo/demo_websocket_service.dart';
 import '../l10n/l10n.dart';
@@ -937,7 +938,11 @@ class _ItemRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(item.name,
+                Text(
+                    kDemoMode
+                        ? DemoL10n.itemName(
+                            context.l10n, item.menuItemId, item.name)
+                        : item.name,
                     style: theme.textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.w600)),
                 if (modifierText != null) ...[

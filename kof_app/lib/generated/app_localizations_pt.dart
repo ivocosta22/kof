@@ -1067,6 +1067,90 @@ class AppLocalizationsPt extends AppLocalizations {
       'O nosso Latte de Outono já está disponível. Experimente hoje!';
 
   @override
+  String get demoItem1Name => 'Espresso';
+
+  @override
+  String get demoItem1Description =>
+      'Um shot rico e encorpado da nossa mistura da casa.';
+
+  @override
+  String get demoItem3Name => 'Americano';
+
+  @override
+  String get demoItem3Description =>
+      'Espresso diluído com água quente — limpo e suave.';
+
+  @override
+  String get demoItem4Name => 'Cappuccino';
+
+  @override
+  String get demoItem4Description =>
+      'Partes iguais de espresso, leite vaporizado e espuma aveludada.';
+
+  @override
+  String get demoItem5Name => 'Latte';
+
+  @override
+  String get demoItem5Description =>
+      'Espresso com leite vaporizado sedoso. Adicione aveia, amêndoa ou soja.';
+
+  @override
+  String get demoItem7Name => 'Chocolate Quente';
+
+  @override
+  String get demoItem7Description =>
+      'Chocolate belga rico com leite gordo vaporizado.';
+
+  @override
+  String get demoItem8Name => 'Americano Gelado';
+
+  @override
+  String get demoItem8Description =>
+      'Espresso duplo servido sobre gelo. Refrescante.';
+
+  @override
+  String get demoItem9Name => 'Cold Brew';
+
+  @override
+  String get demoItem9Description =>
+      'Infundido durante 18 horas — sedoso e suave, com baixa acidez.';
+
+  @override
+  String get demoItem10Name => 'Matcha Latte';
+
+  @override
+  String get demoItem10Description =>
+      'Matcha de grau cerimonial com leite de aveia.';
+
+  @override
+  String get demoItem11Name => 'Muffin de Chocolate';
+
+  @override
+  String get demoItem11Description =>
+      'Cozido fresco diariamente. Chocolate negro intenso com centro macio.';
+
+  @override
+  String get demoItem12Name => 'Croissant';
+
+  @override
+  String get demoItem12Description =>
+      'Amanteigado e estaladiço. Melhor saboreado ainda quente.';
+
+  @override
+  String get demoItem13Name => 'Pãozinho de Canela';
+
+  @override
+  String get demoItem13Description =>
+      'Pãozinho nórdico clássico de cardamomo com glacê.';
+
+  @override
+  String get demoItem14Name => 'Tosta de Abacate';
+
+  @override
+  String get demoItem14Description =>
+      'Pão de fermentação natural, abacate amassado, flocos de piri-piri e ovo escalfado.';
+
+  @override
   String get privacyLastUpdated => 'Última atualização: 2026-05-02';
 
   @override

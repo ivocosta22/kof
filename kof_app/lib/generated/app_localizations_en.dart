@@ -1058,6 +1058,88 @@ class AppLocalizationsEn extends AppLocalizations {
       'Our Autumn Spice Latte is now available. Try it today!';
 
   @override
+  String get demoItem1Name => 'Espresso';
+
+  @override
+  String get demoItem1Description =>
+      'A rich, full-bodied shot of our house blend.';
+
+  @override
+  String get demoItem3Name => 'Americano';
+
+  @override
+  String get demoItem3Description =>
+      'Espresso diluted with hot water — clean and smooth.';
+
+  @override
+  String get demoItem4Name => 'Cappuccino';
+
+  @override
+  String get demoItem4Description =>
+      'Equal parts espresso, steamed milk, and velvety foam.';
+
+  @override
+  String get demoItem5Name => 'Latte';
+
+  @override
+  String get demoItem5Description =>
+      'Espresso with silky steamed milk. Add oat, almond or soy.';
+
+  @override
+  String get demoItem7Name => 'Hot Chocolate';
+
+  @override
+  String get demoItem7Description =>
+      'Rich Belgian chocolate with steamed whole milk.';
+
+  @override
+  String get demoItem8Name => 'Iced Americano';
+
+  @override
+  String get demoItem8Description =>
+      'Double espresso poured over ice. Refreshing.';
+
+  @override
+  String get demoItem9Name => 'Cold Brew';
+
+  @override
+  String get demoItem9Description =>
+      'Steeped for 18 hours — silky smooth with low acidity.';
+
+  @override
+  String get demoItem10Name => 'Matcha Latte';
+
+  @override
+  String get demoItem10Description => 'Ceremonial-grade matcha with oat milk.';
+
+  @override
+  String get demoItem11Name => 'Chocolate Muffin';
+
+  @override
+  String get demoItem11Description =>
+      'Baked fresh daily. Rich dark chocolate with a soft centre.';
+
+  @override
+  String get demoItem12Name => 'Croissant';
+
+  @override
+  String get demoItem12Description =>
+      'Buttery and flaky. Best enjoyed still warm.';
+
+  @override
+  String get demoItem13Name => 'Cinnamon Roll';
+
+  @override
+  String get demoItem13Description => 'Classic Nordic cardamom bun with icing.';
+
+  @override
+  String get demoItem14Name => 'Avocado Toast';
+
+  @override
+  String get demoItem14Description =>
+      'Sourdough, smashed avocado, chilli flakes, poached egg.';
+
+  @override
   String get privacyLastUpdated => 'Last updated: 2026-05-02';
 
   @override

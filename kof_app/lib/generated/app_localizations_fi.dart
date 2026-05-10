@@ -1064,6 +1064,90 @@ class AppLocalizationsFi extends AppLocalizations {
       'Syksyinen Spice Latte on nyt saatavilla. Kokeile tänään!';
 
   @override
+  String get demoItem1Name => 'Espresso';
+
+  @override
+  String get demoItem1Description =>
+      'Rikas ja täyteläinen annos talon omaa sekoitusta.';
+
+  @override
+  String get demoItem3Name => 'Americano';
+
+  @override
+  String get demoItem3Description =>
+      'Espresso laimennettuna kuumalla vedellä — puhdas ja pehmeä.';
+
+  @override
+  String get demoItem4Name => 'Cappuccino';
+
+  @override
+  String get demoItem4Description =>
+      'Yhtä paljon espressoa, höyrytettyä maitoa ja samettista vaahtoa.';
+
+  @override
+  String get demoItem5Name => 'Latte';
+
+  @override
+  String get demoItem5Description =>
+      'Espresso silkkisellä höyrytetyllä maidolla. Lisää kaura-, manteli- tai soijamaito.';
+
+  @override
+  String get demoItem7Name => 'Kaakao';
+
+  @override
+  String get demoItem7Description =>
+      'Täyteläistä belgialaista suklaata höyrytetyssä täysmaidossa.';
+
+  @override
+  String get demoItem8Name => 'Jääamericano';
+
+  @override
+  String get demoItem8Description =>
+      'Tupla espresso jään päälle kaadettuna. Virkistävää.';
+
+  @override
+  String get demoItem9Name => 'Cold Brew';
+
+  @override
+  String get demoItem9Description =>
+      'Haudutettu 18 tuntia — silkkisen pehmeää ja vähähappoista.';
+
+  @override
+  String get demoItem10Name => 'Matcha Latte';
+
+  @override
+  String get demoItem10Description =>
+      'Seremoniallisen tason matchaa kauramaidolla.';
+
+  @override
+  String get demoItem11Name => 'Suklaamuffini';
+
+  @override
+  String get demoItem11Description =>
+      'Leivottu päivittäin tuoreena. Täyteläistä tummaa suklaata ja pehmeä keskus.';
+
+  @override
+  String get demoItem12Name => 'Croissant';
+
+  @override
+  String get demoItem12Description =>
+      'Voinen ja hilseilevä. Parhaimmillaan vielä lämpimänä.';
+
+  @override
+  String get demoItem13Name => 'Korvapuusti';
+
+  @override
+  String get demoItem13Description =>
+      'Klassinen pohjoismainen korvapuusti kuorrutuksella.';
+
+  @override
+  String get demoItem14Name => 'Avokadotoast';
+
+  @override
+  String get demoItem14Description =>
+      'Hapanjuurileipää, muussattua avokadoa, chilihiutaleita ja uppomuna.';
+
+  @override
   String get privacyLastUpdated => 'Päivitetty viimeksi: 2026-05-02';
 
   @override

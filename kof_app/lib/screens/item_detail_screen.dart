@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../demo/demo_localizations.dart';
+import '../demo/demo_mode.dart';
 import '../l10n/l10n.dart';
 import '../models/menu_item.dart';
 import '../models/menu_item_size.dart';
@@ -123,7 +125,9 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                         padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
                         children: [
                           Text(
-                            item.name,
+                            kDemoMode
+                                ? DemoL10n.itemName(l10n, item.id, item.name)
+                                : item.name,
                             style: theme.textTheme.headlineSmall?.copyWith(
                               fontWeight: FontWeight.w700,
                             ),
@@ -131,7 +135,10 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                           if (item.description.isNotEmpty) ...[
                             const SizedBox(height: 8),
                             Text(
-                              item.description,
+                              kDemoMode
+                                  ? DemoL10n.itemDescription(
+                                      l10n, item.id, item.description)
+                                  : item.description,
                               style: theme.textTheme.bodyMedium?.copyWith(
                                 color: theme.colorScheme.onSurface
                                     .withValues(alpha: 0.65),
