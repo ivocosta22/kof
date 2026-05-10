@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../utils/haptics.dart';
 import '../data/countries.dart';
 import '../demo/demo_mode.dart';
@@ -14,6 +15,8 @@ import '../widgets/country_picker_field.dart';
 import '../providers/session_provider.dart';
 import '../providers/settings_provider.dart';
 import 'auth/login_screen.dart';
+import 'privacy_policy_screen.dart';
+import 'terms_screen.dart';
 
 // Supported languages: (languageCode, native name)
 const _kLanguages = [
@@ -101,8 +104,8 @@ class SettingsScreen extends StatelessWidget {
             ),
 
           // ── Preferences ────────────────────────────────────────────
-          _SectionHeader(label: l10n.settingsPreferences),
-          if (Platform.isIOS)
+          if (Platform.isIOS) ...[
+            _SectionHeader(label: l10n.settingsPreferences),
             SwitchListTile.adaptive(
               value: settings.hapticFeedback,
               onChanged: (v) {
@@ -119,6 +122,7 @@ class SettingsScreen extends StatelessWidget {
               ),
               activeTrackColor: theme.colorScheme.primary,
             ),
+          ],
 
           // ── About ──────────────────────────────────────────────────
           _SectionHeader(label: l10n.settingsAbout),
@@ -126,19 +130,25 @@ class SettingsScreen extends StatelessWidget {
             leading: const Icon(Icons.shield_outlined),
             title: Text(l10n.settingsPrivacyPolicy),
             trailing: const Icon(Icons.chevron_right),
-            onTap: () { /* TODO: open URL */ },
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen()),
+            ),
           ),
           ListTile(
             leading: const Icon(Icons.description_outlined),
             title: Text(l10n.settingsTerms),
             trailing: const Icon(Icons.chevron_right),
-            onTap: () { /* TODO: open URL */ },
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const TermsScreen()),
+            ),
           ),
           ListTile(
             leading: const Icon(Icons.mail_outline),
             title: Text(l10n.settingsContactUs),
             trailing: const Icon(Icons.chevron_right),
-            onTap: () { /* TODO: open URL */ },
+            onTap: () => _contactUs(context, l10n),
           ),
           ListTile(
             leading: const Icon(Icons.info_outline),
@@ -211,6 +221,22 @@ class SettingsScreen extends StatelessWidget {
         },
       ),
     );
+  }
+
+  Future<void> _contactUs(BuildContext context, AppLocalizations l10n) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final uri = Uri(scheme: 'mailto', path: 'customersupport@kof.example.com');
+    bool ok = false;
+    try {
+      ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      ok = false;
+    }
+    if (!ok) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.drawerContactUsFailed)),
+      );
+    }
   }
 
   Future<void> _confirmLogout(BuildContext context, AppLocalizations l10n) async {
