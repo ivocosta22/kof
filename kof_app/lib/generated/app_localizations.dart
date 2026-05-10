@@ -1318,11 +1318,29 @@ abstract class AppLocalizations {
   /// **'Country'**
   String get settingsCountry;
 
+  /// No description provided for @settingsCountryDemoDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Country (Disabled in Demo mode)'**
+  String get settingsCountryDemoDisabled;
+
   /// No description provided for @shopWalkInButton.
   ///
   /// In en, this message translates to:
   /// **'Order Here'**
   String get shopWalkInButton;
+
+  /// No description provided for @shopWalkInButtonDemo.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Here (Demo only)'**
+  String get shopWalkInButtonDemo;
+
+  /// No description provided for @shopWalkInProximityNote.
+  ///
+  /// In en, this message translates to:
+  /// **'In the real app, you can only order if you\'re within 100m of the coffee shop.'**
+  String get shopWalkInProximityNote;
 
   /// No description provided for @shopWalkInConnecting.
   ///
@@ -1371,6 +1389,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{meters}m away'**
   String shopWalkInDistanceLabel(int meters);
+
+  /// No description provided for @mapDemoZoomHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom out to see our shops in Portugal and Finland! (Demo only)'**
+  String get mapDemoZoomHint;
+
+  /// No description provided for @menuHello.
+  ///
+  /// In en, this message translates to:
+  /// **'Hello!'**
+  String get menuHello;
+
+  /// No description provided for @menuHelloUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Hello, {name}!'**
+  String menuHelloUser(String name);
+
+  /// No description provided for @cartBubbleContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue order'**
+  String get cartBubbleContinue;
+
+  /// No description provided for @cartBubbleItemsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 item in cart} other{{count} items in cart}}'**
+  String cartBubbleItemsCount(int count);
 
   /// No description provided for @menuFeatured.
   ///
@@ -1804,6 +1852,12 @@ abstract class AppLocalizations {
   /// **'Verification email sent. Check your inbox.'**
   String get accountSettingsEmailChanged;
 
+  /// No description provided for @accountSettingsDemoNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Demo mode is active — this screen is for visual purposes only.'**
+  String get accountSettingsDemoNotice;
+
   /// No description provided for @loginAsDemoUser.
   ///
   /// In en, this message translates to:
@@ -1813,7 +1867,7 @@ abstract class AppLocalizations {
   /// No description provided for @myOrdersClearAllTooltip.
   ///
   /// In en, this message translates to:
-  /// **'Clear all orders'**
+  /// **'Clear all orders (Demo only)'**
   String get myOrdersClearAllTooltip;
 
   /// No description provided for @myOrdersClearAllTitle.
@@ -1853,63 +1907,231 @@ abstract class AppLocalizations {
   String get demoScanSubtitle;
 
   /// No description provided for @demoShop1Description.
+  ///
+  /// In en, this message translates to:
+  /// **'Specialty coffee and homemade pastries in the heart of Helsinki. Our beans are sourced from single-origin farms and roasted in-house.'**
   String get demoShop1Description;
 
   /// No description provided for @demoShop2Description.
+  ///
+  /// In en, this message translates to:
+  /// **'Porto\'s favourite third-wave coffee shop. Great espresso, vegan pastries, and a sun-drenched terrace overlooking the river.'**
   String get demoShop2Description;
 
   /// No description provided for @demoDiscount1Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Pastry + Drink Deal'**
   String get demoDiscount1Title;
 
   /// No description provided for @demoDiscount1Description.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy any pastry and get one espresso or hot/cold drink free.'**
   String get demoDiscount1Description;
 
   /// No description provided for @demoDiscount2Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Summer Special'**
   String get demoDiscount2Title;
 
   /// No description provided for @demoDiscount2Description.
+  ///
+  /// In en, this message translates to:
+  /// **'25% off your entire order. No minimum spend.'**
   String get demoDiscount2Description;
 
   /// No description provided for @demoNotif1Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekend Special!'**
   String get demoNotif1Title;
 
   /// No description provided for @demoNotif1Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Half-price croissants today. Come in before noon and mention Kof!'**
   String get demoNotif1Body;
 
   /// No description provided for @demoNotif2Title.
+  ///
+  /// In en, this message translates to:
+  /// **'New Seasonal Blend'**
   String get demoNotif2Title;
 
   /// No description provided for @demoNotif2Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Our Autumn Spice Latte is now available. Try it today!'**
   String get demoNotif2Body;
 
+  /// No description provided for @privacyLastUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Last updated: 2026-05-02'**
   String get privacyLastUpdated;
+
+  /// No description provided for @privacySection1Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Who we are'**
   String get privacySection1Title;
+
+  /// No description provided for @privacySection1Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Kof is a personal-project ordering app that lets you browse coffee shops, place orders ahead of time, and follow shops you like. This is a portfolio project — there is no real company behind it.'**
   String get privacySection1Body;
+
+  /// No description provided for @privacySection2Title.
+  ///
+  /// In en, this message translates to:
+  /// **'What we collect'**
   String get privacySection2Title;
+
+  /// No description provided for @privacySection2Body.
+  ///
+  /// In en, this message translates to:
+  /// **'When you create an account, we store your email, display name, and (optionally) a phone number and profile photo. When you place an order, we store the order contents, time, and which shop received it. If you follow a shop, we store that relationship so we can deliver notifications.'**
   String get privacySection2Body;
+
+  /// No description provided for @privacySection3Title.
+  ///
+  /// In en, this message translates to:
+  /// **'How we use it'**
   String get privacySection3Title;
+
+  /// No description provided for @privacySection3Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Account data is used to sign you in and personalise the app. Order data is shown to you in My Orders and to the shop staff so they can prepare your order. Notification preferences let you receive push messages from shops you follow.'**
   String get privacySection3Body;
+
+  /// No description provided for @privacySection4Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Who we share it with'**
   String get privacySection4Title;
+
+  /// No description provided for @privacySection4Body.
+  ///
+  /// In en, this message translates to:
+  /// **'We do not sell your data. Order details are shared only with the specific shop you ordered from. Authentication and push delivery are handled by Firebase (Google) under their own privacy terms.'**
   String get privacySection4Body;
+
+  /// No description provided for @privacySection5Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Your choices'**
   String get privacySection5Title;
+
+  /// No description provided for @privacySection5Body.
+  ///
+  /// In en, this message translates to:
+  /// **'You can edit or remove your name, phone, and profile photo from Account Settings at any time. You can unfollow a shop to stop receiving its notifications. Sign out clears your local session.'**
   String get privacySection5Body;
+
+  /// No description provided for @privacySection6Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
   String get privacySection6Title;
+
+  /// No description provided for @privacySection6Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Questions about this policy? Reach us at customersupport@kof.example.com.'**
   String get privacySection6Body;
 
+  /// No description provided for @termsLastUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Last updated: 2026-05-02'**
   String get termsLastUpdated;
+
+  /// No description provided for @termsSection1Title.
+  ///
+  /// In en, this message translates to:
+  /// **'1. About this app'**
   String get termsSection1Title;
+
+  /// No description provided for @termsSection1Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Kof is a personal portfolio project. By using it you acknowledge that there is no real commercial entity behind the app and that orders, prices, and shops shown may be demonstrations rather than real businesses.'**
   String get termsSection1Body;
+
+  /// No description provided for @termsSection2Title.
+  ///
+  /// In en, this message translates to:
+  /// **'2. Your account'**
   String get termsSection2Title;
+
+  /// No description provided for @termsSection2Body.
+  ///
+  /// In en, this message translates to:
+  /// **'You are responsible for keeping your sign-in credentials safe. You must provide an email you control. We may suspend an account that is used to abuse the service or its participating shops.'**
   String get termsSection2Body;
+
+  /// No description provided for @termsSection3Title.
+  ///
+  /// In en, this message translates to:
+  /// **'3. Orders and payment'**
   String get termsSection3Title;
+
+  /// No description provided for @termsSection3Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Orders placed through the app are sent to the relevant shop for preparation. Payment is handled at the counter or via the shop\'s own systems — the app does not currently process payments. Discount codes shown in the app are subject to the issuing shop\'s terms.'**
   String get termsSection3Body;
+
+  /// No description provided for @termsSection4Title.
+  ///
+  /// In en, this message translates to:
+  /// **'4. Acceptable use'**
   String get termsSection4Title;
+
+  /// No description provided for @termsSection4Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Do not use the app to harass shop staff, place fraudulent orders, or attempt to access other users\' data. Automated scraping or load-testing without permission is not allowed.'**
   String get termsSection4Body;
+
+  /// No description provided for @termsSection5Title.
+  ///
+  /// In en, this message translates to:
+  /// **'5. Limitation of liability'**
   String get termsSection5Title;
+
+  /// No description provided for @termsSection5Body.
+  ///
+  /// In en, this message translates to:
+  /// **'The app is provided \"as is\" without warranties of any kind. We are not responsible for missed orders, incorrect items, or any loss arising from use of the app.'**
   String get termsSection5Body;
+
+  /// No description provided for @termsSection6Title.
+  ///
+  /// In en, this message translates to:
+  /// **'6. Changes'**
   String get termsSection6Title;
+
+  /// No description provided for @termsSection6Body.
+  ///
+  /// In en, this message translates to:
+  /// **'These terms may be updated from time to time. Continued use after changes constitutes acceptance of the updated terms.'**
   String get termsSection6Body;
+
+  /// No description provided for @termsSection7Title.
+  ///
+  /// In en, this message translates to:
+  /// **'7. Contact'**
   String get termsSection7Title;
+
+  /// No description provided for @termsSection7Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Questions or complaints? Reach us at customersupport@kof.example.com.'**
   String get termsSection7Body;
 
   /// No description provided for @activeOrdersCount.

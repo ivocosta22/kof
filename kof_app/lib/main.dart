@@ -16,6 +16,7 @@ import 'screens/auth/email_verification_screen.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/home_screen.dart';
 import 'widgets/active_orders_bubble.dart';
+import 'widgets/cart_bubble.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -109,9 +110,9 @@ class _KofMaterialApp extends StatelessWidget {
           useMaterial3: true,
         ),
         home: const _StartupGate(),
-        // Overlay the active-orders bubble over every screen. The Stack
-        // wraps the Navigator (the `child`) so the bubble sits above any
-        // route's content and stays put across navigations.
+        // Overlay the active-orders + cart bubbles over every screen. The
+        // Stack wraps the Navigator (the `child`) so they sit above any
+        // route's content and stay put across navigations.
         builder: (context, child) {
           return Stack(
             children: [
@@ -120,6 +121,12 @@ class _KofMaterialApp extends StatelessWidget {
                 child: IgnorePointer(
                   ignoring: false,
                   child: ActiveOrdersBubble(),
+                ),
+              ),
+              const Positioned.fill(
+                child: IgnorePointer(
+                  ignoring: false,
+                  child: CartBubble(),
                 ),
               ),
             ],
@@ -145,10 +152,11 @@ class _StartupGateState extends State<_StartupGate> {
   }
 
   Future<void> _init() async {
-    // Restore settings and auth session in parallel
+    // Restore settings, auth session, and saved carts in parallel
     await Future.wait([
       context.read<SettingsProvider>().load(),
       context.read<AuthProvider>().tryRestoreSession(),
+      context.read<CartProvider>().hydrate(),
     ]);
     if (!mounted) return;
 

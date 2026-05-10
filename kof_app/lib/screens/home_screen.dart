@@ -85,8 +85,12 @@ class HomeScreen extends StatelessWidget {
                 subtitle: l10n.homeScanSubtitle,
                 color: theme.colorScheme.primary,
                 onTap: () {
-                  context.read<CartProvider>().clear();
+                  // Don't wipe the cart on the way to scanning — items the
+                  // user added stay saved per-shop and resurface via the
+                  // floating cart bubble. The new session is set after the
+                  // scan completes.
                   context.read<SessionProvider>().clearSession();
+                  context.read<CartProvider>().setActiveSession(null);
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const ScanScreen()),

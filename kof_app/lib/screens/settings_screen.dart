@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../utils/haptics.dart';
 import '../data/countries.dart';
+import '../demo/demo_mode.dart';
 import '../l10n/l10n.dart';
 import '../providers/active_orders_provider.dart';
 import '../providers/auth_provider.dart';
@@ -70,8 +71,13 @@ class SettingsScreen extends StatelessWidget {
           ),
           if (!auth.isGuest)
             ListTile(
+              enabled: !kDemoMode,
               leading: const Icon(Icons.flag_outlined),
-              title: Text(l10n.settingsCountry),
+              title: Text(
+                kDemoMode
+                    ? l10n.settingsCountryDemoDisabled
+                    : l10n.settingsCountry,
+              ),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -86,10 +92,12 @@ class SettingsScreen extends StatelessWidget {
                   const Icon(Icons.chevron_right),
                 ],
               ),
-              onTap: () {
-                Haptics.selection();
-                _pickCountry(context, auth);
-              },
+              onTap: kDemoMode
+                  ? null
+                  : () {
+                      Haptics.selection();
+                      _pickCountry(context, auth);
+                    },
             ),
 
           // ── Preferences ────────────────────────────────────────────
@@ -229,7 +237,8 @@ class SettingsScreen extends StatelessWidget {
     if (confirmed != true || !context.mounted) return;
     await context.read<AuthProvider>().logout();
     if (!context.mounted) return;
-    context.read<CartProvider>().clear();
+    await context.read<CartProvider>().clearAll();
+    if (!context.mounted) return;
     context.read<SessionProvider>().clearSession();
     context.read<ActiveOrdersProvider>().clear();
     context.read<NotificationsProvider>().clearAll();

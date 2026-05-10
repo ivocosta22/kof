@@ -71,16 +71,16 @@ class _ScanScreenState extends State<ScanScreen> {
         throw Exception(context.l10n.scanWrongServer);
       }
 
-      context.read<CartProvider>().clear();
-      context.read<SessionProvider>().setSession(
-            TableSession(
-              serverUrl: serverUrl,
-              tableLabel: tableLabel,
-              tableToken: tableToken,
-              shopName: info['shop_name'] as String? ?? context.l10n.appName,
-            ),
-          );
+      final session = TableSession(
+        serverUrl: serverUrl,
+        tableLabel: tableLabel,
+        tableToken: tableToken,
+        shopName: info['shop_name'] as String? ?? context.l10n.appName,
+      );
+      context.read<SessionProvider>().setSession(session);
+      await context.read<CartProvider>().setActiveSession(session);
 
+      if (!mounted) return;
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const MenuScreen()),
@@ -95,16 +95,16 @@ class _ScanScreenState extends State<ScanScreen> {
     }
   }
 
-  void _startDemoSession({String tableLabel = '3'}) {
-    context.read<CartProvider>().clear();
-    context.read<SessionProvider>().setSession(
-          TableSession(
-            serverUrl: DemoData.kServerUrl,
-            tableLabel: tableLabel,
-            tableToken: 'demo-token',
-            shopName: DemoData.shop1.name,
-          ),
-        );
+  Future<void> _startDemoSession({String tableLabel = '3'}) async {
+    final session = TableSession(
+      serverUrl: DemoData.kServerUrl,
+      tableLabel: tableLabel,
+      tableToken: 'demo-token',
+      shopName: DemoData.shop1.name,
+    );
+    context.read<SessionProvider>().setSession(session);
+    await context.read<CartProvider>().setActiveSession(session);
+    if (!mounted) return;
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (_) => const MenuScreen()),

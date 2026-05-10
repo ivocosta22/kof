@@ -682,7 +682,17 @@ class AppLocalizationsFi extends AppLocalizations {
   String get settingsCountry => 'Maa';
 
   @override
+  String get settingsCountryDemoDisabled => 'Maa (Pois käytöstä demotilassa)';
+
+  @override
   String get shopWalkInButton => 'Tilaa tässä';
+
+  @override
+  String get shopWalkInButtonDemo => 'Tilaa tässä (vain demo)';
+
+  @override
+  String get shopWalkInProximityNote =>
+      'Oikeassa sovelluksessa voit tilata vain, jos olet 100 metrin säteellä kahvilasta.';
 
   @override
   String get shopWalkInConnecting => 'Yhdistetään...';
@@ -710,6 +720,32 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String shopWalkInDistanceLabel(int meters) {
     return '${meters}m päässä';
+  }
+
+  @override
+  String get mapDemoZoomHint =>
+      'Loitonna nähdäksesi kahvilamme Portugalissa ja Suomessa! (Vain demo)';
+
+  @override
+  String get menuHello => 'Hei!';
+
+  @override
+  String menuHelloUser(String name) {
+    return 'Hei, $name!';
+  }
+
+  @override
+  String get cartBubbleContinue => 'Jatka tilausta';
+
+  @override
+  String cartBubbleItemsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tuotetta ostoskorissa',
+      one: '1 tuote ostoskorissa',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -963,6 +999,10 @@ class AppLocalizationsFi extends AppLocalizations {
       'Vahvistusviesti lähetetty. Tarkista postilaatikkosi.';
 
   @override
+  String get accountSettingsDemoNotice =>
+      'Demotila on käytössä — tämä näyttö on vain visuaalista tarkoitusta varten.';
+
+  @override
   String get loginAsDemoUser => 'Kirjaudu demokäyttäjänä';
 
   @override
@@ -1104,7 +1144,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get termsSection5Body =>
-      'Sovellus tarjotaan "sellaisenaan" ilman minkäänlaisia takuita. Emme ole vastuussa puuttuvista tilauksista, vääristä tuotteista tai mistään sovelluksen käytöstä aiheutuvista tappioista.';
+      'Sovellus tarjotaan \"sellaisenaan\" ilman minkäänlaisia takuita. Emme ole vastuussa puuttuvista tilauksista, vääristä tuotteista tai mistään sovelluksen käytöstä aiheutuvista tappioista.';
 
   @override
   String get termsSection6Title => '6. Muutokset';

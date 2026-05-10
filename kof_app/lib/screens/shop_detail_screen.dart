@@ -163,16 +163,16 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
       if (!mounted) return;
       if (info['ok'] != true) throw Exception(l10n.shopWalkInError);
 
-      context.read<CartProvider>().clear();
-      context.read<SessionProvider>().setSession(
-            TableSession(
-              serverUrl: serverUrl,
-              shopName: widget.shop.name,
-              fulfillmentType: 'counter_pickup',
-              customerLabel: name,
-            ),
-          );
+      final session = TableSession(
+        serverUrl: serverUrl,
+        shopName: widget.shop.name,
+        fulfillmentType: 'counter_pickup',
+        customerLabel: name,
+      );
+      context.read<SessionProvider>().setSession(session);
+      await context.read<CartProvider>().setActiveSession(session);
 
+      if (!mounted) return;
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const MenuScreen()),
@@ -357,6 +357,20 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
                   if (_walkInAvailable) ...[
                     const SizedBox(height: 12),
                     _walkInButton(theme, l10n),
+                    if (kDemoMode) ...[
+                      const SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: Text(
+                          l10n.shopWalkInProximityNote,
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurface
+                                .withValues(alpha: 0.55),
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
                   const SizedBox(height: 28),
                   if (shop.description.isNotEmpty) ...[
@@ -484,6 +498,14 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
 
   Widget _walkInButton(ThemeData theme, AppLocalizations l10n) {
     final dist = _distanceMeters;
+    final String buttonLabel;
+    if (_connectingWalkIn) {
+      buttonLabel = l10n.shopWalkInConnecting;
+    } else if (kDemoMode) {
+      buttonLabel = l10n.shopWalkInButtonDemo;
+    } else {
+      buttonLabel = l10n.shopWalkInButton;
+    }
     return SizedBox(
       width: double.infinity,
       child: FilledButton.icon(
@@ -499,7 +521,7 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              _connectingWalkIn ? l10n.shopWalkInConnecting : l10n.shopWalkInButton,
+              buttonLabel,
               style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
             ),
             if (dist != null && !_connectingWalkIn)

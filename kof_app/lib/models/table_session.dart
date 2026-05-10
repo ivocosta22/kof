@@ -14,4 +14,24 @@ class TableSession {
     this.tableToken = '',
     this.customerLabel = '',
   });
+
+  Map<String, dynamic> toJson() => {
+        'serverUrl': serverUrl,
+        'shopName': shopName,
+        'fulfillmentType': fulfillmentType,
+        'tableLabel': tableLabel,
+        'tableToken': tableToken,
+        'customerLabel': customerLabel,
+      };
+
+  factory TableSession.fromJson(Map<String, dynamic> json) {
+    return TableSession(
+      serverUrl: json['serverUrl'] as String? ?? '',
+      shopName: json['shopName'] as String? ?? '',
+      fulfillmentType: json['fulfillmentType'] as String? ?? 'table',
+      tableLabel: json['tableLabel'] as String? ?? '',
+      tableToken: json['tableToken'] as String? ?? '',
+      customerLabel: json['customerLabel'] as String? ?? '',
+    );
+  }
 }

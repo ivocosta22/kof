@@ -45,6 +45,18 @@ class MenuItem {
     );
   }
 
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'description': description,
+        'price_cents': priceCents,
+        'availability': availability,
+        'max_makeable_units': maxMakeableUnits,
+        'category': category,
+        'has_sizes': hasSizes,
+        'sizes': sizes.map((s) => s.toJson()).toList(),
+      };
+
   bool get isOrderable =>
       availability == 'available' ||
       availability == 'low' ||

@@ -679,7 +679,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsCountry => 'Country';
 
   @override
+  String get settingsCountryDemoDisabled => 'Country (Disabled in Demo mode)';
+
+  @override
   String get shopWalkInButton => 'Order Here';
+
+  @override
+  String get shopWalkInButtonDemo => 'Order Here (Demo only)';
+
+  @override
+  String get shopWalkInProximityNote =>
+      'In the real app, you can only order if you\'re within 100m of the coffee shop.';
 
   @override
   String get shopWalkInConnecting => 'Connecting...';
@@ -707,6 +717,32 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String shopWalkInDistanceLabel(int meters) {
     return '${meters}m away';
+  }
+
+  @override
+  String get mapDemoZoomHint =>
+      'Zoom out to see our shops in Portugal and Finland! (Demo only)';
+
+  @override
+  String get menuHello => 'Hello!';
+
+  @override
+  String menuHelloUser(String name) {
+    return 'Hello, $name!';
+  }
+
+  @override
+  String get cartBubbleContinue => 'Continue order';
+
+  @override
+  String cartBubbleItemsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items in cart',
+      one: '1 item in cart',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -957,6 +993,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Verification email sent. Check your inbox.';
 
   @override
+  String get accountSettingsDemoNotice =>
+      'Demo mode is active — this screen is for visual purposes only.';
+
+  @override
   String get loginAsDemoUser => 'Login as Demo User';
 
   @override
@@ -987,7 +1027,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get demoShop2Description =>
-      "Porto's favourite third-wave coffee shop. Great espresso, vegan pastries, and a sun-drenched terrace overlooking the river.";
+      'Porto\'s favourite third-wave coffee shop. Great espresso, vegan pastries, and a sun-drenched terrace overlooking the river.';
 
   @override
   String get demoDiscount1Title => 'Pastry + Drink Deal';
@@ -1084,21 +1124,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get termsSection3Body =>
-      "Orders placed through the app are sent to the relevant shop for preparation. Payment is handled at the counter or via the shop's own systems — the app does not currently process payments. Discount codes shown in the app are subject to the issuing shop's terms.";
+      'Orders placed through the app are sent to the relevant shop for preparation. Payment is handled at the counter or via the shop\'s own systems — the app does not currently process payments. Discount codes shown in the app are subject to the issuing shop\'s terms.';
 
   @override
   String get termsSection4Title => '4. Acceptable use';
 
   @override
   String get termsSection4Body =>
-      "Do not use the app to harass shop staff, place fraudulent orders, or attempt to access other users' data. Automated scraping or load-testing without permission is not allowed.";
+      'Do not use the app to harass shop staff, place fraudulent orders, or attempt to access other users\' data. Automated scraping or load-testing without permission is not allowed.';
 
   @override
   String get termsSection5Title => '5. Limitation of liability';
 
   @override
   String get termsSection5Body =>
-      'The app is provided "as is" without warranties of any kind. We are not responsible for missed orders, incorrect items, or any loss arising from use of the app.';
+      'The app is provided \"as is\" without warranties of any kind. We are not responsible for missed orders, incorrect items, or any loss arising from use of the app.';
 
   @override
   String get termsSection6Title => '6. Changes';

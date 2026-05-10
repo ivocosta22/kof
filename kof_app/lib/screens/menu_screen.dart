@@ -141,6 +141,12 @@ class _MenuScreenState extends State<MenuScreen> {
     final session = context.watch<SessionProvider>().session;
     final cart = context.watch<CartProvider>();
 
+    final greeting =
+        (session?.fulfillmentType == 'counter_pickup' &&
+                session!.customerLabel.trim().isNotEmpty)
+            ? l10n.menuHelloUser(session.customerLabel.split(' ').first)
+            : l10n.menuHello;
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -148,18 +154,17 @@ class _MenuScreenState extends State<MenuScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              session?.shopName ?? l10n.appName,
+              greeting,
               style: theme.textTheme.titleMedium
                   ?.copyWith(fontWeight: FontWeight.w700),
             ),
             if (session != null)
               Text(
-                session.fulfillmentType == 'counter_pickup'
-                    ? l10n.menuPickupOrder
-                    : l10n.tableLabel(session.tableLabel),
+                '${session.shopName} · ${session.fulfillmentType == 'counter_pickup' ? l10n.menuPickupOrder : l10n.tableLabel(session.tableLabel)}',
                 style: theme.textTheme.labelSmall?.copyWith(
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
+                overflow: TextOverflow.ellipsis,
               ),
           ],
         ),
@@ -168,8 +173,10 @@ class _MenuScreenState extends State<MenuScreen> {
             icon: const Icon(Icons.qr_code_scanner),
             tooltip: l10n.menuScanDifferentTable,
             onPressed: () {
+              // Preserve the current shop's cart for the floating bubble — the
+              // new session set after scanning will swap it out properly.
               context.read<SessionProvider>().clearSession();
-              context.read<CartProvider>().clear();
+              context.read<CartProvider>().setActiveSession(null);
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (_) => const ScanScreen()),

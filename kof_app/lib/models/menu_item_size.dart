@@ -10,6 +10,11 @@ class MenuItemSize {
       priceCentsDelta: (json['price_cents_delta'] as num?)?.toInt() ?? 0,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'price_cents_delta': priceCentsDelta,
+      };
 }
 
 // Standard size set used as a fallback when the server doesn't ship sizes

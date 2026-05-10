@@ -20,7 +20,11 @@ class AuthProvider extends ChangeNotifier {
   bool get isLoggedIn => _user != null;
   bool get isGuest => _user?.isGuest ?? false;
   bool get emailVerified => _user?.emailVerified ?? false;
-  bool get isPasswordUser => _service.isPasswordUser;
+  // Firebase isn't initialized in demo mode, so any FirebaseAuth call
+  // (including the `currentUser` lookup inside _service.isPasswordUser)
+  // throws and turns the screen grey. Force-false in demo mode so the
+  // account screen shows the read-only Google-style layout.
+  bool get isPasswordUser => kDemoMode ? false : _service.isPasswordUser;
 
   /// Hydrates [_user] from Firebase's persisted session and starts listening
   /// for future auth state changes (sign-in/out on other tabs, token refresh).

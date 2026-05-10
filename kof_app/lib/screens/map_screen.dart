@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
+import '../demo/demo_mode.dart';
 import '../l10n/l10n.dart';
 import '../models/shop.dart';
 import '../providers/auth_provider.dart';
@@ -30,6 +31,7 @@ class _MapScreenState extends State<MapScreen> {
   BitmapDescriptor? _markerIcon;
   String? _activeCountry;
   bool _shopSubInitialized = false;
+  bool _showDemoHint = kDemoMode;
 
   static const _defaultLatLng = LatLng(38.7169, -9.1399); // Lisbon fallback
 
@@ -251,6 +253,56 @@ class _MapScreenState extends State<MapScreen> {
                         ),
                       ),
                     ],
+                  ),
+                ),
+              ),
+            ),
+
+          if (kDemoMode && _showDemoHint)
+            Positioned(
+              top: _locationDenied ? 64 : 12,
+              left: 16,
+              right: 16,
+              child: Material(
+                borderRadius: BorderRadius.circular(14),
+                color: theme.colorScheme.primary,
+                elevation: 6,
+                shadowColor: Colors.black38,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(14),
+                  onTap: () => setState(() => _showDemoHint = false),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 12,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.public,
+                          color: theme.colorScheme.onPrimary,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            l10n.mapDemoZoomHint,
+                            style: TextStyle(
+                              color: theme.colorScheme.onPrimary,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Icon(
+                          Icons.close,
+                          color: theme.colorScheme.onPrimary
+                              .withValues(alpha: 0.7),
+                          size: 16,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

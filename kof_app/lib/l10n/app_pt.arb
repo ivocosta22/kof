@@ -295,8 +295,11 @@
   "countryHint": "Selecione o seu país",
   "countrySearch": "Pesquisar países...",
   "settingsCountry": "País",
+  "settingsCountryDemoDisabled": "País (Desativado no modo de demonstração)",
 
   "shopWalkInButton": "Pedir Aqui",
+  "shopWalkInButtonDemo": "Pedir Aqui (Apenas demonstração)",
+  "shopWalkInProximityNote": "Na app real, só é possível pedir se estiver a menos de 100m da cafetaria.",
   "shopWalkInConnecting": "A ligar...",
   "shopWalkInDialogTitle": "Pedir nesta loja",
   "shopWalkInNameLabel": "O seu nome",
@@ -308,6 +311,21 @@
   "@shopWalkInDistanceLabel": {
     "placeholders": {
       "meters": { "type": "int" }
+    }
+  },
+  "mapDemoZoomHint": "Faça zoom out para ver as nossas cafetarias em Portugal e na Finlândia! (Apenas demonstração)",
+  "menuHello": "Olá!",
+  "menuHelloUser": "Olá, {name}!",
+  "@menuHelloUser": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "cartBubbleContinue": "Continuar pedido",
+  "cartBubbleItemsCount": "{count, plural, =1{1 item no carrinho} other{{count} itens no carrinho}}",
+  "@cartBubbleItemsCount": {
+    "placeholders": {
+      "count": { "type": "int" }
     }
   },
 
@@ -436,6 +454,7 @@
   "accountSettingsEmailReauthTitle": "Confirmar palavra-passe",
   "accountSettingsEmailReauthBody": "Introduza a sua palavra-passe atual para atualizar o endereço de email.",
   "accountSettingsEmailChanged": "Email de verificação enviado. Verifique a sua caixa de entrada.",
+  "accountSettingsDemoNotice": "Modo de demonstração ativo — este ecrã existe apenas para fins visuais.",
 
   "loginAsDemoUser": "Entrar como utilizador de demonstração",
   "myOrdersClearAllTooltip": "Limpar todos os pedidos (Apenas demonstração)",

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../l10n/l10n.dart';
-import '../demo/demo_mode.dart';
 import '../utils/haptics.dart';
 import '../providers/active_orders_provider.dart';
 import '../providers/auth_provider.dart';
@@ -88,7 +87,7 @@ class AppDrawer extends StatelessWidget {
                         ],
                       ),
                     ),
-                    if (user != null && !user.isGuest && !kDemoMode)
+                    if (user != null && !user.isGuest)
                       Icon(
                         Icons.chevron_right,
                         color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
@@ -226,7 +225,8 @@ class AppDrawer extends StatelessWidget {
     close();
     await context.read<AuthProvider>().logout();
     if (!context.mounted) return;
-    context.read<CartProvider>().clear();
+    await context.read<CartProvider>().clearAll();
+    if (!context.mounted) return;
     context.read<SessionProvider>().clearSession();
     context.read<ActiveOrdersProvider>().clear();
     context.read<NotificationsProvider>().clearAll();

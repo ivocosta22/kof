@@ -684,7 +684,18 @@ class AppLocalizationsPt extends AppLocalizations {
   String get settingsCountry => 'País';
 
   @override
+  String get settingsCountryDemoDisabled =>
+      'País (Desativado no modo de demonstração)';
+
+  @override
   String get shopWalkInButton => 'Pedir Aqui';
+
+  @override
+  String get shopWalkInButtonDemo => 'Pedir Aqui (Apenas demonstração)';
+
+  @override
+  String get shopWalkInProximityNote =>
+      'Na app real, só é possível pedir se estiver a menos de 100m da cafetaria.';
 
   @override
   String get shopWalkInConnecting => 'A ligar...';
@@ -712,6 +723,32 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String shopWalkInDistanceLabel(int meters) {
     return '${meters}m de distância';
+  }
+
+  @override
+  String get mapDemoZoomHint =>
+      'Faça zoom out para ver as nossas cafetarias em Portugal e na Finlândia! (Apenas demonstração)';
+
+  @override
+  String get menuHello => 'Olá!';
+
+  @override
+  String menuHelloUser(String name) {
+    return 'Olá, $name!';
+  }
+
+  @override
+  String get cartBubbleContinue => 'Continuar pedido';
+
+  @override
+  String cartBubbleItemsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count itens no carrinho',
+      one: '1 item no carrinho',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -964,10 +1001,15 @@ class AppLocalizationsPt extends AppLocalizations {
       'Email de verificação enviado. Verifique a sua caixa de entrada.';
 
   @override
+  String get accountSettingsDemoNotice =>
+      'Modo de demonstração ativo — este ecrã existe apenas para fins visuais.';
+
+  @override
   String get loginAsDemoUser => 'Entrar como utilizador de demonstração';
 
   @override
-  String get myOrdersClearAllTooltip => 'Limpar todos os pedidos (Apenas demonstração)';
+  String get myOrdersClearAllTooltip =>
+      'Limpar todos os pedidos (Apenas demonstração)';
 
   @override
   String get myOrdersClearAllTitle => 'Limpar todos os pedidos?';
@@ -1046,7 +1088,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get privacySection3Body =>
-      'Os dados da conta são usados para autenticação e personalização da app. Os dados de encomendas são mostrados em "As Minhas Encomendas" e ao pessoal da cafetaria para preparar a sua encomenda. As preferências de notificação permitem receber mensagens push das cafetarias que segue.';
+      'Os dados da conta são usados para autenticação e personalização da app. Os dados de encomendas são mostrados em \"As Minhas Encomendas\" e ao pessoal da cafetaria para preparar a sua encomenda. As preferências de notificação permitem receber mensagens push das cafetarias que segue.';
 
   @override
   String get privacySection4Title => 'Com quem partilhamos';
@@ -1105,7 +1147,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get termsSection5Body =>
-      'A app é fornecida "tal como está", sem garantias de qualquer tipo. Não somos responsáveis por encomendas perdidas, itens incorretos ou qualquer perda decorrente do uso da app.';
+      'A app é fornecida \"tal como está\", sem garantias de qualquer tipo. Não somos responsáveis por encomendas perdidas, itens incorretos ou qualquer perda decorrente do uso da app.';
 
   @override
   String get termsSection6Title => '6. Alterações';

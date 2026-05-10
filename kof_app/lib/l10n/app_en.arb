@@ -296,8 +296,11 @@
   "countryHint": "Select your country",
   "countrySearch": "Search countries...",
   "settingsCountry": "Country",
+  "settingsCountryDemoDisabled": "Country (Disabled in Demo mode)",
 
   "shopWalkInButton": "Order Here",
+  "shopWalkInButtonDemo": "Order Here (Demo only)",
+  "shopWalkInProximityNote": "In the real app, you can only order if you're within 100m of the coffee shop.",
   "shopWalkInConnecting": "Connecting...",
   "shopWalkInDialogTitle": "Order at this shop",
   "shopWalkInNameLabel": "Your name",
@@ -309,6 +312,21 @@
   "@shopWalkInDistanceLabel": {
     "placeholders": {
       "meters": { "type": "int" }
+    }
+  },
+  "mapDemoZoomHint": "Zoom out to see our shops in Portugal and Finland! (Demo only)",
+  "menuHello": "Hello!",
+  "menuHelloUser": "Hello, {name}!",
+  "@menuHelloUser": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "cartBubbleContinue": "Continue order",
+  "cartBubbleItemsCount": "{count, plural, =1{1 item in cart} other{{count} items in cart}}",
+  "@cartBubbleItemsCount": {
+    "placeholders": {
+      "count": { "type": "int" }
     }
   },
 
@@ -437,6 +455,7 @@
   "accountSettingsEmailReauthTitle": "Confirm password",
   "accountSettingsEmailReauthBody": "Enter your current password to update your email address.",
   "accountSettingsEmailChanged": "Verification email sent. Check your inbox.",
+  "accountSettingsDemoNotice": "Demo mode is active — this screen is for visual purposes only.",
 
   "loginAsDemoUser": "Login as Demo User",
   "myOrdersClearAllTooltip": "Clear all orders (Demo only)",

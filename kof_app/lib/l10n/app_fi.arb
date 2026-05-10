@@ -295,8 +295,11 @@
   "countryHint": "Valitse maasi",
   "countrySearch": "Hae maita...",
   "settingsCountry": "Maa",
+  "settingsCountryDemoDisabled": "Maa (Pois käytöstä demotilassa)",
 
   "shopWalkInButton": "Tilaa tässä",
+  "shopWalkInButtonDemo": "Tilaa tässä (vain demo)",
+  "shopWalkInProximityNote": "Oikeassa sovelluksessa voit tilata vain, jos olet 100 metrin säteellä kahvilasta.",
   "shopWalkInConnecting": "Yhdistetään...",
   "shopWalkInDialogTitle": "Tilaa tästä kahvilasta",
   "shopWalkInNameLabel": "Nimesi",
@@ -308,6 +311,21 @@
   "@shopWalkInDistanceLabel": {
     "placeholders": {
       "meters": { "type": "int" }
+    }
+  },
+  "mapDemoZoomHint": "Loitonna nähdäksesi kahvilamme Portugalissa ja Suomessa! (Vain demo)",
+  "menuHello": "Hei!",
+  "menuHelloUser": "Hei, {name}!",
+  "@menuHelloUser": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "cartBubbleContinue": "Jatka tilausta",
+  "cartBubbleItemsCount": "{count, plural, =1{1 tuote ostoskorissa} other{{count} tuotetta ostoskorissa}}",
+  "@cartBubbleItemsCount": {
+    "placeholders": {
+      "count": { "type": "int" }
     }
   },
 
@@ -436,6 +454,7 @@
   "accountSettingsEmailReauthTitle": "Vahvista salasana",
   "accountSettingsEmailReauthBody": "Anna nykyinen salasanasi päivittääksesi sähköpostiosoitteen.",
   "accountSettingsEmailChanged": "Vahvistusviesti lähetetty. Tarkista postilaatikkosi.",
+  "accountSettingsDemoNotice": "Demotila on käytössä — tämä näyttö on vain visuaalista tarkoitusta varten.",
 
   "loginAsDemoUser": "Kirjaudu demokäyttäjänä",
   "myOrdersClearAllTooltip": "Tyhjennä kaikki tilaukset (Vain demo)",
