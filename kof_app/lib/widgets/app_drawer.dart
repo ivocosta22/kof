@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import '../l10n/l10n.dart';
 import '../utils/haptics.dart';
 import '../providers/active_orders_provider.dart';
@@ -49,7 +50,8 @@ class AppDrawer extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (_) => const AccountSettingsScreen()),
+                          builder: (_) => const AccountSettingsScreen(),
+                        ),
                       );
                     }
                   : null,
@@ -57,11 +59,7 @@ class AppDrawer extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
                 child: Row(
                   children: [
-                    _Avatar(
-                      radius: 26,
-                      initial: initial,
-                      photoUrl: photoUrl,
-                    ),
+                    _Avatar(radius: 26, initial: initial, photoUrl: photoUrl),
                     const SizedBox(width: 14),
                     Expanded(
                       child: Column(
@@ -70,7 +68,9 @@ class AppDrawer extends StatelessWidget {
                           Text(
                             user?.name ?? l10n.drawerGuestName,
                             style: const TextStyle(
-                                fontWeight: FontWeight.w700, fontSize: 16),
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16,
+                            ),
                             overflow: TextOverflow.ellipsis,
                           ),
                           Text(
@@ -79,8 +79,9 @@ class AppDrawer extends StatelessWidget {
                                 : l10n.drawerBrowsingAsGuest,
                             style: TextStyle(
                               fontSize: 12,
-                              color: theme.colorScheme.onSurface
-                                  .withValues(alpha: 0.6),
+                              color: theme.colorScheme.onSurface.withValues(
+                                alpha: 0.6,
+                              ),
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -90,7 +91,9 @@ class AppDrawer extends StatelessWidget {
                     if (user != null && !user.isGuest)
                       Icon(
                         Icons.chevron_right,
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.4,
+                        ),
                       ),
                   ],
                 ),
@@ -119,7 +122,8 @@ class AppDrawer extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (_) => const FollowedShopsScreen()),
+                    builder: (_) => const FollowedShopsScreen(),
+                  ),
                 );
               },
             ),
@@ -158,7 +162,8 @@ class AppDrawer extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (_) => const PrivacyPolicyScreen()),
+                    builder: (_) => const PrivacyPolicyScreen(),
+                  ),
                 );
               },
             ),
@@ -184,13 +189,22 @@ class AppDrawer extends StatelessWidget {
             const Spacer(),
             Padding(
               padding: const EdgeInsets.all(20),
-              child: Text(
-                l10n.drawerVersion,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 11,
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.35),
-                ),
+              child: FutureBuilder<PackageInfo>(
+                future: PackageInfo.fromPlatform(),
+                builder: (context, snapshot) {
+                  final version = snapshot.data?.version ?? '';
+
+                  return Text(
+                    'Kof v$version',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: theme.colorScheme.onSurface.withValues(
+                        alpha: 0.35,
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           ],
@@ -203,10 +217,7 @@ class AppDrawer extends StatelessWidget {
     close();
     final messenger = ScaffoldMessenger.of(context);
     final l10n = context.l10n;
-    final uri = Uri(
-      scheme: 'mailto',
-      path: 'customersupport@kof.example.com',
-    );
+    final uri = Uri(scheme: 'mailto', path: 'customersupport@kof.example.com');
     bool ok = false;
     try {
       ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
@@ -312,10 +323,7 @@ class _Avatar extends StatelessWidget {
         child: SizedBox(
           width: radius * 0.8,
           height: radius * 0.8,
-          child: CircularProgressIndicator(
-            strokeWidth: 2.5,
-            color: fg,
-          ),
+          child: CircularProgressIndicator(strokeWidth: 2.5, color: fg),
         ),
       ),
     );

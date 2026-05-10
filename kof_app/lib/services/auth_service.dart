@@ -123,9 +123,11 @@ class AuthService {
   }
 
   Future<User> loginWithApple() async {
-    // Requires Apple Developer account ($99/year). See TODO.md.
-    throw const AuthException(AuthErrorCode.unknown,
-        'Apple Sign-In is not yet configured.');
+    // Requires Apple Developer account ($99/year)
+    throw const AuthException(
+      AuthErrorCode.unknown,
+      'Apple Sign-In is not yet configured.',
+    );
   }
 
   Future<void> updateProfile({String? name, String? photoUrl}) async {
@@ -164,8 +166,7 @@ class AuthService {
   }
 
   bool get isPasswordUser =>
-      _auth.currentUser?.providerData
-          .any((p) => p.providerId == 'password') ??
+      _auth.currentUser?.providerData.any((p) => p.providerId == 'password') ??
       false;
 
   Future<void> logout() async {
