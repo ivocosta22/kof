@@ -18,9 +18,7 @@ class DemoWebSocketService extends WebSocketService {
     disconnect();
 
     // Signal connected immediately.
-    Future<void>.microtask(
-      () => onMessage({'type': 'realtime_connected'}),
-    );
+    Future<void>.microtask(() => onMessage({'type': 'realtime_connected'}));
 
     final orderId = DemoApiService.latestOrderId;
     if (orderId == null) return;
@@ -38,6 +36,10 @@ class DemoWebSocketService extends WebSocketService {
           'payload': {'id': orderId, 'status': 'ready'},
         });
         DemoApiService.updateOrderStatus(orderId, 'ready');
+        onMessage({
+          'type': 'order_payment_changed',
+          'payload': {'id': orderId, 'payment_status': 'paid'},
+        });
       });
     });
   }
