@@ -16,6 +16,8 @@ This is a purely personal portfolio project. It is not a real commercial product
 
 ## Quick Tour
 
+**Android Only** - You can install a demo version of the app by [downloading the APK.](https://github.com/ivocosta22/kof/releases)
+
 ### Kof App Demo
 [![Kof App Demo](https://img.youtube.com/vi/bn0NXUxBooo/hqdefault.jpg)](https://www.youtube.com/watch?v=bn0NXUxBooo)
 
