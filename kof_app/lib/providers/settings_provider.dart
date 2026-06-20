@@ -6,19 +6,26 @@ class SettingsProvider extends ChangeNotifier {
   static const _keyHaptic = 'setting_haptic_feedback';
   static const _keyTheme = 'setting_theme_mode';
   static const _keyLocale = 'setting_locale';
+  static const _keyOnboardingSeen = 'setting_onboarding_seen';
 
   bool _hapticFeedback = true;
   ThemeMode _themeMode = ThemeMode.system;
   Locale? _locale; // null = follow system
+  bool _onboardingSeen = false;
 
   bool get hapticFeedback => _hapticFeedback;
   ThemeMode get themeMode => _themeMode;
   Locale? get locale => _locale;
 
+  /// Whether the user has already completed (or skipped) the intro carousel.
+  /// Drives the one-time onboarding shown ahead of the login screen.
+  bool get onboardingSeen => _onboardingSeen;
+
   Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
     _hapticFeedback = prefs.getBool(_keyHaptic) ?? true;
     Haptics.enabled = _hapticFeedback;
+    _onboardingSeen = prefs.getBool(_keyOnboardingSeen) ?? false;
 
     final themeStr = prefs.getString(_keyTheme);
     _themeMode = switch (themeStr) {
@@ -52,6 +59,13 @@ class SettingsProvider extends ChangeNotifier {
       _ => 'system',
     };
     await prefs.setString(_keyTheme, str);
+  }
+
+  Future<void> setOnboardingSeen(bool value) async {
+    _onboardingSeen = value;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_keyOnboardingSeen, value);
   }
 
   Future<void> setLocale(Locale? locale) async {

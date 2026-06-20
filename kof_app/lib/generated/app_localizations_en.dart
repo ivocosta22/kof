@@ -1246,4 +1246,41 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get onboardingNext => 'Next';
+
+  @override
+  String get onboardingSkip => 'Skip intro';
+
+  @override
+  String get onboardingGetStarted => 'Get Started';
+
+  @override
+  String get onboardingWelcomeTitle => 'Welcome to Kof';
+
+  @override
+  String get onboardingWelcomeBody =>
+      'Order your favorite coffee effortlessly.';
+
+  @override
+  String get onboardingScanTitle => 'Scan, browse, order';
+
+  @override
+  String get onboardingScanBody =>
+      'Scan the QR code at your table, explore the live menu, and place your order in seconds.';
+
+  @override
+  String get onboardingTrackTitle => 'Track every sip';
+
+  @override
+  String get onboardingTrackBody =>
+      'Follow your order in real time as it moves from new, to brewing, to ready for pickup.';
+
+  @override
+  String get onboardingFollowTitle => 'Follow & save';
+
+  @override
+  String get onboardingFollowBody =>
+      'Follow the shops you love to unlock their latest deals and get notified about fresh offers.';
 }

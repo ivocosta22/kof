@@ -4,10 +4,10 @@ import 'package:provider/provider.dart';
 import '../../demo/demo_mode.dart';
 import '../../l10n/l10n.dart';
 import '../../providers/auth_provider.dart';
-import '../../providers/settings_provider.dart';
 import '../../services/auth_error_messages.dart';
 import '../../utils/guest_migration.dart';
 import '../../utils/haptics.dart';
+import '../../widgets/language_theme_bar.dart';
 import '../home_screen.dart';
 import 'email_verification_screen.dart';
 import 'forgot_password_screen.dart';
@@ -145,7 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const SizedBox(height: 16),
-                  _LoginTopBar(),
+                  const LanguageThemeBar(),
                   const SizedBox(height: 32),
                   Icon(Icons.coffee, size: 52, color: theme.colorScheme.primary),
                   const SizedBox(height: 12),
@@ -472,130 +472,5 @@ class _GoogleIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SvgPicture.string(_svg, width: 18, height: 18);
-  }
-}
-
-// ── Top bar: language picker + theme toggle ────────────────────────────────
-
-const _kLoginLanguages = [
-  (null, ''),
-  ('en', 'English'),
-  ('pt', 'Português'),
-  ('fi', 'Suomi'),
-];
-
-class _LoginTopBar extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final settings = context.watch<SettingsProvider>();
-    final theme = Theme.of(context);
-
-    final langLabel = settings.locale == null
-        ? l10n.settingsLanguageSystem
-        : _kLoginLanguages
-            .where((e) => e.$1 == settings.locale!.languageCode)
-            .map((e) => e.$2)
-            .firstOrNull ?? settings.locale!.languageCode;
-
-    final themeIcon = switch (settings.themeMode) {
-      ThemeMode.light => Icons.light_mode_outlined,
-      ThemeMode.dark  => Icons.dark_mode_outlined,
-      _               => Icons.brightness_auto_outlined,
-    };
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        // ── Language button ──────────────────────────────────────
-        InkWell(
-          borderRadius: BorderRadius.circular(20),
-          onTap: () => _pickLanguage(context, settings, l10n),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.language_outlined, size: 16,
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6)),
-                const SizedBox(width: 4),
-                Text(
-                  langLabel,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                  ),
-                ),
-                const SizedBox(width: 2),
-                Icon(Icons.arrow_drop_down, size: 16,
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6)),
-              ],
-            ),
-          ),
-        ),
-        // ── Theme toggle ─────────────────────────────────────────
-        IconButton(
-          icon: Icon(themeIcon,
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.6)),
-          tooltip: l10n.loginSelectTheme,
-          onPressed: () {
-            final next = switch (settings.themeMode) {
-              ThemeMode.system => ThemeMode.light,
-              ThemeMode.light  => ThemeMode.dark,
-              _                => ThemeMode.system,
-            };
-            context.read<SettingsProvider>().setThemeMode(next);
-          },
-        ),
-      ],
-    );
-  }
-
-  Future<void> _pickLanguage(
-    BuildContext context,
-    SettingsProvider settings,
-    AppLocalizations l10n,
-  ) async {
-    await showModalBottomSheet<void>(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 8),
-            Container(
-              width: 36, height: 4,
-              decoration: BoxDecoration(
-                color: Theme.of(ctx).colorScheme.outlineVariant,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 8),
-            RadioGroup<String?>(
-              groupValue: settings.locale?.languageCode,
-              onChanged: (code) {
-                context.read<SettingsProvider>()
-                    .setLocale(code == null ? null : Locale(code));
-                Navigator.pop(ctx);
-              },
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  for (final (code, name) in _kLoginLanguages)
-                    RadioListTile<String?>(
-                      value: code,
-                      title: Text(code == null ? l10n.settingsLanguageSystem : name),
-                    ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 8),
-          ],
-        ),
-      ),
-    );
   }
 }

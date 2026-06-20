@@ -529,5 +529,17 @@
   "termsSection6Body": "Näitä ehtoja voidaan päivittää ajoittain. Käytön jatkaminen muutosten jälkeen tarkoittaa päivitettyjen ehtojen hyväksymistä.",
   "termsSection7Title": "7. Yhteystiedot",
   "termsSection7Body": "Kysymyksiä tai valituksia? Ota yhteyttä customersupport@kof.example.com.",
-  "activeOrdersCount": "{count, plural, =1{1 aktiivinen tilaus} other{{count} aktiivista tilausta}}"
+  "activeOrdersCount": "{count, plural, =1{1 aktiivinen tilaus} other{{count} aktiivista tilausta}}",
+
+  "onboardingNext": "Seuraava",
+  "onboardingSkip": "Ohita esittely",
+  "onboardingGetStarted": "Aloita",
+  "onboardingWelcomeTitle": "Tervetuloa Kofiin",
+  "onboardingWelcomeBody": "Tilaa lempikahvisi vaivattomasti.",
+  "onboardingScanTitle": "Skannaa, selaa, tilaa",
+  "onboardingScanBody": "Skannaa pöytäsi QR-koodi, selaa reaaliaikaista valikkoa ja tee tilauksesi sekunneissa.",
+  "onboardingTrackTitle": "Seuraa jokaista kulausta",
+  "onboardingTrackBody": "Seuraa tilaustasi reaaliajassa, kun se etenee uudesta valmistukseen ja noudettavaksi.",
+  "onboardingFollowTitle": "Seuraa ja säästä",
+  "onboardingFollowBody": "Seuraa rakastamiasi kahviloita avataksesi niiden uusimmat tarjoukset ja saadaksesi ilmoituksia uusista eduista."
 }

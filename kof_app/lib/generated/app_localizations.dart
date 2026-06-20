@@ -2283,6 +2283,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 active order} other{{count} active orders}}'**
   String activeOrdersCount(int count);
+
+  /// No description provided for @onboardingNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get onboardingNext;
+
+  /// No description provided for @onboardingSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip intro'**
+  String get onboardingSkip;
+
+  /// No description provided for @onboardingGetStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Started'**
+  String get onboardingGetStarted;
+
+  /// No description provided for @onboardingWelcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Kof'**
+  String get onboardingWelcomeTitle;
+
+  /// No description provided for @onboardingWelcomeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Order your favorite coffee effortlessly.'**
+  String get onboardingWelcomeBody;
+
+  /// No description provided for @onboardingScanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan, browse, order'**
+  String get onboardingScanTitle;
+
+  /// No description provided for @onboardingScanBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan the QR code at your table, explore the live menu, and place your order in seconds.'**
+  String get onboardingScanBody;
+
+  /// No description provided for @onboardingTrackTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Track every sip'**
+  String get onboardingTrackTitle;
+
+  /// No description provided for @onboardingTrackBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow your order in real time as it moves from new, to brewing, to ready for pickup.'**
+  String get onboardingTrackBody;
+
+  /// No description provided for @onboardingFollowTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow & save'**
+  String get onboardingFollowTitle;
+
+  /// No description provided for @onboardingFollowBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow the shops you love to unlock their latest deals and get notified about fresh offers.'**
+  String get onboardingFollowBody;
 }
 
 class _AppLocalizationsDelegate

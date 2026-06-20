@@ -535,5 +535,17 @@
     "placeholders": {
       "count": { "type": "int" }
     }
-  }
+  },
+
+  "onboardingNext": "Next",
+  "onboardingSkip": "Skip intro",
+  "onboardingGetStarted": "Get Started",
+  "onboardingWelcomeTitle": "Welcome to Kof",
+  "onboardingWelcomeBody": "Order your favorite coffee effortlessly.",
+  "onboardingScanTitle": "Scan, browse, order",
+  "onboardingScanBody": "Scan the QR code at your table, explore the live menu, and place your order in seconds.",
+  "onboardingTrackTitle": "Track every sip",
+  "onboardingTrackBody": "Follow your order in real time as it moves from new, to brewing, to ready for pickup.",
+  "onboardingFollowTitle": "Follow & save",
+  "onboardingFollowBody": "Follow the shops you love to unlock their latest deals and get notified about fresh offers."
 }

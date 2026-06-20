@@ -529,5 +529,17 @@
   "termsSection6Body": "Estes termos podem ser atualizados periodicamente. O uso continuado após alterações constitui aceitação dos termos atualizados.",
   "termsSection7Title": "7. Contacto",
   "termsSection7Body": "Questões ou reclamações? Contacte-nos em customersupport@kof.example.com.",
-  "activeOrdersCount": "{count, plural, =1{1 pedido ativo} other{{count} pedidos ativos}}"
+  "activeOrdersCount": "{count, plural, =1{1 pedido ativo} other{{count} pedidos ativos}}",
+
+  "onboardingNext": "Seguinte",
+  "onboardingSkip": "Saltar introdução",
+  "onboardingGetStarted": "Começar",
+  "onboardingWelcomeTitle": "Bem-vindo ao Kof",
+  "onboardingWelcomeBody": "Peça o seu café preferido sem complicações.",
+  "onboardingScanTitle": "Digitalize, explore, peça",
+  "onboardingScanBody": "Digitalize o código QR na sua mesa, explore o menu em tempo real e faça o seu pedido em segundos.",
+  "onboardingTrackTitle": "Acompanhe cada gole",
+  "onboardingTrackBody": "Siga o seu pedido em tempo real à medida que passa de novo, para em preparação, até estar pronto para recolha.",
+  "onboardingFollowTitle": "Siga e poupe",
+  "onboardingFollowBody": "Siga as cafetarias que adora para desbloquear as suas promoções mais recentes e receber notificações de novas ofertas."
 }

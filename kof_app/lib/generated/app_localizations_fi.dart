@@ -1254,4 +1254,40 @@ class AppLocalizationsFi extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get onboardingNext => 'Seuraava';
+
+  @override
+  String get onboardingSkip => 'Ohita esittely';
+
+  @override
+  String get onboardingGetStarted => 'Aloita';
+
+  @override
+  String get onboardingWelcomeTitle => 'Tervetuloa Kofiin';
+
+  @override
+  String get onboardingWelcomeBody => 'Tilaa lempikahvisi vaivattomasti.';
+
+  @override
+  String get onboardingScanTitle => 'Skannaa, selaa, tilaa';
+
+  @override
+  String get onboardingScanBody =>
+      'Skannaa pöytäsi QR-koodi, selaa reaaliaikaista valikkoa ja tee tilauksesi sekunneissa.';
+
+  @override
+  String get onboardingTrackTitle => 'Seuraa jokaista kulausta';
+
+  @override
+  String get onboardingTrackBody =>
+      'Seuraa tilaustasi reaaliajassa, kun se etenee uudesta valmistukseen ja noudettavaksi.';
+
+  @override
+  String get onboardingFollowTitle => 'Seuraa ja säästä';
+
+  @override
+  String get onboardingFollowBody =>
+      'Seuraa rakastamiasi kahviloita avataksesi niiden uusimmat tarjoukset ja saadaksesi ilmoituksia uusista eduista.';
 }

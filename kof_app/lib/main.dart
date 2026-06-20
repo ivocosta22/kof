@@ -15,6 +15,7 @@ import 'navigation.dart';
 import 'screens/auth/email_verification_screen.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/home_screen.dart';
+import 'screens/onboarding_screen.dart';
 import 'widgets/active_orders_bubble.dart';
 import 'widgets/cart_bubble.dart';
 
@@ -165,8 +166,11 @@ class _StartupGateState extends State<_StartupGate> {
 
     if (!mounted) return;
     final auth = context.read<AuthProvider>();
+    final settings = context.read<SettingsProvider>();
     final Widget next;
-    if (!auth.isLoggedIn) {
+    if (!auth.isLoggedIn && !settings.onboardingSeen) {
+      next = const OnboardingScreen();
+    } else if (!auth.isLoggedIn) {
       next = const LoginScreen();
     } else if (!auth.isGuest && !auth.emailVerified) {
       next = const EmailVerificationScreen();

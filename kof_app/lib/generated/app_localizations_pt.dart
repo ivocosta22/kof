@@ -1257,4 +1257,41 @@ class AppLocalizationsPt extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get onboardingNext => 'Seguinte';
+
+  @override
+  String get onboardingSkip => 'Saltar introdução';
+
+  @override
+  String get onboardingGetStarted => 'Começar';
+
+  @override
+  String get onboardingWelcomeTitle => 'Bem-vindo ao Kof';
+
+  @override
+  String get onboardingWelcomeBody =>
+      'Peça o seu café preferido sem complicações.';
+
+  @override
+  String get onboardingScanTitle => 'Digitalize, explore, peça';
+
+  @override
+  String get onboardingScanBody =>
+      'Digitalize o código QR na sua mesa, explore o menu em tempo real e faça o seu pedido em segundos.';
+
+  @override
+  String get onboardingTrackTitle => 'Acompanhe cada gole';
+
+  @override
+  String get onboardingTrackBody =>
+      'Siga o seu pedido em tempo real à medida que passa de novo, para em preparação, até estar pronto para recolha.';
+
+  @override
+  String get onboardingFollowTitle => 'Siga e poupe';
+
+  @override
+  String get onboardingFollowBody =>
+      'Siga as cafetarias que adora para desbloquear as suas promoções mais recentes e receber notificações de novas ofertas.';
 }
